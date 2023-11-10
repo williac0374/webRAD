@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>none</title>
+<script src= "js/codemirror.js"></script>
+<link rel="stylesheet" href="css/codemirror.css">
+<script src= "js/javascript.js"></script>
+<link rel="stylesheet" href="css/base16-dark.css"> 
+<script src= "js/matchbrackets.js"></script>
+<script src= "js/formatting.js"></script>
+  <style>
+    body {
+      margin: 0;
+      height: availHeight;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #1EFF00
+    }
+    #menu {
+	  position: absolute;
+      left:0.5%;
+      top:1%;
+      height: 7%;
+      width: 99%;
+      background-color:  #151515;
+      color: #1EFF00;
+      display: flex;
+    }
+    #menu button {
+      background-color:  #151515;
+      color: #1EFF00;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+    #menu button:hover {
+      background-color:  #1EFF00;
+      color: #151515;
+    }
+    #editor{
+      position: absolute;
+      left:0.5%;
+      top:9%;
+      width: 99%;
+      height: 90%;
+      background-color: black;
+    }
+    .CodeMirror {
+      height: 100%;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+	<input id="fread" type='file' style="display: none" accept='.js , .json ,.html' onchange='openFile(event)'>
+  <div id="menu">
+    <button id="load">Load</button>
+    <button id="save">Save</button>
+    <button id="zoom">Zoom</button>
+    <button id="format">Format</button>
+    <button id="test">TEST!</button>
+  </div>
+  <div id="editor"></div>
+
+  <script>
+	  var codeSize = 14;
+    // Initialize CodeMirror
+    var editor = CodeMirror(document.getElementById("editor"), {
+      mode: "javascript",
+      theme: "base16-dark",
+      lineNumbers: true,
+      matchBrackets: true,
+      lineWrapping: true,
+      autoCloseBrackets: true,
+      styleActiveLine: true
+    });
+	document.getElementsByClassName("CodeMirror")[0].style.fontSize = codeSize +"px";
+    // Load button click function
+    document.getElementById("load").addEventListener("click", function () {
+      // Open file dialog and handle file loading
+       load();
+    });
+
+    // Save button click function
+    document.getElementById("save").addEventListener("click", function () {
+      // Open save file dialog and save the editor content to a file
+       save();
+    });
+    
+    // zoom button click function
+    document.getElementById("zoom").addEventListener("click", function () {
+		codeSize = prompt("codeSize?",codeSize)
+        document.getElementsByClassName("CodeMirror")[0].style.fontSize =   codeSize+"px";
+    });
+
+    // Format button click function
+    document.getElementById("format").addEventListener("click", function () {
+      format();
+    });
+     // TEST! button click function
+    document.getElementById("test").addEventListener("click", function () {
+      // Open file dialog and handle file loading
+       document.body.style.backgroundColor = "#151515"
+        setTimeout(function(){run();document.body.style.backgroundColor = "#1EFF00"}, 100);
+     });
+    function load(){
+		
+    document.getElementById('fread').click();
+  }
+  openFile = function(event) {
+    var input = event.target; var reader = new FileReader();
+    reader.onload = function(){
+      var text = reader.result; var name = document.getElementById('fread');
+      saveName=name.files.item(0).name
+      editor.setValue(text);
+	  document.title=saveName;
+      document.getElementById('fread').value='';
+    };
+    reader.readAsText(input.files[0]);
+  };
+
+    function run(){
+      var cursor = editor.getCursor();
+      var c = editor.getValue()
+  	var myWindow = window.open();
+	//myWindow.document.title = 'testing';
+    myWindow.document.write(c);
+   var t = document.title.split('.');
+   myWindow.document.title= '###'+t[0]+'###';
+    editor.getInputField().focus();
+    editor.setCursor({ line: cursor.line, ch: cursor.ch });  
+  }
+    function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+  function save(){
+	  var c = editor.getValue()
+	  download(prompt("game name?",document.title.split('.')[0]) + ".html",c)
+}
+function format(){
+  // this formats code
+        var range = getSelectedRange();
+		//alert(range.from)
+        editor.autoFormatRange(range.from, range.to);
+ }
+  function getSelectedRange() {
+	return { from: editor.getCursor(true), to: editor.getCursor(false) };
+}
+  </script>
+</body>
+</html>

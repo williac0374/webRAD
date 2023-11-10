@@ -1,0 +1,239 @@
+<!DOCTYPE html><title>GameJamEditor Test</title><meta name='apple-mobile-web-app-capable' content='yes' /><meta name='viewport' content='initial-scale=1.0, maximum-scale=1.0, user-scalable=0, width=device-width, height=device-height' /><meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' /><body style='margin: 0px; padding: 0px; border: solid 0px;background: black; overflow:hidden'><script>// gets errors without opening dev tools
+var msg='';
+window.onerror = function(message, source, lineno, colno, error) {
+  msg = message+' , line :'+ lineno+' , column: ' +colno+ ' , ' +error
+  alert(msg);
+}
+// Create the canvas
+var canvas = document.createElement("canvas");
+var ctx = canvas.getContext("2d");
+canvas.width = screen.width;
+canvas.height = screen.height;
+document.body.appendChild(canvas);
+
+// game object classes
+class Camera {
+  constructor(t, s) {
+    this.x = t, this.y = s
+  }
+}
+class Text {
+  constructor(t, s, i, e, c) {
+    this.x = t, this.y = s, this.col = c, this.txt = i, this.font = e
+  }
+  draw() {
+    ctx.font = this.font, ctx.fillStyle = this.col, ctx.fillText(this.txt, this.x, this.y)
+  }
+}
+class Circle {
+  constructor(t, s, i, e) {
+    this.x = t, this.y = s, this.r = i, this.col = e
+  }
+  draw() {
+    ctx.fillStyle = this.col, ctx.fill(), ctx.strokeStyle = this.col, ctx.beginPath(), ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI), ctx.stroke()
+  }
+}
+class Rectangle { //Rectangle(x,y,w,h,c)
+  constructor(t, s, i, e, c) {
+    this.rot = 0, this.x = t, this.y = s, this.w = i, this.h = e, this.col = c
+  }
+  draw(rot) {
+    var rotation = this.rot
+      if(rot!=null){rotation += rot}
+      ctx.translate(this.x - camera.x, this.y - camera.y);
+      ctx.rotate(degrees_to_radians(rotation));
+      ctx.fillRect(-(this.w*this.scale)/2, -(this.h*this.scale)/2, this.w*this.scale, this.h*this.scale);
+      ctx.rotate(-degrees_to_radians(rotation));
+      ctx.translate(-(this.x - camera.x), -(this.y - camera.y));
+  }
+}
+class Line {
+  constructor(t, s, i, e, c) {
+    this.x = t, this.y = s, this.x2 = i, this.y2 = e, this.col = c, this.rot = 0
+  }
+  draw() {
+    ctx.fillStyle = this.col, ctx.strokeStyle = this.col, ctx.save(), ctx.translate(this.x, this.y), ctx.rotate(this.rot * Math.PI / 180), ctx.moveTo(this.x, this.y), ctx.lineTo(this.x2, this.y2), ctx.stroke(), ctx.restore()
+  }
+}
+class Sprite { //Sprite(url,x,y,w,h)
+  constructor(t, s, i, e, c) {
+    this.rot = 0, this.scale = 1, this.timer, this.url = t, this.img, this.x = s, this.y = i, this.w = e, this.h = c
+  }
+  setup() {
+    this.img = new Image, this.img.src = this.url;
+  }
+  draw(rot) {
+    //if(this!=null){ctx.drawImage(this.img, this.x - camera.x, this.y - camera.y, this.w, this.h)}
+    if(this!=null){
+      var rotation = this.rot
+      if(rot!=null){
+        rotation += rot}
+      ctx.translate(this.x - camera.x, this.y - camera.y);
+      ctx.rotate(degrees_to_radians(rotation));
+      ctx.drawImage(this.img,-(this.w*this.scale)/2, -(this.h*this.scale)/2, this.w*this.scale, this.h*this.scale);
+      ctx.rotate(-degrees_to_radians(rotation));
+      ctx.translate(-(this.x - camera.x), -(this.y - camera.y));
+    }
+  }
+}
+var camera = new Camera(0, 0);
+////////////////////////////////////////////////////////
+
+function dBox(x,y,w,h,col,rot){
+      var rotation = 0
+      if(rot!=null){rotation += rot}
+  	  ctx.fillStyle = col;
+      ctx.translate(x - camera.x, y - camera.y);
+      ctx.rotate(degrees_to_radians(rotation));
+      ctx.fillRect(-w/2, -h/2, w, h);
+      ctx.rotate(-degrees_to_radians(rotation));
+      ctx.translate(-(x - camera.x), -(y - camera.y));
+}
+function dLine(x,y,x2,y2,col,thck){
+    ctx.strokeStyle = col;
+    ctx.lineWidth = thck;
+  	ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+}
+function dText(font,col,x,y,txt){//'30px Arial'
+  ctx.font = font, ctx.fillStyle = col, ctx.fillText(txt, x, y)
+}
+// Handle keyboard controls
+var keysDown = {};
+
+addEventListener("keydown", function (e) {
+	keysDown[e.keyCode] = true;
+}, false);
+
+addEventListener("keyup", function (e) {
+	delete keysDown[e.keyCode];
+}, false);
+
+function key(code,kill){
+  if (code in keysDown){
+    if(kill!=null){delete keysDown[code]}
+    return true
+  }  
+}
+var mX=null;
+var mY=null;
+var mDown=null;
+
+if(navigator.userAgent.includes("Android")){
+  canvas.addEventListener("touchstart", function(e){
+      // Capture the position of the touch, accounting for canvas position
+      var touch = e.touches[0];
+      mX = touch.clientX - canvas.offsetLeft;
+      mY = touch.clientY - canvas.offsetTop;
+      mDown=true;
+    });
+    canvas.addEventListener("touchmove", function(e){
+      
+      // Capture the position of the touch, accounting for canvas position
+      var touch = e.touches[0];
+      if(mDown==true){
+      mX = touch.clientX - canvas.offsetLeft;
+      mY = touch.clientY - canvas.offsetTop;
+      }
+    });
+  
+  
+}else{
+  // handles mouse/touch events
+  canvas.addEventListener("mousedown", function(e){
+      // Capture the position of the click, accounting for canvas position
+      mX = e.x - canvas.offsetLeft;
+      mY = e.y - canvas.offsetTop;
+      mDown=true;
+    });
+    canvas.addEventListener("mousemove", function(e){
+      // Capture the position of the click, accounting for canvas position
+      if(mDown==true){
+      mX = e.x - canvas.offsetLeft;
+      mY = e.y - canvas.offsetTop;
+      }
+    });
+}
+
+function clickIn(obj){
+  if(mDown){
+  	if(mX>obj.x-obj.w/2 && mX<obj.x+obj.w/2){
+      	if(mY>obj.y-obj.h/2 && mY<obj.y+obj.h/2){
+    		return true;
+    	}
+    }
+ }
+}
+
+function objExplore(obj){
+       let properties = Object.getOwnPropertyNames(obj);
+	  let propertiesString = "";
+	  for (const property of properties) {
+      	propertiesString += `${property}: ${obj[property]}\n`
+      }
+	  return propertiesString; 
+}
+
+function lengthdir_x(_length, _direction) {
+  return _length * Math.cos(degrees_to_radians(_direction))}
+function lengthdir_y(_length, _direction) {
+  return _length * Math.sin(degrees_to_radians(_direction))}
+function point_distance(_x1, _y1, _x2, _y2) {
+  return Math.sqrt(Math.pow(( _x1 - _x2), 2) + Math.pow((_y1 - _y2), 2));
+}
+function point_direction(_x1, _y1, _x2, _y2) {
+  return radians_to_degrees(Math.atan2(_y2 - _y1, _x2 - _x1)) ;
+}
+function radians_to_degrees(radians){
+  var pi = Math.PI;
+  return radians * (180/pi)}
+function degrees_to_radians(degrees){
+  var pi = Math.PI;
+  return degrees * (pi/180)}
+// The main game loop
+var main = function () {
+	var now = Date.now();
+	var delta = now - then;
+
+	update(delta / 1000);
+    
+	render();
+
+	then = now;
+
+	// Request to do this again ASAP
+	requestAnimationFrame(main);
+};
+
+// Cross-browser support for requestAnimationFrame
+var w = window;
+requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;var d6 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAMBJREFUWEftV1sSgCAIzPsf2tSUkvER6/j4wI8mC5aVYhnMlS/L9rO2JgHTjXtg3ZoVMMM1JoR9LyuD08kjCc+ievLI1BvAmWlh+HdVAskxRUZI9DCqBLgjQuIPhhI49x9gpbKnCuC6Ezg2P4EABzbtElAh4rmVqKEK0VAGQrN+2iUtSfq5jtR6ydlVABe3wLGbAQEWZNoloEKkQrQtAypEUFEDTkkHvOuyubA0mn16BT6CSRJQGk6JhARowJZa7Q2N5vgHeCb+JgAAAABJRU5ErkJggg=='
+// set background color
+canvas.style.background = "#33af23"
+
+var dice = new Sprite(d6,300,300,64,64);dice.setup();
+
+// Update game objects
+var update = function (modifier) {
+    if(key(27)){window.close('','_parent','');}
+    if(clickIn(dice)){
+      mDown=false;
+
+
+    }
+
+};
+
+// Draw everything
+var render = function () {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+	dice.draw();
+  	//dice.rot += Math.random()*4-2
+    //dice.scale += Math.random()*4-2
+};
+
+// Let's go!
+var then = Date.now();
+main();</script></body></html>

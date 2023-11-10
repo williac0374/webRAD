@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .ball {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="ball" id="ball"></div>
+
+    <script>
+        // Function to generate a random color
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Initialize the Speech Recognition API
+        const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            if (transcript.toLowerCase() === 'go') {
+                const ball = document.getElementById('ball');
+                ball.style.backgroundColor = getRandomColor();
+            }
+        }
+
+        // Start listening
+        recognition.start();
+    </script>
+</body>
+</html>

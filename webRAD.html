@@ -1,0 +1,465 @@
+<head>
+<script src= "js/codemirror.js"></script>
+<link rel="stylesheet" href="css/codemirror.css">
+<script src= "js/javascript.js"></script>
+<link rel="stylesheet" href="css/base16-dark.css"> 
+<script src= "js/matchbrackets.js"></script>
+<script src= "js/formatting.js"></script>
+</head>
+<title>webRAD</title>
+<body>
+  <style>
+    body {
+      margin: 0;
+      height: availHeight;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .topnav {
+      overflow: hidden;
+      background-color: #151515;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 10%;
+      oncontextmenu: none;
+      -webkit-user-select: none; /* Safari */
+  	  -ms-user-select: none; /* IE 10 and IE 11 */
+      user-select: none; /* Standard syntax */
+    }
+    .topnav a {
+      float: left;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+      border: 1px solid white;
+    }
+    .topnav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+    .topnav a.active {
+      background-color: #04AA6D;
+      color: white;
+    }
+     .topnav a.projName {
+      background-color: #ddd;
+      color: #036d0a;
+    }
+    .topnav input{
+      float: left;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+      background-color: #333;
+      border: 1px solid white;
+    }
+    .topnav input:hover {
+      background-color: #ddd;
+      color: black;
+    }
+    .topnav input.active {
+      background-color: #04AA6D;
+      color: white;
+    }
+    textarea {
+      width: 100%;
+       -webkit-box-sizing: border-box;
+      /* Safari/Chrome, other WebKit */
+      -moz-box-sizing: border-box;
+      /* Firefox, other Gecko */
+      box-sizing: border-box;
+      /* Opera/IE 8+ */
+    }
+    #m{
+      position: absolute;
+      left:10.5%;
+      top:10.5%;
+      width: 89.5%;
+      height: 89.5%;
+      background-color: black;
+    }
+    .CodeMirror {
+      height: 100%;
+      background: white;
+    }
+#cPick{
+	position: absolute;
+	z-index: -2;
+	top: 0%;
+	left: 50%;
+	width:0%;
+	height:0%;
+	text-align: center;
+	font-size: 20px;
+}
+.scripts {
+      overflow: hidden;
+      background-color: #151515;
+      position: fixed;
+      top: 10%;
+      left: 0%;
+      width: 10%;
+      height: 90%;
+ 	  -webkit-user-select: none; /* Safari */
+      -ms-user-select: none; /* IE 10 and IE 11 */
+      user-select: none; /* Standard syntax */
+    }
+   .scripts a {
+      float: left;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 0px;
+      width: 100%;
+      height: 3%;
+      text-decoration: none;
+      font-size: 17px;
+      border: 1px solid white;
+    }
+    .scripts a:hover {
+       background-color: #ddd;
+      color: black;
+   }
+
+  </style>
+  </head>
+<body>
+  <input id='cPick' type='color' onchange='watchColorPicker(event)'>
+  </input>
+<input id="imjread" type='file' style="display: none" accept='.png' onchange='openImgFile(event)'>
+<input id="fread" type='file' style="display: none" accept='.js ,.ege , .json ,.html' onchange='openFile(event)'>
+<div class="topnav" oncontextmenu="return false">
+  <a id='pname' class="projName" onclick="renamed()">Project</a>
+  <a onclick="save()">Save</a>
+  <a onclick="load()">Load</a>
+  <a onclick="run()">Run</a>
+  <a onclick="expo()">Export</a>
+  <a id = "kshow" onmouseover ="showKeyCode = true"
+     onmouseleave = "showKeyCode = false"
+     onclick="alert('while hovering over press keys to view keycode')">Kcode
+  </a>
+  <a onclick="cpickHandler(this)">Color
+  </a>
+  <a onwheel="textzoom()"
+  onclick="alert('scroll mousewheel over textsize button to change code text size')" >textsize
+  </a>
+  <a onclick="document.getElementById('imjread').click();">2B64</a>
+  <a onclick="autoFormatSelection()">Format</a>
+  <a onclick="window.open('piskel/index.html')">Piskel</a>
+</div>
+<div class='scripts' oncontextmenu="return false">
+  <a class='script' id='Script1' onclick="scriptHandler(1)">Script1</a>
+  <a class='script' id='Script2' onclick="scriptHandler(2)">Script2</a>
+  <a class='script' id='Script3' onclick="scriptHandler(3)">Script3</a>
+  <a class='script' id='Script4' onclick="scriptHandler(4)">Script4</a>
+  <a class='script' id='Script5' onclick="scriptHandler(5)">Script5</a>
+  <a class='script' id='Script6' onclick="scriptHandler(6)">Script6</a>
+  <a class='script' id='Script7' onclick="scriptHandler(7)">Script7</a>
+  <a class='script' id='Script8' onclick="scriptHandler(8)">Script8</a>
+  <a class='script' id='Script9' onclick="scriptHandler(9)">Script9</a>
+  <a class='script' id='Script10' onclick="scriptHandler(10)">Script10</a>
+</div>
+<div id='m'>
+  <textarea id='codearea'>
+  </textarea>
+</div>
+<script>
+  const codemirrorEditor = CodeMirror.fromTextArea(document.getElementById('codearea'), {
+  lineNumbers: true,  matchBrackets: true,  lineWrapping: true,
+  mode: "javascript",  theme: "base16-dark",  autoRefresh: true,
+  gutter: true,  gutters: ['gut']  }
+  );
+  codemirrorEditor.on("change",function(cm,change){
+	code['s'+currentScript+'code']=codemirrorEditor.getValue();
+    localStorage.setItem("evoProject", JSON.stringify(code));
+});
+  
+  // hadles project renaming
+  function renamed(name){
+    if(name==null){
+  		var pn = ''
+		  pn = prompt('enter project name',code['pName'] );
+		  if (pn=='new'){
+			codeReset();
+			currentScript = 1;
+			pn = 'myProject';
+			document.getElementById('Script'+currentScript).click();
+			renameNAMES();
+			code['pName'] = pn
+			document.getElementById('pname').text='myProject';
+			return;
+		  }
+		if (pn=='blank'){
+			codeClear();
+			currentScript = 1;
+			//pn = 'blank';
+			document.getElementById('Script'+currentScript).click();
+			renameNAMES();
+			code['pName'] = pn
+			document.getElementById('pname').text='blank';
+			return;
+		}
+		code['pName'] = pn
+		document.getElementById('pname').text = pn;
+	}else{
+		//code['pName'] = name
+		document.getElementById('pname').text = name;
+	}
+  }
+ 
+  //expo is functioon for export
+  function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+  function save(){
+    	const output = JSON.stringify(code);
+    download(prompt("project name?",code['pName'] ) + ".json",output)
+   // var c = codemirrorEditor.getValue()
+   // download(prompt("game name?") + ".ege",c)
+  }
+  function run(){
+	    var c = '';
+    if(code['s1name']!=''){c+= code['s1code']}
+    if(code['s2name']!=''){c+= code['s2code']}
+    if(code['s3name']!=''){c+= code['s3code']}
+    if(code['s4name']!=''){c+= code['s4code']}
+    if(code['s5name']!=''){c+= code['s5code']}
+    if(code['s6name']!=''){c+= code['s6code']}
+    if(code['s7name']!=''){c+= code['s7code']}
+    if(code['s8name']!=''){c+= code['s8code']}
+    if(code['s9name']!=''){c+= code['s9code']}
+    if(code['s10name']!=''){c+= code['s10code']}
+   
+  	var myWindow = window.open();
+	//myWindow.document.title = 'testing';
+    myWindow.document.write(c);
+  }
+  function load(){
+    document.getElementById('fread').click();
+  }
+  openFile = function(event) {
+    var input = event.target; var reader = new FileReader();
+    reader.onload = function(){
+      var text = reader.result; var name = document.getElementById('fread');
+      saveName=name.files.item(0).name
+      // this checks if the loaded file is a json project file
+      // and not just a js code file
+      if(saveName.includes(".json")){
+        renamed(saveName.replace(".json",""));
+      	 code = JSON.parse(text); currentScript = 1
+   		document.getElementById('Script'+currentScript).click()
+        renameNAMES();
+        renamed(code['pName']);
+      }else{
+            codemirrorEditor.setValue(text);
+      }
+      document.getElementById('fread').value='';
+    };
+    reader.readAsText(input.files[0]);
+  };
+  function renameNAMES(){
+     var allScripts = document.getElementsByClassName("script")
+    for(i=0;i<allScripts.length;i++){
+    	allScripts[i].innerHTML=code['s'+(i+1)+'name']
+    }
+  }
+  // this formats code
+  function autoFormatSelection() {
+        var range = getSelectedRange();
+		//alert(range.from)
+        codemirrorEditor.autoFormatRange(range.from, range.to);
+  }
+  function getSelectedRange() {
+	return { from: codemirrorEditor.getCursor(true), to: codemirrorEditor.getCursor(false) };
+}
+  function expo(){
+	    var c = '';
+    if(code['s1name']!=''){c+= code['s1code']}
+    if(code['s2name']!=''){c+= code['s2code']}
+    if(code['s3name']!=''){c+= code['s3code']}
+    if(code['s4name']!=''){c+= code['s4code']}
+    if(code['s5name']!=''){c+= code['s5code']}
+    if(code['s6name']!=''){c+= code['s6code']}
+    if(code['s7name']!=''){c+= code['s7code']}
+    if(code['s8name']!=''){c+= code['s8code']}
+    if(code['s9name']!=''){c+= code['s9code']}
+    if(code['s10name']!=''){c+= code['s10code']}
+   
+    download(prompt("game name?",code['pName'] ) + ".html",c)
+  }
+  ///////////converts images to base64
+var openImgFile = function(event) {
+	var input = event.target;
+	var reader = new FileReader();
+	reader.onload = function(){
+	  var text = reader.result;
+	  var name = document.getElementById('imjread'); 
+	  saveName=name.files.item(0).name
+	  
+	  audioToBase64(name.files[0]).then(result => imgDump(result))
+	};
+	reader.readAsText(input.files[0]);
+  };
+    async function audioToBase64(audioFile) {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (e) => resolve(e.target.result);
+    reader.readAsDataURL(audioFile);
+  });
+}
+function imgDump(result){
+  var c = codemirrorEditor.getValue()
+  codemirrorEditor.setValue(c+"'"+result+"'");
+  document.getElementById("imjread").value='';
+}
+  
+  // this is for catching and using mouse wheel for code zoom
+ var codesize = 16;
+  var wheely = 0
+window.addEventListener("wheel", event => wheel(event))
+function wheel(e){
+  	wheely = e.deltaY
+     console.log(e.deltaY);
+  }
+function czIn(){
+	codesize ++;
+	document.getElementsByClassName("CodeMirror")[0].style.fontSize = codesize +"px";
+	codemirrorEditor.focus();
+	codemirrorEditor.refresh();
+ }
+function czOut(){
+	codesize --;
+	if(codesize<2){codesize = 2}
+	document.getElementsByClassName("CodeMirror")[0].style.fontSize = codesize +"px";
+	codemirrorEditor.focus();codemirrorEditor.refresh();
+}  
+function textzoom(){
+  if(wheely>0){czIn()}else{czOut()}
+}
+  
+   // functions for dealing with colorPicker
+  function cpickHandler(){
+    document.getElementById('cPick').click();
+  }
+  function watchColorPicker(event){
+    let cValue = document.getElementById('cPick').value;
+    navigator.clipboard.writeText(cValue)
+  }
+  // Get keyCodes for topnav keycode display
+  var keyCode = 0;
+  var keysDown = {};
+  var showKeyCode = false;
+  addEventListener("keydown", function (e) {
+    keyCode =e.keyCode;
+    keysDown[e.keyCode] = true;
+  }
+                   , false);
+  addEventListener("keyup", function (e) {
+	delete keysDown[e.keyCode];
+}, false);
+  
+    // this is for picking and renaming scripts
+  function scriptHandler(ind){
+    var allScripts = document.getElementsByClassName("script")
+    for(i=0;i<allScripts.length;i++){
+      allScripts[i].style.textDecoration = "none"
+      if(i==ind-1){
+        allScripts[i].style.textDecoration = "underline overline";
+        allScripts[i].style.textDecorationThickness = "5px";
+        allScripts[i].style.textDecorationColor = '#04aa6d';
+      }
+    }
+    currentScript = ind;
+    codemirrorEditor.setValue(code['s'+currentScript+'code']);
+ 	rename(ind);
+    moveup(ind);
+  }
+  function codeReset(){
+    code = {pName: 'myProject',s1name: 'HtmlTop',s1code: "<!DOCTYPE html>\n<html lang='en'>\n<head>\n<meta http-equiv='X-UA-Compatible' content='IE=edge' />\n<meta http-equiv='pragma' content='no-cache' />\n<meta name='apple-mobile-web-app-capable' content='yes' />\n<meta name='viewport' content='initial-scale=1.0, maximum-scale=1.0, user-scalable=0, width=device-width, height=device-height' />\n<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />\n<meta charset='utf-8' />\n</head>\n<body style='background: black; margin: 0; padding: 0;'>\n\x3Cscript>\n\n\n  \n  ",s2name: 'script2',s2code: '',s3name: 'script3',
+    s3code: '',s4name: 'script4',s4code: '',s5name: 'script5',s5code: '',s6name: 'script6',
+	s6code: '',s7name: 'script7',s7code: '',s8name: 'script8',s8code: '',s9name: 'script9',
+	s9code: '',s10name: 'htmlBottom',s10code: '\n\n\x3C/script>\n</body>\n</html>\n\n\n',
+}; 
+}
+function codeClear(){
+    code = {pName: 'blank',s1name: 'script1',s1code: "",s2name: 'script2',s2code: '',s3name: 'script3',
+   s3code: '',s4name: 'script4',s4code: '',s5name: 'script5',s5code: '',s6name: 'script6',
+	s6code: '',s7name: 'script7',s7code: '',s8name: 'script8',s8code: '',s9name: 'script9',
+	s9code: '',s10name: 'script10',s10code: '',
+};
+ } 
+  function rename(ind){
+    var allScripts = document.getElementsByClassName("script")
+       if(17 in keysDown){ // if ctrl key is down
+      	code['s'+ind+'name'] = prompt("enter script name", code['s'+ind+'name']);
+      	allScripts[ind-1].innerHTML=code['s'+ind+'name']
+         delete keysDown[17];
+    	
+  	}
+  }
+    function moveup(ind){
+      var allScripts = document.getElementsByClassName("script")
+      if(16 in keysDown){ // if shift key is down and top script is not the one clicked
+      var tn = code['s'+ind+'name'];
+      var tc = code['s'+ind+'code'];
+      code['s'+ind+'name'] = code['s'+(ind-1)+'name'] ; 
+      code['s'+ind+'code'] = code['s'+(ind-1)+'code'] ; 
+      code['s'+(ind-1)+'name'] = tn;
+      code['s'+(ind-1)+'code'] = tc;
+      renameNAMES();      
+      delete keysDown[16];
+    	
+  	}
+  }
+  // a loop to update things as needed
+  var main = function () {
+    // this shows keycodes in top nav if Kcode is hovered over
+    if(showKeyCode){
+      // this adds spaces to keycode to keep Kcode nav from changing width
+      var t = 'Kcode'
+      var showcode=''+keyCode;
+      if(showcode.length==3){
+        showcode='\xa0'+'\xa0'+showcode+'\xa0'+'\xa0'}
+      if(showcode.length==2){
+        showcode='\xa0'+'\xa0'+'\xa0'+showcode+'\xa0'+'\xa0'+'\xa0'}
+      if(showcode.length==1){
+        showcode='\xa0'+'\xa0'+'\xa0'+showcode+'\xa0'+'\xa0'+'\xa0'+'\xa0'+'\xa0'}
+      document.getElementById('kshow').innerHTML = showcode;
+    }
+    else{
+      document.getElementById('kshow').innerHTML = 'Kcode';
+    }
+    requestAnimationFrame(main);
+  };
+  //this sets up a starting project if none is loaded
+  var code;
+  if(localStorage.getItem("evoProject")!=null){
+    var text= localStorage.getItem("evoProject");
+    code = JSON.parse(text); currentScript = 1
+   		document.getElementById('Script'+currentScript).click()
+        renameNAMES();
+        renamed(code['pName']);
+      //localStorage.setItem("evoProject", code);
+  }else{
+  codeReset();
+  }
+  // this sets the editor with the top script being selected/displayed
+   var currentScript = 1
+   document.getElementById('Script'+currentScript).click();
+  renameNAMES();
+  renamed(code['pName']);
+
+  // start the loop
+  main();
+</script>

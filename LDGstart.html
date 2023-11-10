@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Simple Canvas Game</title>
+	</head>
+	<body>
+		<script>
+          
+ 
+var backGround = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAHgBAMAAAAh+sjWAAAAMFBMVEUGDwYIFgkJGAoUMhYZEwocRx8fTyImUB0/gzA/hTA/hjBAbC1LOR9Mck5UPyNegGAQoePyAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEz0lEQVR4Xu3aTXHjeBQA8T6EgCh4IMgQlsKKQiCMIXghhEKWQiAkEMYURGEPzmTsyFu6/7v7MvU876R6+Sr9nl6B5QAA5+s/qvkJeU9cDqeZdy7/rDy/gG3uAjicfl2WI/P6yvL8gm3uAgBOHFi5ME3XD01zF8Dpr4V3jq/LAhewzV0A59M8ceTwvlzef4Bt7gJgvXAEmA78+nG2zV0ATO8scHz9uRzXM7a5CwAuJ15ZFpjfwDZ3AcCJ6bIwv/B8/Uw1dwFwfv7758LMM29nLgfZ3AUAL6d/J96AMxxscxfAtHL++DhzWGYA29wFsPIB8wlmPmawzV0AMHN9NjPTim3uAgCY5uu0fn4qmrsA2L4/vz6p6ffzGm7OB9z0yAd8/tfnAxtvzgfc9sAHfNsYbs4H3PUE9+/LDeUDbtr6gGnl61vntI435wPu2/qAFb6+da4DzvmA+57YvD8fvXzAXQ98wJ/Wb78XjDHnA+565AP4/afz1wMca84H3PbIB3z+7Px8bOPN+YDbHviA363AiHM+4K5HPuC2Eed8wG0PfcDdl86Acz7gpkc+gLsvnfHmfMBtj3zAn8ac8wG3/Y8PWAef8wFf5QOQlw9AXj4AefmAveXRywcgLx+AvHzA3vro5QOQlw9AXj4AefkA5OUDkJcPQF4+AHn5AOTlA5CXD0BePgB5+QDk5QP2lkcvH4C8fADy8gF766OXD0BePgB5+QDk5QOQlw9AXj4AefkA5OUDkJcPQF4+AHn5AOTlA5CXD9hbHr18APLyAcjLB+ytj14+AHn5AOTlA5CXD0BePgB5+QDk5QOQlw9AXj4AefkA5OUDkJcPQF4+YG959PIByMsHIC8fsLc+evkA5OUDkJcPQF4+AHn5AOTlA5CXD0BePgB5+QDk5QOQlw9AXj4AefmAveXRywcgLx+AvHzA3vro5QOQlw9AXj4AefkA5OUDkJcPQF4+AHn5AOTlA5CXD0BePgB5+QDk5QP2lkcvH4C8fADy8gF766OXD0BePgB5+QDk5QOQlw9AXj4AefkA5OUDkJcPQF4+AHn5AOTlA5CXD9hbHr18APLyAcjLB+ytj14+AHn5AOTlA5CXD0BePgB5+QDk5QOQlw9AXj4AefkA5OUDkJcPQF4+YG959PIByMsHIC8fsLc+evkA5OUDkJcPQF4+AHn5AOTlA5CXD0BePgB5+QDk5QOQlw9AXj4AefmAveXRywcgLx+AvHzA3vro5QOQlw9AXj4AefkA5OUDkJcPQF4+AHn5AOTlA5CXD0BePgB5+QDk5QP2lkcvH4C8fADy8gF766OXD0BePgB5+QDk5QOQlw9AXj4AefkA5OUDkJcPQF4+AHn5AOTlA5CXD9hbHr18APLyAcjLB+ytj14+AHn5AOTlA5CXD0BePgB5+QDk5QOQlw9AXj4AefkA5OUDkJcPQF4+YG959PIByMsHIC8fsLc+evkA5OUDkJcPQF4+AHn5AOTlA5CXD0BePgB5+QDkPfQBprkLYOsDVHMXsPUBrrkLgK0PMM1dwMYHyOYuYOMDZHMXwMYHuOYugI0PcM1dAGx8gGruAvj2vtw2dwFsfIBr7gLY+gDV3AV8f19um7sAtj5ANXcBwPzNB6jmLgBg6wM8s/4C/gPCHEonpOZggQAAAABJRU5ErkJggg=='
+
+var bgImage = new Image();
+bgImage.src = backGround;
+
+
+
+
+//context.drawImage(img, sx, sy, swidth, sheight, x, y, width, height)
+// Game objects
+function obj(id, x, y, img, sx, sy, sw, sh, speed) {
+  this.id = id;
+  this.x = x;
+  this.y = y;
+  this.img = img;
+  this.sx = sx;
+  this.sy = sy;
+  this.sw = sw;
+  this.sh = sh;
+  this.speed = speed;
+  this.woof = function(){
+    // only an example if I needed it for later
+    alert('ruff ruff '+ this.x);
+  }
+}
+var hero = new obj('hero',120,120,bgImage,0,0,32,32,100);
+// Update game objects
+var update = function (modifier) {
+  if (38 in keysDown) {
+    // Player holding up
+    hero.y -= hero.speed * modifier;
+  }
+  if (40 in keysDown) {
+    // Player holding down
+    hero.y += hero.speed * modifier;
+  }
+  if (37 in keysDown) {
+    // Player holding left
+    hero.x -= hero.speed * modifier;
+  }
+  if (39 in keysDown) {
+    // Player holding right
+    hero.x += hero.speed * modifier;
+  }
+};// Draw everythingHero 
+var render = function () {
+  ctx.drawImage(bgImage, 0, 0, c.width, c.height);
+  // Score
+  ctx.fillStyle = "rgb(250, 250, 250)";
+  ctx.font = "24px Helvetica";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.fillText("Hero x,y: " + hero.x.toFixed(2) + ' , ' + hero.y.toFixed(2), 32, 32);
+  ctx.fillText("mouse x,y: " + mX.toFixed(2) + ' , ' + mY.toFixed(2), 32, 64);
+  ctx.fillText("mDown: " + mDown, 32, 96);
+  
+  
+  
+  draw(hero);
+  
+};
+function draw(what){
+ 
+//context.drawImage(img, sx, sy, swidth, sheight, x, y, width, height)
+ ctx.drawImage(what.img, what.sx, what.sy, what.sw, what.sh, what.x, what.y,  what.sw, what.sh)
+ 
+}
+// Create the canvas
+var c = document.createElement("canvas");
+var ctx = c.getContext("2d");
+c.width =  400 ;
+c.height = 400;
+document.body.appendChild(c);
+
+
+// Handle keyboard controls
+var keysDown = {};
+var mDown = false;
+var mX = -1;
+var mY = -1;
+addEventListener("keydown",(e)=>{keysDown[e.keyCode] = true;}, false);
+addEventListener("keyup",(e)=>{delete keysDown[e.keyCode];}, false);
+addEventListener("mousedown",(e)=>{mDown=true; },false);
+addEventListener("mouseup",(e)=>{mDown=false},false);
+addEventListener("mousemove",(e)=>{mX=e.x-c.offsetLeft;mY=e.y-c.offsetTop;},false);
+// Reset the game 
+var reset = function () {
+};
+
+
+// The main game loop
+var main = function () {
+  var now = Date.now();
+  var delta = now - then;
+  update(delta / 1000);
+  render();
+  then = now;
+  // Request to do this again ASAP
+  requestAnimationFrame(main);
+};
+// Cross-browser support for requestAnimationFrame
+var w = window;
+requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+// Let's play this game!
+var then = Date.now();
+reset();
+main();
+
+
+
+
+
+
+
+
+
+       </script>
+	</body>
+</html>
