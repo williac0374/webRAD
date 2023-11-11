@@ -11,11 +11,13 @@
 </style>
 </head>
 <body>
-  <script>        
-function blank(){}
+  <script> 
+
+window.addEventListener('resize', function(){blank()});
+function blank(){
  var maps = [];
  var mapIndex= 0;
- var map1 = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,41,98,41,2,3,2,2,2,2,2,2,2,3],[1,0,0,0,0,3,0,0,0,0,0,0,30,3],[1,12,5,12,12,13,0,0,0,12,12,12,12,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,34,0,0,0,34,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,19,0,0,0,0,0,3],[1,0,0,15,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,34,0,3],[1,0,0,0,0,1,12,5,12,3,0,0,0,3],[1,0,0,0,0,1,0,0,0,3,0,0,0,3],[1,0,0,0,0,1,29,0,29,3,0,0,0,3],[11,12,12,12,12,12,12,12,12,12,12,12,12,13],];
+ var map1 = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,41,98,41,2,3,2,2,2,2,2,2,2,3],[1,0,0,0,0,3,0,0,0,0,0,0,30,3],[1,12,5,12,12,13,0,0,0,12,12,12,12,3],[1,0,46,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,43,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,15,0,0,0,32,0,0,0,0,0,3],[1,0,0,0,0,0,0,19,0,0,0,0,0,3],[1,0,0,0,0,1,12,4,12,3,0,45,0,3],[1,0,0,0,0,1,0,0,0,3,0,0,0,3],[1,0,0,0,0,1,29,0,29,3,0,0,0,3],[11,12,12,12,12,12,12,12,12,12,12,12,12,13],];
 maps.push(map1)
 var map2 = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,41,98,41,3,1,2,3,1,2,2,2,2,3],[1,0,0,0,3,1,0,3,1,0,15,15,0,3],[1,12,5,12,12,12,0,3,1,0,0,0,0,3],[1,0,0,0,0,0,0,3,1,0,0,0,0,3],[1,0,1,12,12,12,12,13,11,3,0,0,0,3],[1,34,1,1,12,12,12,12,3,3,0,0,0,3],[1,0,1,1,40,40,40,40,3,3,0,19,0,3],[1,0,1,1,40,40,40,40,3,3,0,0,0,3],[1,34,1,1,40,40,40,40,3,3,0,19,0,3],[1,0,1,11,12,12,12,12,13,3,0,0,0,3],[1,0,11,12,12,12,12,12,12,13,19,0,0,3],[1,0,30,0,0,0,0,0,0,0,0,0,0,3],[11,12,97,12,12,12,12,12,12,12,12,12,12,13],];
 maps.push(map2)
@@ -26,7 +28,7 @@ var mathMap = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,2,2,2,2,2,2,2,2,2,
 
 
 
-var zoom = 185;
+var zoom = 100;
 
 document.body.style.zoom = zoom+"%";
 var bgImage = new Image();
@@ -38,7 +40,6 @@ var destroyY = -1;
 var level=1
 var levelStartPos = []
 var levelEndPos = []
-function blank(){};
 var destID=null
 var move=false;
 var nmeMoves = []
@@ -54,20 +55,35 @@ function checkNumTiles(){
   }
 }
 function moveNme(tile,x,y){
-  let dir = ['left', 'up', 'right', 'down'][Math.floor(Math.random() * 4)];
+  let dir='nope';
+  if(tile==33 || tile==45){dir = ['left', 'up', 'right', 'down'][Math.floor(Math.random() * 4)];}
+  if(tile==32){dir ='up'}
+  if(tile==44){dir ='down'}
+  if(tile==43){dir ='left'}
+  if(tile==31){dir ='right'}
+  //document.title = dir
   if(dir=='left' && currentMap[y][x-1]==0){
     nmeMoves.push({y:y,x:x,ny:y,nx:x-1,tile:tile});
+  }else{
+  	if(tile==43){currentMap[y][x]=31} 
   }
-    if(dir=='up' && currentMap[y-1][x]==0){
+  if(dir=='up' && currentMap[y-1][x]==0){
       nmeMoves.push({y:y,x:x,ny:y-1,nx:x,tile:tile});
+  }else{
+   	if(tile==32){currentMap[y][x]=44} 
   }
-    if(dir=='right' && currentMap[y][x+1]==0){
+  if(dir=='right' && currentMap[y][x+1]==0){
       nmeMoves.push({y:y,x:x,ny:y,nx:x+1,tile:tile});
+  }else{
+   	if(tile==31){currentMap[y][x]=43} 
   }
-    if(dir=='down' && currentMap[y+1][x]==0){
+ if(dir=='down' && currentMap[y+1][x]==0){
       nmeMoves.push({y:y,x:x,ny:y+1,nx:x,tile:tile});
+  }else{
+   	if(tile==44){currentMap[y][x]=32} 
   }
 }
+
 function movePlayer(dx, dy) {
   move=true;
   newX = hero.x + dx;
@@ -82,7 +98,8 @@ function movePlayer(dx, dy) {
       setTimeout(function(){
         
         mapIndex++;
-        if(mapIndex==maps.length){mapIndex=0}
+        level++;
+        if(mapIndex==maps.length){mapIndex=0;level=1}
         if(levelStartPos[mapIndex]!=null){
           hero.x=levelStartPos[mapIndex].x;
           hero.y=levelStartPos[mapIndex].y;
@@ -134,6 +151,7 @@ function movePlayer(dx, dy) {
                ,1000)
     keyTrend = -1
     }else{
+      combat(currentMap[newY][newX]);
       // this sets up the chest to shake when its tried without a key
       jiggleX = newX;jiggleY = newY;
     }
@@ -185,7 +203,7 @@ function movePlayer(dx, dy) {
     //picks up key by turning potion to empty tile
     // and adding it to inventory
   }
-  if (currentMap[newY][newX] > 30  && currentMap[newY][newX] < 35) {
+  if (currentMap[newY][newX] > 30  && currentMap[newY][newX] < 35 || currentMap[newY][newX] > 42  && currentMap[newY][newX] < 47) {
     combat(currentMap[newY][newX])
   }
   if(currentMap==mathMap){
@@ -207,7 +225,6 @@ function destroy(id){
 // Define the size of your tiles.
 const tileSize = 16;
 var currentMap = maps[mapIndex];
-document.title = currentMap
 var battle = false;
 var nme = 31;
 var factorA = 0;
@@ -219,6 +236,7 @@ var newY = 0;
 var gameOver = false;
 var setNumber=false;
 var nmeX = 12;
+var lockPickX=0;
 var numTiles=[];
 var numTilesLoaded=false;
 //context.drawImage(img, sx, sy, swidth, sheight, x, y, width, height)
@@ -503,7 +521,7 @@ function drawHero(){
   drawTile(hero.tile,hero.x,hero.y)
 }
 setInterval(function(){
-  if(battle==true){
+  if(battle==true&&lockPickX==0){
     nmeX--;
     if(nmeX==1){
       check()}
@@ -512,12 +530,14 @@ setInterval(function(){
             ,1000)
 function combat(enemy){  
   nme = enemy;
+  if(nme> 30 && nme<35){nme+=12}
   nmeX = 12;
   factorA = Math.floor(Math.random()*(level+2)) ;
   factorB = Math.floor(Math.random()*(level+2)) ;
   answer = '';
   product = factorA*factorB;
   battle=true;
+  if(nme<8){lockPickX=3}
   move=false;
 }
 function drawBattle(){
@@ -525,22 +545,38 @@ function drawBattle(){
     drawMap(battleMap);
     // player 1,8 nme 12,8
     ctx.fillStyle = "rgb(250, 250, 250)"
-    drawTile(30,1,8)
-    drawTile(nme+12,nmeX,8)
+    if(nme<8){drawTile(nme,1,8);drawTile(42,lockPickX,8)}else{drawTile(30,1,8);drawTile(nme,nmeX,8)}
+    
     drawText(0,2,factorA+' X '+factorB+' = '+answer,32)
   }
 }
 function check(){
   if(answer==product && answer!=''){
-    battle=false;
-    hero.coins+=level;
+    
+    
+    if(nme<7){
+      lockPickX--;
+      factorA = Math.floor(Math.random()*(level+2)) ;
+      factorB = Math.floor(Math.random()*(level+2)) ;
+      answer = '';
+      product = factorA*factorB;
+    
+    }else{
+      lockPickX=0;
+      hero.coins+=level;
+    }
+    if(nme<7 && lockPickX==0 || nme>36 && nme<47){
+     battle=false; 
     setTimeout(function(){
-      currentMap[newY][newX]=17;
+      if(nme>7){currentMap[newY][newX]=17}else{currentMap[newY][newX]=0}
     }
                ,300)
+    }
   }
   else{
+    
     battle=false;
+    if(nme>7){  
     healthShake=true;
     healthTrend = -1
     setTimeout(function(){
@@ -555,6 +591,7 @@ function check(){
       else{
         gameOver=true;
       }
+    }
     }
   }
 }
@@ -627,10 +664,8 @@ function drawMap(map) {
       var col = tile % 10;
       //this keeps from drawing tile0 that I had to add cause piskel doesnt play well with blank tiles
       if(tile!=0){
-        if(tile>=31 && tile<=34){
+        if(tile>=31 && tile<=34 || tile>=43 && tile<=46){
           if(move==true){moveNme(tile,x,y)}
-          // this makes bad guys face the hero
-          if(hero.x<x){tile+=12} //+12
           // this makes bad guys shake randomly at idle
           let mod = Math.floor(Math.random()*100);
           if(mod==0){
@@ -644,7 +679,7 @@ function drawMap(map) {
           }
         }
         else{ //jiggleX = newX;jiggleY = newY;
-        if(jiggleX==x && jiggleY==y){ // this makes a tile jiggle if its in the appointed map cell
+        if(jiggleX==x && jiggleY==y && move==false){ // this makes a tile jiggle if its in the appointed map cell
             let modX = Math.floor(Math.random()*2)-1;
             let modY = Math.floor(Math.random()*2)-1;
             drawTile(tile,x,y,modX,modY);
@@ -674,7 +709,7 @@ function drawMap(map) {
           ctx.fillStyle = "rgb(250, 250, 250)";
           drawText(x,y,tile-60,10,5,2)
 
-        }else if(tile<50 || tile>69 && tile<71){  // all the rest
+        }else if(tile<50 || tile>69 && tile<77){  // all the rest
         ctx.drawImage(bgImage, col*16, row*16, 16, 16, x*16, y*16, 16, 16)
           /*
           var mystery1 = new obj('',-1,-1,71,16,16,100);
@@ -718,7 +753,8 @@ function drawMap(map) {
     	map[nmeMoves[i].ny][nmeMoves[i].nx] = nmeMoves[i].tile
     }
     if(nmeMoves[i].ny==hero.y && nmeMoves[i].nx==hero.x){
-     	combat(currentMap[hero.y][hero.x]) 
+        newY=hero.y;newX=hero.x;
+     	combat(currentMap[newY][newX]) 
     }
   }
   
@@ -728,10 +764,16 @@ function drawMap(map) {
 // Create the canvas
 var c = document.createElement("canvas");
 var ctx = c.getContext("2d");
+//alert(window.innerHeight)//alert(window.innerWidth) 657 by 1024
+
 c.width =  224;
 c.height = 224;
+zoom = (window.innerHeight/c.height)*95 
+document.body.style.zoom = zoom+"%";
+let left = Math.floor((window.innerWidth-c.width*(zoom/100))/6)
+//alert(left) //zoom 278
 c.style.position = 'absolute';
-c.style.left = 120 + 'px'
+c.style.left = left + 'px'
 c.style.top = 5 + 'px'
 c.style.backgroundColor = "#3D253B";
 //c.style.display = 'block';
@@ -785,15 +827,7 @@ var then = Date.now();
 reset();
 main();
 function resetMap(map){
-  if(map=='map1'){
-   map1 = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,41,56,41,2,3,2,2,2,2,2,2,2,3],[1,0,0,0,0,3,0,0,0,0,0,0,30,3],[1,12,5,12,12,13,0,0,0,12,12,12,12,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,34,0,0,0,34,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,19,0,0,0,0,0,3],[1,0,0,15,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,34,0,3],[1,0,0,0,0,1,12,5,12,3,0,0,0,3],[1,0,0,0,0,1,0,0,0,3,0,0,0,3],[1,0,0,0,0,1,29,0,29,3,0,0,0,3],[11,12,12,12,12,12,12,12,12,12,12,12,12,13],];
-  }
-  if(map=='map2'){
-  map2 = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,41,56,41,3,1,2,3,1,2,2,2,2,3],[1,0,0,0,3,1,0,3,1,0,15,15,0,3],[1,12,5,12,12,12,0,3,1,0,0,0,0,3],[1,0,0,0,0,0,0,3,1,0,0,0,0,3],[1,0,1,12,12,12,12,13,11,3,0,0,0,3],[1,34,1,1,12,12,12,12,3,3,0,0,0,3],[1,0,1,1,40,40,40,40,3,3,0,19,0,3],[1,0,1,1,40,40,40,40,3,3,0,0,0,3],[1,34,1,1,40,40,40,40,3,3,0,19,0,3],[1,0,1,11,12,12,12,12,13,3,0,0,0,3],[1,0,11,12,12,12,12,12,12,13,19,0,0,3],[1,0,30,0,0,0,0,0,0,0,0,0,0,3],[11,12,12,12,12,12,12,12,12,12,12,12,12,13],];
-  }
- if(map=='mathMap'){
-  mathMap = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,2,2,2,2,2,2,2,2,2,2,2,2,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,30,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,60,61,62,63,64,65,66,67,68,69,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,71,72,71,73,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[11,12,12,12,12,12,12,12,12,12,12,12,12,13],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],]; 
- }
+
 }
 function drawKeyboard(){
   let top = 9.5;
@@ -848,13 +882,7 @@ function drawButton(x,y,text,w,h){
   ctx.fillStyle = "#ffffff"
   drawText(x,y,text,14,5,4)
 }
-function resetGame(map){
- resetMap('map1');
- resetMap('map2');
- currentMap = map;
- hero.health = 100;
- hero.lives = 2;
- hero.keys = 0
+
 }
 </script>
 </body>
