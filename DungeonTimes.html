@@ -1,889 +1,922 @@
 <!DOCTYPE html>
-  <html lang="en">
-    <head>
-    <meta charset="utf-8">
-      <title>DungeonTimes</title>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DungeonTimes</title>
 <style>
-      body {
-        margin: 0;
-        padding: 0;
-      }
+  body {
+  margin: 0;
+  padding: 0;
+  }
 </style>
 </head>
 <body>
-  <script> 
+<script>
+let zzfx,zzfxV,zzfxX
+// ZzFXMicro - Zuper Zmall Zound Zynth - v1.2.1 by Frank Force ~ 880 bytes
+zzfxV=.3    // volume
+zzfx=       // play sound
+(p=1,k=.05,b=220,e=0,r=0,t=.1,q=0,D=1,u=0,y=0,v=0,z=0,l=0,E=0,A=0,F=0,c=0,w=1,m=
+0,B=0,M=Math,R=44100,d=2*M.PI,G=u*=500*d/R/R,C=b*=(1-k+2*k*M.random(k=[]))*d/R,g
+  =0,H=0,a=0,n=1,I=0,J=0,f=0,x,h)=>{e=R*e+9;m*=R;r*=R;t*=R;c*=R;y*=500*d/R**3;A*=d
+  /R;v*=d/R;z*=R;l=R*l|0;for(h=e+m+r+t+c|0;a<h;k[a++]=f)++J%(100*F|0)||(f=q?1<q?2<
+  q?3<q?M.sin((g%d)**3):M.max(M.min(M.tan(g),1),-1):1-(2*g/d%2+2)%2:1-4*M.abs(M.
+  round(g/d)-g/d):M.sin(g),f=(l?1-B+B*M.sin(d*a/l):1)*(0<f?1:-1)*M.abs(f)**D*zzfxV
+  *p*(a<e?a/e:a<e+m?1-(a-e)/m*(1-w):a<e+m+r?w:a<h-c?(h-a-c)/t*w:0),f=c?f/2+(c>a?0:
+  (a<h-c?1:(h-a)/c)*k[a-c|0]/2):f),x=(b+=u+=y)*M.cos(A*H++),g+=x-x*E*(1-1E9*(M.sin
+  (a)+1)%2),n&&++n>z&&(b+=v,C+=v,n=0),!l||++I%l||(b=C,u=G,n=n||1);p=zzfxX.
+  createBuffer(1,h,R);p.getChannelData(0).set(k);b=zzfxX.createBufferSource();b.
+  buffer=p;b.connect(zzfxX.destination);b.start();return b};zzfxX=new AudioContext;
 
-window.addEventListener('resize', function(){blank()});
-function blank(){
- var maps = [];
- var mapIndex= 0;
- var map1 = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,41,98,41,2,3,2,2,2,2,2,2,2,3],[1,0,0,0,0,3,0,0,0,0,0,0,30,3],[1,12,5,12,12,13,0,0,0,12,12,12,12,3],[1,0,46,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,43,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,15,0,0,0,32,0,0,0,0,0,3],[1,0,0,0,0,0,0,19,0,0,0,0,0,3],[1,0,0,0,0,1,12,4,12,3,0,45,0,3],[1,0,0,0,0,1,0,0,0,3,0,0,0,3],[1,0,0,0,0,1,29,0,29,3,0,0,0,3],[11,12,12,12,12,12,12,12,12,12,12,12,12,13],];
-maps.push(map1)
-var map2 = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,41,98,41,3,1,2,3,1,2,2,2,2,3],[1,0,0,0,3,1,0,3,1,0,15,15,0,3],[1,12,5,12,12,12,0,3,1,0,0,0,0,3],[1,0,0,0,0,0,0,3,1,0,0,0,0,3],[1,0,1,12,12,12,12,13,11,3,0,0,0,3],[1,34,1,1,12,12,12,12,3,3,0,0,0,3],[1,0,1,1,40,40,40,40,3,3,0,19,0,3],[1,0,1,1,40,40,40,40,3,3,0,0,0,3],[1,34,1,1,40,40,40,40,3,3,0,19,0,3],[1,0,1,11,12,12,12,12,13,3,0,0,0,3],[1,0,11,12,12,12,12,12,12,13,19,0,0,3],[1,0,30,0,0,0,0,0,0,0,0,0,0,3],[11,12,97,12,12,12,12,12,12,12,12,12,12,13],];
-maps.push(map2)
-var map3 = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,2,2,2,2,2,2,2,2,76,2,98,76,3],[1,0,0,0,0,0,0,0,0,76,0,0,76,3],[1,0,0,0,0,0,0,0,0,12,12,4,12,3],[1,0,0,31,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,31,0,0,0,0,0,0,3],[1,0,0,0,34,0,0,0,0,33,0,0,0,3],[1,0,0,0,32,0,0,0,0,0,0,0,0,3],[1,32,0,0,0,0,0,34,0,0,33,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,34,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,30,0,0,0,0,0,3],[11,12,12,12,12,12,12,97,12,12,12,12,12,13],];
-maps.push(map3)
-var battleMap = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,2,2,2,2,2,2,2,2,2,2,2,2,3],[1,36,36,36,36,36,36,36,36,36,36,36,36,3],[1,36,36,36,36,36,36,36,36,36,36,36,36,3],[1,36,36,36,36,36,36,36,36,36,36,36,36,3],[1,36,36,36,36,36,36,36,36,36,36,36,36,3],[11,12,12,12,12,12,12,12,12,12,12,12,12,13],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],];
-var mathMap = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,2,2,2,2,2,2,2,2,2,2,2,2,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,30,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,60,61,62,63,64,65,66,67,68,69,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,71,72,71,73,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[11,12,12,12,12,12,12,12,12,12,12,12,12,13],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],];
 
-
-
-var zoom = 100;
-
-document.body.style.zoom = zoom+"%";
-var bgImage = new Image();
-bgImage.src = 'DungeonTimesTiles.png';
-var jiggleX = -1;
-var jiggleY = -1;
-var destroyX = -1;
-var destroyY = -1;
-var level=1
-var levelStartPos = []
-var levelEndPos = []
-var destID=null
-var move=false;
-var nmeMoves = []
-function wait(what,when){
-  setTimeout(function(){what},when)
-}
-function checkNumTiles(){
- //{num:tile,x:x,y:y};numTiles
-  for(i=0;i<numTiles.length;i++){
-    if(currentMap[numTiles[i].y][numTiles[i].x] == 0){
-      currentMap[numTiles[i].y][numTiles[i].x] = numTiles[i].num
+var doorSFX = new Function('zzfx(...[1.33,,199,.08,.13,.21,,.28,1.8,-0.3,-134,.03,.09,.1,,,.09,.67,.3]);');
+var walkSFX = new Function('zzfx(...[0.1,,266,,.04,.04,4,1.72,,-5.8,,,,2,,.1,,.99,.02]);');
+var keySFX = new Function('zzfx(...[1.02,,1617,.01,.07,.18,,1.35,,,,,.01,,,,,.95]);')
+var lockedSFX = new Function('zzfx(...[1.21,,349.2282,.16,,.31,4,2.03,,.6,,,,.9,,.6,,.45,,.14]);')
+var potionSFX = new Function('zzfx(...[2.03,,252,.01,.02,.13,,.26,6.2,,,,,,,.1,.05,.49,.01]);')
+var deathSFX = new Function('zzfx(...[,,132,.01,.28,.23,2,0,,-0.1,-36,.07,.14,,,,,.78,.13,.47]);')
+var combatSFX = new Function('zzfx(...[1.67,,1142,.23,.01,.09,2,.32,-4.2,1.1,804,.13,,,5.6,.4,.08,.18,.06]);')
+var newLevelSFX = new Function('zzfx(...[1.19,,655,.05,.95,.36,2,.76,,,45,.13,.11,.2,,,,.6,.21,.31]);')
+  function nope(){}
+  window.addEventListener('load', function(){blank()});
+  function blank(){
+  var maps = [];
+  var mapIndex= 0;
+  var map1 = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,41,98,41,2,3,2,2,2,2,2,2,2,3],[1,0,0,0,0,3,0,0,0,0,0,0,30,3],[1,12,5,12,12,13,0,0,0,12,12,12,12,3],[1,0,46,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,43,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,15,0,0,0,32,0,0,0,0,0,3],[1,0,0,0,0,0,0,19,0,0,0,0,0,3],[1,0,0,0,0,1,12,4,12,3,0,45,0,3],[1,0,0,0,0,1,0,0,0,3,0,0,0,3],[1,0,0,0,0,1,29,0,29,3,0,0,0,3],[11,12,12,12,12,12,12,12,12,12,12,12,12,13],];
+  maps.push(map1)
+  var map2 = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,41,98,41,3,1,2,3,1,2,2,2,2,3],[1,0,0,0,3,1,0,3,1,0,15,15,0,3],[1,12,5,12,12,12,0,3,1,0,0,0,0,3],[1,0,0,0,0,0,0,3,1,0,0,0,0,3],[1,0,1,12,12,12,12,13,11,3,0,0,0,3],[1,34,1,1,12,12,12,12,3,3,0,0,0,3],[1,0,1,1,40,40,40,40,3,3,0,19,0,3],[1,0,1,1,40,40,40,40,3,3,0,0,0,3],[1,34,1,1,40,40,40,40,3,3,0,19,0,3],[1,0,1,11,12,12,12,12,13,3,0,0,0,3],[1,0,11,12,12,12,12,12,12,13,19,0,0,3],[1,0,30,0,0,0,0,0,0,0,0,0,0,3],[11,12,97,12,12,12,12,12,12,12,12,12,12,13],];
+  maps.push(map2)
+  var map3 = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,2,2,2,2,2,2,2,2,76,2,98,76,3],[1,0,0,0,0,0,0,0,0,76,0,0,76,3],[1,0,0,0,0,0,0,0,0,12,12,4,12,3],[1,0,0,31,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,31,0,0,0,0,0,0,3],[1,0,0,0,34,0,0,0,0,33,0,0,0,3],[1,0,0,0,32,0,0,0,0,0,0,0,0,3],[1,32,0,0,0,0,0,34,0,0,33,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,34,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,30,0,0,0,0,0,3],[11,12,12,12,12,12,12,97,12,12,12,12,12,13],];
+  maps.push(map3)
+  var battleMap = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,2,2,2,2,2,2,2,2,2,2,2,2,3],[1,36,36,36,36,36,36,36,36,36,36,36,36,3],[1,36,36,36,36,36,36,36,36,36,36,36,36,3],[1,36,36,36,36,36,36,36,36,36,36,36,36,3],[1,36,36,36,36,36,36,36,36,36,36,36,36,3],[11,12,12,12,12,12,12,12,12,12,12,12,12,13],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],];
+  var mathMap = [[40,40,40,40,40,40,40,40,40,40,40,40,40,40],[1,2,2,2,2,2,2,2,2,2,2,2,2,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,30,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,60,61,62,63,64,65,66,67,68,69,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,71,72,71,73,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[1,0,0,0,0,0,0,0,0,0,0,0,0,3],[11,12,12,12,12,12,12,12,12,12,12,12,12,13],[40,40,40,40,40,40,40,40,40,40,40,40,40,40],];
+  
+  
+  
+  var zoom = 100;
+  
+  document.body.style.zoom = zoom+"%";
+  var bgImage = new Image();
+  bgImage.src = 'DungeonTimesTiles.png';
+  var jiggleX = -1;
+  var jiggleY = -1;
+  var destroyX = -1;
+  var destroyY = -1;
+  var level=1
+  var levelStartPos = []
+  var levelEndPos = []
+  var destID=null
+  var move=false;
+  var nmeMoves = []
+    function wait(what,when){
+      setTimeout(function(){what},when)
     }
-  }
-}
-function moveNme(tile,x,y){
-  let dir='nope';
-  if(tile==33 || tile==45){dir = ['left', 'up', 'right', 'down'][Math.floor(Math.random() * 4)];}
-  if(tile==32){dir ='up'}
-  if(tile==44){dir ='down'}
-  if(tile==43){dir ='left'}
-  if(tile==31){dir ='right'}
-  //document.title = dir
-  if(dir=='left' && currentMap[y][x-1]==0){
-    nmeMoves.push({y:y,x:x,ny:y,nx:x-1,tile:tile});
-  }else{
-  	if(tile==43){currentMap[y][x]=31} 
-  }
-  if(dir=='up' && currentMap[y-1][x]==0){
-      nmeMoves.push({y:y,x:x,ny:y-1,nx:x,tile:tile});
-  }else{
-   	if(tile==32){currentMap[y][x]=44} 
-  }
-  if(dir=='right' && currentMap[y][x+1]==0){
-      nmeMoves.push({y:y,x:x,ny:y,nx:x+1,tile:tile});
-  }else{
-   	if(tile==31){currentMap[y][x]=43} 
-  }
- if(dir=='down' && currentMap[y+1][x]==0){
-      nmeMoves.push({y:y,x:x,ny:y+1,nx:x,tile:tile});
-  }else{
-   	if(tile==44){currentMap[y][x]=32} 
-  }
-}
-
-function movePlayer(dx, dy) {
-  move=true;
-  newX = hero.x + dx;
-  newY = hero.y + dy;
-  // Check for collisions   //40
-  if (currentMap[newY][newX] == 0 || currentMap[newY][newX] == 17 || currentMap[newY][newX] == 36 || currentMap[newY][newX]>49 && currentMap[newY][newX]<60 || currentMap[newY][newX] == 97 || currentMap[newY][newX] == 98){
-    // if newPos hits empty
-    hero.x = newX;
-    hero.y = newY;
-    if(currentMap[newY][newX] == 98){ // exit door
-      levelEndPos[mapIndex]={x:newX-dx,y:newY-dy}
-      setTimeout(function(){
-        
-        mapIndex++;
-        level++;
-        if(mapIndex==maps.length){mapIndex=0;level=1}
-        if(levelStartPos[mapIndex]!=null){
-          hero.x=levelStartPos[mapIndex].x;
-          hero.y=levelStartPos[mapIndex].y;
+    function checkNumTiles(){
+      //{num:tile,x:x,y:y};numTiles
+      for(i=0;i<numTiles.length;i++){
+        if(currentMap[numTiles[i].y][numTiles[i].x] == 0){
+        currentMap[numTiles[i].y][numTiles[i].x] = numTiles[i].num
         }
-        currentMap = maps[mapIndex]
-
-        },1)
+      }
     }
+    function moveNme(tile,x,y){
+    let dir='nope';
+      if(tile==33 || tile==45){dir = ['left', 'up', 'right', 'down'][Math.floor(Math.random() * 4)];}
+      if(tile==32){dir ='up'}
+      if(tile==44){dir ='down'}
+      if(tile==43){dir ='left'}
+      if(tile==31){dir ='right'}
+    //document.title = dir
+      if(dir=='left' && currentMap[y][x-1]==0){
+        nmeMoves.push({y:y,x:x,ny:y,nx:x-1,tile:tile});
+        }else{
+        if(tile==43){currentMap[y][x]=31}
+      }
+      if(dir=='up' && currentMap[y-1][x]==0){
+        nmeMoves.push({y:y,x:x,ny:y-1,nx:x,tile:tile});
+        }else{
+        if(tile==32){currentMap[y][x]=44}
+      }
+      if(dir=='right' && currentMap[y][x+1]==0){
+        nmeMoves.push({y:y,x:x,ny:y,nx:x+1,tile:tile});
+        }else{
+        if(tile==31){currentMap[y][x]=43}
+      }
+      if(dir=='down' && currentMap[y+1][x]==0){
+        nmeMoves.push({y:y,x:x,ny:y+1,nx:x,tile:tile});
+        }else{
+        if(tile==44){currentMap[y][x]=32}
+      }
+    }
+  
+    function movePlayer(dx, dy) {
+    walkSFX();
+    move=true;
+    newX = hero.x + dx;
+    newY = hero.y + dy;
+    // Check for collisions   //40
+      if (currentMap[newY][newX] == 0 || currentMap[newY][newX] == 17 || currentMap[newY][newX] == 36 || currentMap[newY][newX]>49 && currentMap[newY][newX]<60 || currentMap[newY][newX] == 97 || currentMap[newY][newX] == 98){
+      // if newPos hits empty
+      hero.x = newX;
+      hero.y = newY;
+        if(currentMap[newY][newX] == 98){ // exit door
+          levelEndPos[mapIndex]={x:newX-dx,y:newY-dy}
+          setTimeout(function(){
+          newLevelSFX();
+          mapIndex++;
+          level++;
+            if(mapIndex==maps.length){mapIndex=0;level=1}
+            if(levelStartPos[mapIndex]!=null){
+            hero.x=levelStartPos[mapIndex].x;
+            hero.y=levelStartPos[mapIndex].y;
+            }
+          currentMap = maps[mapIndex]
+          
+          },1)
+        }
         if(currentMap[newY][newX] == 97){ // entrance door
-      setTimeout(function(){
-        mapIndex--;
-        hero.x=levelEndPos[mapIndex].x;
-        hero.y=levelEndPos[mapIndex].y;
-        currentMap = maps[mapIndex]
-
-        },1)
-    }
-  }
-  if (currentMap[newY][newX] >49 && currentMap[newY][newX] <60){ //floor numbers
-    
-  }
-  if (currentMap[newY][newX] >59 && currentMap[newY][newX] <70){ //push crates
-     // newX = hero.x + dx;
-     // newY = hero.y + dy;
+          setTimeout(function(){
+          mapIndex--;
+          hero.x=levelEndPos[mapIndex].x;
+          hero.y=levelEndPos[mapIndex].y;
+          currentMap = maps[mapIndex]
+          
+          },1)
+        }
+      }
+      if (currentMap[newY][newX] >49 && currentMap[newY][newX] <60){ //floor numbers
+      
+      }
+      if (currentMap[newY][newX] >59 && currentMap[newY][newX] <70){ //push crates
+      // newX = hero.x + dx;
+      // newY = hero.y + dy;
         if (currentMap[newY + dy][newX + dx] == 71 || currentMap[newY + dy][newX + dx] == 72 || currentMap[newY + dy][newX + dx] == 73 || currentMap[newY + dy][newX + dx] == 0 || currentMap[newY + dy][newX + dx] == 17 || currentMap[newY + dy][newX + dx]>49 && currentMap[newY + dy][newX + dx]<60){
         
         let temp = currentMap[newY][newX];
-      	currentMap[newY][newX]=0;
+        currentMap[newY][newX]=0;
         currentMap[newY + dy][newX + dx] = temp
+        }
+      checkNumTiles();
       }
-    checkNumTiles();
-  }
-  //document.title = newY
-  if (currentMap[newY][newX] >=4 && currentMap[newY][newX] <=7) {
-    // if newPos hits single door
-    if(hero.keys>0){
-    currentMap[newY][newX] = 0;
-    destroyX=newX;
-    destroyY=newY;
-    destID = 'door'
-    setTimeout(function(){
-      destroyX=-1;
-      destroyY=-1}
-               ,100)
-    hero.keys--;
-    keyShake = true;
-    setTimeout(function(){
-      keyShake=false}
-               ,1000)
-    keyTrend = -1
-    }else{
-      combat(currentMap[newY][newX]);
-      // this sets up the chest to shake when its tried without a key
-      jiggleX = newX;jiggleY = newY;
-    }
-  }
-  if (currentMap[newY][newX] >=14 && currentMap[newY][newX] <=15) {
-    if(hero.keys>0){
-    // if newPos hits chest
-    currentMap[newY][newX] = 0;
-    chest(100,newX,newY)
-    hero.keys--;
-    keyTrend = -1;
-    keyShake = true;
-    setTimeout(function(){
-      keyShake=false}
-               ,1000)
-    }else{
-      // this sets up the chest to shake when its tried without a key
-      jiggleX = newX;jiggleY = newY;
-    }
-    //Opens door by turning door to empty tile
-  }
-
-  if (currentMap[newY][newX] == 19 ) {
-    // if newPos hits gold key
-    currentMap[newY][newX] = 0;
-    hero.keys++;
-    keyTrend = 1;
-    keyShake = true;
-    setTimeout(function(){
-      keyShake=false}
-               ,1000)
-    hero.x = newX;
-    hero.y = newY;
-    //picks up key by turning door to empty tile
-    // and adding it to inventory
-  }
-  if (currentMap[newY][newX] == 29 ) {
-    // if newPos hits health potion
-    currentMap[newY][newX] = 0;
-    if(hero.health<100){
-      hero.health+=10};
-        healthShake = true;
-    setTimeout(function(){
-      healthShake=false}
-               ,1000)
-    healthTrend = 1
-    hero.x = newX;
-    hero.y = newY;
-    //picks up key by turning potion to empty tile
-    // and adding it to inventory
-  }
-  if (currentMap[newY][newX] > 30  && currentMap[newY][newX] < 35 || currentMap[newY][newX] > 42  && currentMap[newY][newX] < 47) {
-    combat(currentMap[newY][newX])
-  }
-  if(currentMap==mathMap){
-    //11,11
-    if(hero.x==11 || hero.x==12){
-      if(hero.y==11){
-      	setTimeout(function(){resetMap('mathMap');currentMap = mathMap;},100);
+    //document.title = newY
+      if (currentMap[newY][newX] >=4 && currentMap[newY][newX] <=7) {
+      // if newPos hits single door
+        if(hero.keys>0){
+        doorSFX()
+        currentMap[newY][newX] = 0;
+        destroyX=newX;
+        destroyY=newY;
+        destID = 'door'
+          setTimeout(function(){
+          destroyX=-1;
+          destroyY=-1}
+        ,100)
+        hero.keys--;
+        keyShake = true;
+          setTimeout(function(){
+          keyShake=false}
+        ,1000)
+        keyTrend = -1
+          }else{
+        combat(currentMap[newY][newX]);
+        // this sets up the chest to shake when its tried without a key
+        jiggleX = newX;jiggleY = newY;
+        }
       }
-    }
-  }
-}
-function destroy(id){
- //var destroyX = -1;
-//var destroyY = -1; 
-  
-  if(id=='door'){ctx.fillStyle = "#6e4a48";drawText(destroyX,destroyY,'[][][][]',4,0,10)}
-  if(id=='nme'){ctx.fillStyle = "#ff0000";drawText(destroyX,destroyY,'!',0,0,16)}
- }
-// Define the size of your tiles.
-const tileSize = 16;
-var currentMap = maps[mapIndex];
-var battle = false;
-var nme = 31;
-var factorA = 0;
-var factorB = 0;
-var answer = 0;
-var product = 0;
-var newX = 0;
-var newY = 0;
-var gameOver = false;
-var setNumber=false;
-var nmeX = 12;
-var lockPickX=0;
-var numTiles=[];
-var numTilesLoaded=false;
-//context.drawImage(img, sx, sy, swidth, sheight, x, y, width, height)
-// Game objects
-function obj(id, x, y, tile, sw, sh, speed) {
-  this.id = id;
-  this.frame = 0;
-  this.x = x;
-  this.y = y;
-  this.tile = tile;
-  this.sw = sw;
-  this.sh = sh;
-  this.speed = speed;
-  this.woof = function(){
-    // only an example if I needed it for later
-    alert('ruff ruff '+ this.x);
-  }
-}
-//             obj(id, x, y, img, sx, sy, sw, sh, speed) 
-var hero = new obj('hero',2,2,30,16,16,100);
-hero.health = 100;
-hero.lives = 2;
-hero.keys = 0;
-hero.coins = 0;
-var mystery1 = new obj('',-1,-1,71,16,16,100);
-var mystery2 = new obj('',-1,-1,71,16,16,100);
-var times = new obj('',-1,-1,72,16,16,100);
-var equals = new obj('',-1,-1,73,16,16,100);
-
-
-//setInterval(function(){hero.frame+=16;if(hero.frame>160){hero.frame=0}}, 200);
-// Update game objects
-function update() {
-   
-  if(battle==false){
-    if (87 in keysDown || 38 in keysDown) {
-      // Player holding up
-      //hero.y -= hero.speed * modifier;
-      movePlayer(0, -1)
-      delete keysDown[87]
-      delete keysDown[38]
-    }
-    if (83 in keysDown || 40 in keysDown) {
-      // Player holding down
-      //hero.y += hero.speed * modifier;
-      movePlayer(0, 1)
-      delete keysDown[83]
-      delete keysDown[40]
-    }
-    if (65 in keysDown || 37 in keysDown) {
-      // Player holding left
-      //hero.x -= hero.speed * modifier;
-      movePlayer(-1, 0)
-      hero.tile = 42
-      delete keysDown[65]
-      delete keysDown[37]
-    }
-    if (68 in keysDown || 39 in keysDown) {
-      // Player holding right
-      //hero.x += hero.speed * modifier;
-      movePlayer(1, 0)
-      hero.tile = 30
-      delete keysDown[68]
-      delete keysDown[39]
-    }
+      if (currentMap[newY][newX] >=14 && currentMap[newY][newX] <=15) {
+        if(hero.keys>0){
+        // if newPos hits chest
+        currentMap[newY][newX] = 0;
+        chest(100,newX,newY)
+        hero.keys--;
+        keyTrend = -1;
+        keyShake = true;
+          setTimeout(function(){
+          keyShake=false}
+        ,1000)
+          }else{
+        // this sets up the chest to shake when its tried without a key
+        jiggleX = newX;jiggleY = newY;
+        lockedSFX();
+        }
+      //Opens door by turning door to empty tile
+      }
     
-    
-    
-    if (82 in keysDown) {resetGame(map2)}
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-  }
-  else{
-    if (96 in keysDown ) {
-      answer+='0';
-      delete keysDown[96]}
-    if (97 in keysDown) {
-      answer+='1';
-      delete keysDown[97]}
-    if (98 in keysDown) {
-      answer+='2';
-      delete keysDown[98]}
-    if (99 in keysDown) {
-      answer+='3';
-      delete keysDown[99]}
-    if (100 in keysDown) {
-      answer+='4';
-      delete keysDown[100]}
-    if (101 in keysDown) {
-      answer+='5';
-      delete keysDown[101]}
-    if (102 in keysDown) {
-      answer+='6';
-      delete keysDown[102]}
-    if (103 in keysDown) {
-      answer+='7';
-      delete keysDown[103]}
-    if (104 in keysDown) {
-      answer+='8';
-      delete keysDown[104]}
-    if (105 in keysDown) {
-      answer+='9';
-      delete keysDown[105]}
-    if (13 in keysDown) {
-      check();
-      answer='';
-      delete keysDown[13]}
-     if (8 in keysDown) {
-      answer='';
-      delete keysDown[8]}   
-     if (48 in keysDown ) { 
-      answer+='0';
-      delete keysDown[48]}
-    if (49 in keysDown) {
-      answer+='1';
-      delete keysDown[49]}
-    if (50 in keysDown) {
-      answer+='2';
-      delete keysDown[50]}
-    if (51 in keysDown) {
-      answer+='3';
-      delete keysDown[51]}
-    if (52 in keysDown) {
-      answer+='4';
-      delete keysDown[52]}
-    if (53 in keysDown) {
-      answer+='5';
-      delete keysDown[53]}
-    if (54 in keysDown) {
-      answer+='6';
-      delete keysDown[54]}
-    if (55 in keysDown) {
-      answer+='7';
-      delete keysDown[55]}
-    if (56 in keysDown) {
-      answer+='8';
-      delete keysDown[56]}
-    if (57 in keysDown) {
-      answer+='9';
-      delete keysDown[57]}
-
-  }
-};
-// Draw everythingHero 
-function render() {
-  // Clear the canvas  
-  ctx.clearRect(0, 0, c.width, c.height);
-  // ctx.drawImage(bgImage, 0, 0, c.width, c.height);
-  // Score
-  // ctx.fillText("mouse x,y: " + mX.toFixed(2) + ' , ' + mY.toFixed(2), 16, 64);
-  // ctx.fillText("mDown: " + mDown, 16, 96);
-  drawOther();
-  drawMap(currentMap);
-  if(currentMap==mathMap){drawResetButton(11,11,10,2,1)}
-  drawHero();
-  drawHud();
-  destroy(destID);
-  drawBattle();
-  if(battle==true){drawKeyboard()}
-  
-  if(gameOver==true){
-    alert('GAME OVER')}
-};
-function chest(lvl,x,y){
-  for(i=0;i<lvl;i++){
-    let treasure = Math.floor(Math.random()*2);
-    let tx = Math.floor(Math.random()*3)-1;
-    let ty = Math.floor(Math.random()*3)-1;
-    if(currentMap[y+ty][x+tx]==0){
-      currentMap[y+ty][x+tx]=29}
-  }
-}
-
-function shakeTile(tile,x,y,shake){
-  let shakeX = (Math.random()*-shake)+(shake/2);
-  let shakeY = (Math.random()*-shake)+(shake/2);
-  var row = Math.floor(tile/10)
-  var col = tile % 10;
-  var sx = col*16
-  var sy = row*16
-  ctx.drawImage(bgImage, sx+shakeX, sy+shakeY, 16, 16, x*16, y*16, 16, 16);
-}
-function looper(min, max, step) {
-  let current = min;
-  let increasing = true;
-  return function () {
-    if (increasing) {
-      current += step;
-      if (current >= max) {
-        increasing = false;
-        current = max;
+      if (currentMap[newY][newX] == 19 ) {
+      // if newPos hits gold key
+      currentMap[newY][newX] = 0;
+      hero.keys++;
+      keySFX()
+      keyTrend = 1;
+      keyShake = true;
+        setTimeout(function(){
+        keyShake=false}
+      ,1000)
+      hero.x = newX;
+      hero.y = newY;
+      //picks up key by turning door to empty tile
+      // and adding it to inventory
+      }
+      if (currentMap[newY][newX] == 29 ) {
+      // if newPos hits health potion
+      currentMap[newY][newX] = 0;
+        potionSFX();
+        if(hero.health<100){
+        hero.health+=10};
+      healthShake = true;
+        setTimeout(function(){
+        healthShake=false}
+      ,1000)
+      healthTrend = 1
+      hero.x = newX;
+      hero.y = newY;
+      //picks up key by turning potion to empty tile
+      // and adding it to inventory
+      }
+      if (currentMap[newY][newX] > 30  && currentMap[newY][newX] < 35 || currentMap[newY][newX] > 42  && currentMap[newY][newX] < 47) {
+      combat(currentMap[newY][newX])
+      }
+      if(currentMap==mathMap){
+      //11,11
+        if(hero.x==11 || hero.x==12){
+          if(hero.y==11){
+            setTimeout(function(){},100);
+          }
+        }
       }
     }
-    else {
-      current -= step;
-      if (current <= min) {
-        increasing = true;
-        current = min;
+    function destroy(id){
+    //var destroyX = -1;
+    //var destroyY = -1;
+    
+      if(id=='door'){ctx.fillStyle = "#6e4a48";drawText(destroyX,destroyY,'[][][][]',4,0,10)}
+      if(id=='nme'){ctx.fillStyle = "#ff0000";drawText(destroyX,destroyY,'!',0,0,16)}
+    }
+  // Define the size of your tiles.
+  const tileSize = 16;
+  var currentMap = maps[mapIndex];
+  var battle = false;
+  var nme = 31;
+  var factorA = 0;
+  var factorB = 0;
+  var answer = 0;
+  var product = 0;
+  var newX = 0;
+  var newY = 0;
+  var gameOver = false;
+  var setNumber=false;
+  var nmeX = 12;
+  var lockPickX=0;
+  var numTiles=[];
+  var numTilesLoaded=false;
+  //context.drawImage(img, sx, sy, swidth, sheight, x, y, width, height)
+  // Game objects
+    function obj(id, x, y, tile, sw, sh, speed) {
+    this.id = id;
+    this.frame = 0;
+    this.x = x;
+    this.y = y;
+    this.tile = tile;
+    this.sw = sw;
+    this.sh = sh;
+    this.speed = speed;
+      this.woof = function(){
+      // only an example if I needed it for later
+      alert('ruff ruff '+ this.x);
       }
     }
-    return current;
-  };
-}
-const bouncer = looper(0, 8, 1);
-function drawTile(tile,x,y,modX,modY,scaleX,scaleY){
-  if(modX==null){
-    modX=0}
-  if(modY==null){
-    modY=0}
-  if(scaleX==null){
-    scaleX=100}
-  if(scaleY==null){
-    scaleY=100}
-  var row = Math.floor(tile/10)
-  var col = tile % 10;
-  var sx = col*16
-  var sy = row*16
-  ctx.drawImage(bgImage, sx, sy, 16, 16, x*16+modX, y*16+modY, 16*(scaleX/100), 16*(scaleY/100));
-}
-function drawFloorObj(text,y,x,tSize,modY,modX){
-  ctx.beginPath();
-  ctx.lineWidth = "1";
-  ctx.strokeStyle = "#25131a";
-  ctx.fillStyle = "#25131a"
-  ctx.rect(x*16+1, y*16+1, 15, 14);
-  ctx.stroke();  
-  drawText(x,y,text,tSize,modX,modY)
-}
-function drawGameObj(text,y,x,tSize,modY,modX){
-  ctx.fillStyle = "#25131a"
-  ctx.fillRect(x*16+1, y*16+1, 15, 14);
-  ctx.fillStyle = "#78514f"
-  //ctx.fillRect(x*16+1, y*16+1, 15, 4);
-  ctx.beginPath();
-  ctx.lineWidth = "1";
-  ctx.strokeStyle = "#78514f";
-  ctx.rect(x*16+1, y*16+1, 15, 14);
-  ctx.stroke();
-  ctx.fillStyle = "rgb(250, 250, 250)";
-  drawText(x,y,text,tSize,modX,modY)
-  if(text=='='){drawGameObj(product,equals.x,equals.y+1,10,2,2)}
-}
-function drawResetButton(x,y,tSize,modX,modY){
-  ctx.fillStyle = "#25131a"
-  ctx.fillRect(x*16+1, y*16+1, 29, 14);
-  ctx.fillStyle = "#78514f"
-  //ctx.fillRect(x*16+1, y*16+1, 15, 4);
-  ctx.beginPath();
-  ctx.lineWidth = "1";
-  ctx.strokeStyle = "#78514f";
-  ctx.rect(x*16+1, y*16+1, 29, 14);
-  ctx.stroke();
-  ctx.fillStyle = "rgb(250, 250, 250)";
-  drawText(x,y,'reset',tSize,modX,modY)
-}
-function checkAnswer(){
+  //             obj(id, x, y, img, sx, sy, sw, sh, speed)
+  var hero = new obj('hero',2,2,30,16,16,100);
+  hero.health = 100;
+  hero.lives = 2;
+  hero.keys = 0;
+  hero.coins = 0;
+  var mystery1 = new obj('',-1,-1,71,16,16,100);
+  var mystery2 = new obj('',-1,-1,71,16,16,100);
+  var times = new obj('',-1,-1,72,16,16,100);
+  var equals = new obj('',-1,-1,73,16,16,100);
   
-  if(currentMap==mathMap){
-  if((currentMap[mystery1.x][mystery1.y]-60)*(currentMap[mystery2.x][mystery2.y]-60)==product) {
-    
-   setTimeout(function(){alert('Math')},100); 
-  }
-  }
-}
-function setAnswer(){
-  setNumber=true;
-  factorA = Math.floor(Math.random()*9)+1 ;
-  factorB = Math.floor(Math.random()*9)+1 ;
-  if(factorA==factorB){if(factorA==1){factorA++}else{factorA--}}
-  answer = '';
-  product = factorA*factorB;
   
-}
-function drawOther(){
-  if(setNumber==false){setAnswer()}else{checkAnswer()}
-  drawFloorObj('?',mystery1.x,mystery1.y,12,1,5)
-  drawFloorObj('?',mystery2.x,mystery2.y,12,1,5)
-  drawGameObj('x',times.x,times.y,12,1,4)
-  drawGameObj('=',equals.x,equals.y,12,0,3)
-  
-}
-function drawHero(){
-  drawTile(hero.tile,hero.x,hero.y)
-}
-setInterval(function(){
-  if(battle==true&&lockPickX==0){
-    nmeX--;
-    if(nmeX==1){
-      check()}
-  }
-}
-            ,1000)
-function combat(enemy){  
-  nme = enemy;
-  if(nme> 30 && nme<35){nme+=12}
-  nmeX = 12;
-  factorA = Math.floor(Math.random()*(level+2)) ;
-  factorB = Math.floor(Math.random()*(level+2)) ;
-  answer = '';
-  product = factorA*factorB;
-  battle=true;
-  if(nme<8){lockPickX=3}
-  move=false;
-}
-function drawBattle(){
-  if(battle==true){
-    drawMap(battleMap);
-    // player 1,8 nme 12,8
-    ctx.fillStyle = "rgb(250, 250, 250)"
-    if(nme<8){drawTile(nme,1,8);drawTile(42,lockPickX,8)}else{drawTile(30,1,8);drawTile(nme,nmeX,8)}
+    //setInterval(function(){hero.frame+=16;if(hero.frame>160){hero.frame=0}}, 200);
+  // Update game objects
+    function update() {
     
-    drawText(0,2,factorA+' X '+factorB+' = '+answer,32)
-  }
-}
-function check(){
-  if(answer==product && answer!=''){
-    
-    
-    if(nme<7){
-      lockPickX--;
-      factorA = Math.floor(Math.random()*(level+2)) ;
-      factorB = Math.floor(Math.random()*(level+2)) ;
-      answer = '';
-      product = factorA*factorB;
-    
-    }else{
-      lockPickX=0;
-      hero.coins+=level;
-    }
-    if(nme<7 && lockPickX==0 || nme>36 && nme<47){
-     battle=false; 
-    setTimeout(function(){
-      if(nme>7){currentMap[newY][newX]=17}else{currentMap[newY][newX]=0}
-    }
-               ,300)
-    }
-  }
-  else{
-    
-    battle=false;
-    if(nme>7){  
-    healthShake=true;
-    healthTrend = -1
-    setTimeout(function(){
-      healthShake=false}
-               ,1000)
-    hero.health-=10;
-    if(hero.health<0){
-      if(hero.lives>0){
-        hero.health=100;
-        hero.lives--;
+      if(battle==false){
+        if (87 in keysDown || 38 in keysDown) {
+        // Player holding up
+        //hero.y -= hero.speed * modifier;
+        movePlayer(0, -1)
+        delete keysDown[87]
+        delete keysDown[38]
+        }
+        if (83 in keysDown || 40 in keysDown) {
+        // Player holding down
+        //hero.y += hero.speed * modifier;
+        movePlayer(0, 1)
+        delete keysDown[83]
+        delete keysDown[40]
+        }
+        if (65 in keysDown || 37 in keysDown) {
+        // Player holding left
+        //hero.x -= hero.speed * modifier;
+        movePlayer(-1, 0)
+        hero.tile = 42
+        delete keysDown[65]
+        delete keysDown[37]
+        }
+        if (68 in keysDown || 39 in keysDown) {
+        // Player holding right
+        //hero.x += hero.speed * modifier;
+        movePlayer(1, 0)
+        hero.tile = 30
+        delete keysDown[68]
+        delete keysDown[39]
+        }
+      
+      
+      
+      
+      ///////////////////////////////////////////////////////////////////////////////////////////////
       }
       else{
-        gameOver=true;
+        if (96 in keysDown ) {
+        answer+='0';
+        delete keysDown[96]}
+        if (97 in keysDown) {
+        answer+='1';
+        delete keysDown[97]}
+        if (98 in keysDown) {
+        answer+='2';
+        delete keysDown[98]}
+        if (99 in keysDown) {
+        answer+='3';
+        delete keysDown[99]}
+        if (100 in keysDown) {
+        answer+='4';
+        delete keysDown[100]}
+        if (101 in keysDown) {
+        answer+='5';
+        delete keysDown[101]}
+        if (102 in keysDown) {
+        answer+='6';
+        delete keysDown[102]}
+        if (103 in keysDown) {
+        answer+='7';
+        delete keysDown[103]}
+        if (104 in keysDown) {
+        answer+='8';
+        delete keysDown[104]}
+        if (105 in keysDown) {
+        answer+='9';
+        delete keysDown[105]}
+        if (13 in keysDown) {
+        check();
+        answer='';
+        delete keysDown[13]}
+        if (8 in keysDown) {
+        answer='';
+        delete keysDown[8]}
+        if (48 in keysDown ) {
+        answer+='0';
+        delete keysDown[48]}
+        if (49 in keysDown) {
+        answer+='1';
+        delete keysDown[49]}
+        if (50 in keysDown) {
+        answer+='2';
+        delete keysDown[50]}
+        if (51 in keysDown) {
+        answer+='3';
+        delete keysDown[51]}
+        if (52 in keysDown) {
+        answer+='4';
+        delete keysDown[52]}
+        if (53 in keysDown) {
+        answer+='5';
+        delete keysDown[53]}
+        if (54 in keysDown) {
+        answer+='6';
+        delete keysDown[54]}
+        if (55 in keysDown) {
+        answer+='7';
+        delete keysDown[55]}
+        if (56 in keysDown) {
+        answer+='8';
+        delete keysDown[56]}
+        if (57 in keysDown) {
+        answer+='9';
+        delete keysDown[57]}
+      
+      }
+    };
+  // Draw everythingHero
+    function render() {
+    // Clear the canvas
+    ctx.clearRect(0, 0, c.width, c.height);
+    // ctx.drawImage(bgImage, 0, 0, c.width, c.height);
+    // Score
+    // ctx.fillText("mouse x,y: " + mX.toFixed(2) + ' , ' + mY.toFixed(2), 16, 64);
+    // ctx.fillText("mDown: " + mDown, 16, 96);
+    drawOther();
+    drawMap(currentMap);
+      if(currentMap==mathMap){drawResetButton(11,11,10,2,1)}
+    drawHero();
+    drawHud();
+    destroy(destID);
+    drawBattle();
+      if(battle==true){drawKeyboard()}
+    
+      if(gameOver==true){
+      alert('GAME OVER')}
+    };
+    function chest(lvl,x,y){
+      for(i=0;i<lvl;i++){
+      let treasure = Math.floor(Math.random()*2);
+      let tx = Math.floor(Math.random()*3)-1;
+      let ty = Math.floor(Math.random()*3)-1;
+        if(currentMap[y+ty][x+tx]==0){
+        currentMap[y+ty][x+tx]=29}
       }
     }
+  
+    function shakeTile(tile,x,y,shake){
+    let shakeX = (Math.random()*-shake)+(shake/2);
+    let shakeY = (Math.random()*-shake)+(shake/2);
+    var row = Math.floor(tile/10)
+    var col = tile % 10;
+    var sx = col*16
+    var sy = row*16
+    ctx.drawImage(bgImage, sx+shakeX, sy+shakeY, 16, 16, x*16, y*16, 16, 16);
     }
-  }
-}
-function drawText(x,y,text,fsize,modY,modX){
-  if(fsize==null){fsize=14}
-  if(modX==null){modX=0}
-  if(modY==null){modY=0}
-  var row = y*16+2+modX;
-  var col = x*16+modY;
-  //    destroyX=newX;
+    function looper(min, max, step) {
+    let current = min;
+    let increasing = true;
+      return function () {
+        if (increasing) {
+        current += step;
+          if (current >= max) {
+          increasing = false;
+          current = max;
+          }
+        }
+        else {
+        current -= step;
+          if (current <= min) {
+          increasing = true;
+          current = min;
+          }
+        }
+      return current;
+      };
+    }
+  const bouncer = looper(0, 8, 1);
+    function drawTile(tile,x,y,modX,modY,scaleX,scaleY){
+      if(modX==null){
+      modX=0}
+      if(modY==null){
+      modY=0}
+      if(scaleX==null){
+      scaleX=100}
+      if(scaleY==null){
+      scaleY=100}
+    var row = Math.floor(tile/10)
+    var col = tile % 10;
+    var sx = col*16
+    var sy = row*16
+    ctx.drawImage(bgImage, sx, sy, 16, 16, x*16+modX, y*16+modY, 16*(scaleX/100), 16*(scaleY/100));
+    }
+    function drawFloorObj(text,y,x,tSize,modY,modX){
+    ctx.beginPath();
+    ctx.lineWidth = "1";
+    ctx.strokeStyle = "#25131a";
+    ctx.fillStyle = "#25131a"
+    ctx.rect(x*16+1, y*16+1, 15, 14);
+    ctx.stroke();
+    drawText(x,y,text,tSize,modX,modY)
+    }
+    function drawGameObj(text,y,x,tSize,modY,modX){
+    ctx.fillStyle = "#25131a"
+    ctx.fillRect(x*16+1, y*16+1, 15, 14);
+    ctx.fillStyle = "#78514f"
+    //ctx.fillRect(x*16+1, y*16+1, 15, 4);
+    ctx.beginPath();
+    ctx.lineWidth = "1";
+    ctx.strokeStyle = "#78514f";
+    ctx.rect(x*16+1, y*16+1, 15, 14);
+    ctx.stroke();
+    ctx.fillStyle = "rgb(250, 250, 250)";
+    drawText(x,y,text,tSize,modX,modY)
+      if(text=='='){drawGameObj(product,equals.x,equals.y+1,10,2,2)}
+    }
+    function drawResetButton(x,y,tSize,modX,modY){
+    ctx.fillStyle = "#25131a"
+    ctx.fillRect(x*16+1, y*16+1, 29, 14);
+    ctx.fillStyle = "#78514f"
+    //ctx.fillRect(x*16+1, y*16+1, 15, 4);
+    ctx.beginPath();
+    ctx.lineWidth = "1";
+    ctx.strokeStyle = "#78514f";
+    ctx.rect(x*16+1, y*16+1, 29, 14);
+    ctx.stroke();
+    ctx.fillStyle = "rgb(250, 250, 250)";
+    drawText(x,y,'reset',tSize,modX,modY)
+    }
+    function checkAnswer(){
+    
+      if(currentMap==mathMap){
+        if((currentMap[mystery1.x][mystery1.y]-60)*(currentMap[mystery2.x][mystery2.y]-60)==product) {
+        
+          setTimeout(function(){alert('Math')},100);
+        }
+      }
+    }
+    function setAnswer(){
+    setNumber=true;
+    factorA = Math.floor(Math.random()*9)+1 ;
+    factorB = Math.floor(Math.random()*9)+1 ;
+      if(factorA==factorB){if(factorA==1){factorA++}else{factorA--}}
+    answer = '';
+    product = factorA*factorB;
+    
+    }
+    function drawOther(){
+      if(setNumber==false){setAnswer()}else{checkAnswer()}
+    drawFloorObj('?',mystery1.x,mystery1.y,12,1,5)
+    drawFloorObj('?',mystery2.x,mystery2.y,12,1,5)
+    drawGameObj('x',times.x,times.y,12,1,4)
+    drawGameObj('=',equals.x,equals.y,12,0,3)
+    
+    }
+    function drawHero(){
+    drawTile(hero.tile,hero.x,hero.y)
+    }
+    setInterval(function(){
+      if(battle==true&&lockPickX==0){
+      nmeX--;
+        if(nmeX==1){
+        check()}
+      }
+    }
+  ,1000)
+    function combat(enemy){
+    nme = enemy;
+      combatSFX();
+      if(nme> 30 && nme<35){nme+=12}
+    nmeX = 12;
+    factorA = Math.floor(Math.random()*(level+2)) ;
+    factorB = Math.floor(Math.random()*(level+2)) ;
+    answer = '';
+    product = factorA*factorB;
+    battle=true;
+      if(nme<8){lockPickX=3}
+    move=false;
+    }
+    function drawBattle(){
+      if(battle==true){
+      drawMap(battleMap);
+      // player 1,8 nme 12,8
+      ctx.fillStyle = "rgb(250, 250, 250)"
+        if(nme<8){drawTile(nme,1,8);drawTile(42,lockPickX,8)}else{drawTile(30,1,8);drawTile(nme,nmeX,8)}
+      
+      drawText(0,2,factorA+' X '+factorB+' = '+answer,32)
+      }
+    }
+    function check(){
+      if(answer==product && answer!=''){
+      
+      
+        if(nme<7){
+        lockPickX--;
+        factorA = Math.floor(Math.random()*(level+2)) ;
+        factorB = Math.floor(Math.random()*(level+2)) ;
+        answer = '';
+        product = factorA*factorB;
+        
+          }else{
+        lockPickX=0;
+        hero.coins+=level;
+        
+        
+        }
+        if(nme<7 && lockPickX==0 || nme>36 && nme<47){
+        battle=false;
+          setTimeout(function(){
+            if(nme>7){currentMap[newY][newX]=17;deathSFX()}else{currentMap[newY][newX]=0}
+          }
+        ,300)
+        }
+      }
+      else{
+      
+      battle=false;
+        if(nme>7){
+        healthShake=true;
+        healthTrend = -1
+          setTimeout(function(){
+          healthShake=false}
+        ,1000)
+        hero.health-=10;
+          if(hero.health<0){
+            if(hero.lives>0){
+            hero.health=100;
+            hero.lives--;
+            }
+            else{
+            gameOver=true;
+            }
+          }
+        }
+      }
+    }
+    function drawText(x,y,text,fsize,modY,modX){
+      if(fsize==null){fsize=14}
+      if(modX==null){modX=0}
+      if(modY==null){modY=0}
+    var row = y*16+2+modX;
+    var col = x*16+modY;
+    //    destroyX=newX;
     destroyY=newY;
     destID = 'door';
-  ctx.font = fsize+"px Helvetica";
-  ctx.textAlign = "left";
-  ctx.textBaseline = "top";
-  ctx.fillText(text,col, row);
-}
-var lifeShake = false;
-var lifeTrend = 0;
-var healthShake = false;
-var healthTrend = 0;
-var keyShake = false;
-var keyTrend = 0;
-
-function drawHud(){
-  ctx.fillStyle = "rgb(250, 250, 250)"
-  if(lifeShake==true){
-    shakeTile(30,3,0,1);
-    if(lifeTrend<0){ctx.fillStyle = "rgb(250, 0, 0)"}
-    if(lifeTrend>0){ctx.fillStyle = "rgb(0, 250, 0)"}
-  }
-  else{
-    drawTile(30,3,0)};
-  drawText(4,0,':'+hero.lives)
-  ctx.fillStyle = "rgb(250, 250, 250)"
-  if(healthShake==true){
-    shakeTile(28,5,0,1);
-    if(healthTrend<0){ctx.fillStyle = "rgb(250, 0, 0)"}
-    if(healthTrend>0){ctx.fillStyle = "rgb(0, 250, 0)"}
-  }
-  else{
-    drawTile(28,5,0)};
-  drawText(6,0,':'+hero.health)
-  ctx.fillStyle = "rgb(250, 250, 250)"
-  if(keyShake==true){
-    shakeTile(19,8,0,1);
-    ctx.fillStyle = "rgb(0, 250, 0)"
-    if(keyTrend<0){ctx.fillStyle = "rgb(250, 0, 0)"}
-    if(keyTrend>0){ctx.fillStyle = "rgb(0, 250, 0)"}  
-  }
-  else{
-    drawTile(19,8,0)};
-  drawText(9,0,':'+hero.keys)
-  drawTile(16,10,0);
-  ctx.fillStyle = "rgb(250, 250, 250)"
-  drawText(11,0,':'+hero.coins)
-}
-function drawMap(map) {
-  for (let y = 0; y < map.length; y++) {
-    for (let x = 0; x < map[y].length; x++) {
-      var tile = map[y][x];
-      if (tile==30){
-        // this loads the player start position
-        map[y][x] = 0;
-        hero.x = x;
-        hero.y = y
-        levelStartPos.push({x:x,y:y});
+    ctx.font = fsize+"px Helvetica";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.fillText(text,col, row);
+    }
+  var lifeShake = false;
+  var lifeTrend = 0;
+  var healthShake = false;
+  var healthTrend = 0;
+  var keyShake = false;
+  var keyTrend = 0;
+  
+    function drawHud(){
+    ctx.fillStyle = "rgb(250, 250, 250)"
+      if(lifeShake==true){
+      shakeTile(30,3,0,1);
+        if(lifeTrend<0){ctx.fillStyle = "rgb(250, 0, 0)"}
+        if(lifeTrend>0){ctx.fillStyle = "rgb(0, 250, 0)"}
       }
-      var row = Math.floor(tile/10)
-      var col = tile % 10;
-      //this keeps from drawing tile0 that I had to add cause piskel doesnt play well with blank tiles
-      if(tile!=0){
-        if(tile>=31 && tile<=34 || tile>=43 && tile<=46){
-          if(move==true){moveNme(tile,x,y)}
-          // this makes bad guys shake randomly at idle
-          let mod = Math.floor(Math.random()*100);
-          if(mod==0){
-            drawTile(tile,x,y,-1,0);
-          }
-          if(mod>=1 && mod<=98){
-            drawTile(tile,x,y,0,0);
-          }
-          if(mod==99){
-            drawTile(tile,x,y,1,0);
-          }
-        }
-        else{ //jiggleX = newX;jiggleY = newY;
-        if(jiggleX==x && jiggleY==y && move==false){ // this makes a tile jiggle if its in the appointed map cell
-            let modX = Math.floor(Math.random()*2)-1;
-            let modY = Math.floor(Math.random()*2)-1;
-            drawTile(tile,x,y,modX,modY);
-            jiggleX = -1;
-            jiggleY = -1;
-         }else{
-        if(tile>49 && tile<60){ /// floor numbers numTiles[]
-          if(numTilesLoaded==false){let temp={num:tile,x:x,y:y};numTiles.push(temp)}
-          ctx.beginPath();
-		  ctx.lineWidth = "1";
-		  ctx.strokeStyle = "#25131a";
-          ctx.fillStyle = "#25131a"
-          ctx.rect(x*16+1, y*16+1, 15, 14);
-          ctx.stroke();  
-          drawText(x,y,tile-50,8,6,4)
-          //ctx.drawImage(bgImage, col*16, row*16, 16, 16, x*16, y*16, 16, 16)
-        }else if(tile>59 && tile<70){  //number crates
-          ctx.fillStyle = "#25131a"
-          ctx.fillRect(x*16+1, y*16+1, 15, 14);
-          ctx.fillStyle = "#78514f"
-          //ctx.fillRect(x*16+1, y*16+1, 15, 4);
-          ctx.beginPath();
-		  ctx.lineWidth = "1";
-		  ctx.strokeStyle = "#78514f";
-          ctx.rect(x*16+1, y*16+1, 15, 14);
-          ctx.stroke();
-          ctx.fillStyle = "rgb(250, 250, 250)";
-          drawText(x,y,tile-60,10,5,2)
-
-        }else if(tile<50 || tile>69 && tile<77){  // all the rest
-        ctx.drawImage(bgImage, col*16, row*16, 16, 16, x*16, y*16, 16, 16)
-          /*
-          var mystery1 = new obj('',-1,-1,71,16,16,100);
-		  var mystery2 = new obj('',-1,-1,71,16,16,100);
-		  var times = new obj('',-1,-1,72,16,16,100);
-		  var equals = new obj('',-1,-1,73,16,16,100);
-           var inDoor = [];
-           var outDoor = [];
-           var mapIndex= 0;
-          */
-        }else if(tile==97){ //36
-          //map[y][x] = 36;
-        ctx.drawImage(bgImage, col*16, row*16, 16, 16, x*16, y*16, 16, 16)             }else if(tile==98){
-          //map[y][x] = 36;
-        ctx.drawImage(bgImage, col*16, row*16, 16, 16, x*16, y*16, 16, 16)  
-       }else if(tile==71){
-          if(mystery1.x==-1){mystery1.x=y;mystery1.y=x}else{mystery2.x=y;mystery2.y=x}
-          map[y][x] = 0;
-        }else if(tile==72){
-          times.x = y;
-          times.y = x;
-          map[y][x] = 0;
-        }else if(tile==73){
-          equals.x = y;
-          equals.y = x;
-          map[y][x] = 0;
-         }
-        }
-     
-       }   
-      
+      else{
+      drawTile(30,3,0)};
+    drawText(4,0,':'+hero.lives)
+    ctx.fillStyle = "rgb(250, 250, 250)"
+      if(healthShake==true){
+      shakeTile(28,5,0,1);
+        if(healthTrend<0){ctx.fillStyle = "rgb(250, 0, 0)"}
+        if(healthTrend>0){ctx.fillStyle = "rgb(0, 250, 0)"}
+      }
+      else{
+      drawTile(28,5,0)};
+    drawText(6,0,':'+hero.health)
+    ctx.fillStyle = "rgb(250, 250, 250)"
+      if(keyShake==true){
+      shakeTile(19,8,0,1);
+      ctx.fillStyle = "rgb(0, 250, 0)"
+        if(keyTrend<0){ctx.fillStyle = "rgb(250, 0, 0)"}
+        if(keyTrend>0){ctx.fillStyle = "rgb(0, 250, 0)"}
+      }
+      else{
+      drawTile(19,8,0)};
+    drawText(9,0,':'+hero.keys)
+    drawTile(16,10,0);
+    ctx.fillStyle = "rgb(250, 250, 250)"
+    drawText(11,0,':'+hero.coins)
     }
-  }
-  numTilesLoaded=true;
-}
-  for(i=0;i<nmeMoves.length;i++){
-    //nmeMoves.push({y:y,x:x,ny:y+1,nx:x,tile:tile});
-    //map[y][x] = 0
-    if(map[nmeMoves[i].ny][nmeMoves[i].nx]==0){
+    function drawMap(map) {
+      for (let y = 0; y < map.length; y++) {
+        for (let x = 0; x < map[y].length; x++) {
+        var tile = map[y][x];
+          if (tile==30){
+          // this loads the player start position
+          map[y][x] = 0;
+          hero.x = x;
+          hero.y = y
+            levelStartPos.push({x:x,y:y});
+          }
+        var row = Math.floor(tile/10)
+        var col = tile % 10;
+        //this keeps from drawing tile0 that I had to add cause piskel doesnt play well with blank tiles
+          if(tile!=0){
+            if(tile>=31 && tile<=34 || tile>=43 && tile<=46){
+              if(move==true){moveNme(tile,x,y)}
+            // this makes bad guys shake randomly at idle
+            let mod = Math.floor(Math.random()*100);
+              if(mod==0){
+              drawTile(tile,x,y,-1,0);
+              }
+              if(mod>=1 && mod<=98){
+              drawTile(tile,x,y,0,0);
+              }
+              if(mod==99){
+              drawTile(tile,x,y,1,0);
+              }
+            }
+            else{ //jiggleX = newX;jiggleY = newY;
+              if(jiggleX==x && jiggleY==y && move==false){ // this makes a tile jiggle if its in the appointed map cell
+              let modX = Math.floor(Math.random()*2)-1;
+              let modY = Math.floor(Math.random()*2)-1;
+              drawTile(tile,x,y,modX,modY);
+              jiggleX = -1;
+              jiggleY = -1;
+                }else{
+                if(tile>49 && tile<60){ /// floor numbers numTiles[]
+                  if(numTilesLoaded==false){let temp={num:tile,x:x,y:y};numTiles.push(temp)}
+                ctx.beginPath();
+                ctx.lineWidth = "1";
+                ctx.strokeStyle = "#25131a";
+                ctx.fillStyle = "#25131a"
+                ctx.rect(x*16+1, y*16+1, 15, 14);
+                ctx.stroke();
+                drawText(x,y,tile-50,8,6,4)
+                //ctx.drawImage(bgImage, col*16, row*16, 16, 16, x*16, y*16, 16, 16)
+                  }else if(tile>59 && tile<70){  //number crates
+                ctx.fillStyle = "#25131a"
+                ctx.fillRect(x*16+1, y*16+1, 15, 14);
+                ctx.fillStyle = "#78514f"
+                //ctx.fillRect(x*16+1, y*16+1, 15, 4);
+                ctx.beginPath();
+                ctx.lineWidth = "1";
+                ctx.strokeStyle = "#78514f";
+                ctx.rect(x*16+1, y*16+1, 15, 14);
+                ctx.stroke();
+                ctx.fillStyle = "rgb(250, 250, 250)";
+                drawText(x,y,tile-60,10,5,2)
+                
+                  }else if(tile<50 || tile>69 && tile<77){  // all the rest
+                ctx.drawImage(bgImage, col*16, row*16, 16, 16, x*16, y*16, 16, 16)
+                /*
+                var mystery1 = new obj('',-1,-1,71,16,16,100);
+                var mystery2 = new obj('',-1,-1,71,16,16,100);
+                var times = new obj('',-1,-1,72,16,16,100);
+                var equals = new obj('',-1,-1,73,16,16,100);
+                var inDoor = [];
+                var outDoor = [];
+                var mapIndex= 0;
+                */
+                  }else if(tile==97){ //36
+                //map[y][x] = 36;
+                  ctx.drawImage(bgImage, col*16, row*16, 16, 16, x*16, y*16, 16, 16)             }else if(tile==98){
+                //map[y][x] = 36;
+                ctx.drawImage(bgImage, col*16, row*16, 16, 16, x*16, y*16, 16, 16)
+                  }else if(tile==71){
+                  if(mystery1.x==-1){mystery1.x=y;mystery1.y=x}else{mystery2.x=y;mystery2.y=x}
+                map[y][x] = 0;
+                  }else if(tile==72){
+                times.x = y;
+                times.y = x;
+                map[y][x] = 0;
+                  }else if(tile==73){
+                equals.x = y;
+                equals.y = x;
+                map[y][x] = 0;
+                }
+              }
+            
+            }
+          
+          }
+        }
+      numTilesLoaded=true;
+      }
+      for(i=0;i<nmeMoves.length;i++){
+        //nmeMoves.push({y:y,x:x,ny:y+1,nx:x,tile:tile});
+      //map[y][x] = 0
+        if(map[nmeMoves[i].ny][nmeMoves[i].nx]==0){
         map[nmeMoves[i].y][nmeMoves[i].x]=0;
-    	map[nmeMoves[i].ny][nmeMoves[i].nx] = nmeMoves[i].tile
-    }
-    if(nmeMoves[i].ny==hero.y && nmeMoves[i].nx==hero.x){
+        map[nmeMoves[i].ny][nmeMoves[i].nx] = nmeMoves[i].tile
+        }
+        if(nmeMoves[i].ny==hero.y && nmeMoves[i].nx==hero.x){
         newY=hero.y;newX=hero.x;
-     	combat(currentMap[newY][newX]) 
+        combat(currentMap[newY][newX])
+        }
+      }
+    
+    nmeMoves = [];
+    move=false;
     }
+  // Create the canvas
+  var c = document.createElement("canvas");
+  var ctx = c.getContext("2d");
+  //alert(window.innerHeight)//alert(window.innerWidth) 657 by 1024
+  
+  c.width =  224;
+  c.height = 224;
+  zoom = (window.innerHeight/c.height)*95
+  document.body.style.zoom = zoom+"%";
+  let left = Math.floor((window.innerWidth-c.width*(zoom/100))/6)
+  //alert(left) //zoom 278
+  c.style.position = 'absolute';
+  c.style.left = left + 'px'
+  c.style.top = 5 + 'px'
+  c.style.backgroundColor = "#3D253B";
+  //c.style.display = 'block';
+  document.body.appendChild(c);
+  // Handle keyboard controls
+    var keysDown = {
+    };
+  var mDown = false;
+  var mX = -1;
+  var mY = -1;
+  var cLeft = c.offsetLeft*(zoom/100);
+  var cTop = c.offsetTop*(zoom/100);
+    addEventListener("keydown",(e)=>{
+    keysDown[e.keyCode] = true;
+    }
+  , false);
+    addEventListener("keyup",(e)=>{
+    delete keysDown[e.keyCode];
+    }
+  , false);
+    addEventListener("mousedown",(e)=>{
+    mDown=true;
+    }
+  ,false);
+    addEventListener("mouseup",(e)=>{
+    mDown=false}
+  ,false);
+    addEventListener("mousemove",(e)=>{
+    mX=e.x-cLeft;
+    mY=e.y-cTop;
+    }
+  ,false);
+  // Reset the game
+    var reset = function () {
+    };
+  // The main game loop
+    var main = function () {
+    var now = Date.now();
+    var delta = now - then;
+    update(delta / 1000);
+    render();
+    then = now;
+    // Request to do this again ASAP
+    requestAnimationFrame(main);
+    };
+  // Cross-browser support for requestAnimationFrame
+  var w = window;
+  requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+  // Let's play this game!
+  var then = Date.now();
+  reset();
+  main();
+    function resetMap(map){
+    
+    }
+    function drawKeyboard(){
+    let top = 9.5;
+    let left = 4;
+    let tall = 24;
+    let wide= 32;
+    drawButton(left,top,'7',wide,tall);
+      if(buttonClick(left,top,wide,tall)){answer+='7'}
+    drawButton(left+2,top,'8',wide,tall);
+      if(buttonClick(left+2,top,wide,tall)){answer+='8'}
+    drawButton(left+4,top,'9',wide,tall);
+      if(buttonClick(left+4,top,wide,tall)){answer+='9'}
+    drawButton(left,top+1.5,'4',wide,tall);
+      if(buttonClick(left,top+1.5,wide,tall)){answer+='4'}
+    drawButton(left+2,top+1.5,'5',wide,tall);
+      if(buttonClick(left+2,top+1.5,wide,tall)){answer+='5'}
+    drawButton(left+4,top+1.5,'6',wide,tall);
+      if(buttonClick(left+4,top+1.5,wide,tall)){answer+='6'}
+    drawButton(left,top+3,'1',wide,tall);
+      if(buttonClick(left,top+3,wide,tall)){answer+='1'}
+    drawButton(left+2,top+3,'2',wide,tall);
+      if(buttonClick(left+2,top+3,wide,tall)){answer+='2'}
+    drawButton(left+4,top+3,'3',wide,tall);
+      if(buttonClick(left+4,top+3,wide,tall)){answer+='3'}
+    drawButton(left-2,top+3,'0',wide,tall);
+      if(buttonClick(left-2,top+3,wide,tall)){answer+='0'}
+    drawButton(left+6,top+1.5,'Clear',wide*1.5,tall);
+      if(buttonClick(left+6,top+1.5,wide*1.5,tall)){answer=''}
+    drawButton(left+6,top+3,'Enter',wide*1.5,tall);
+      if(buttonClick(left+6,top+3,wide*1.5,tall)){check()}
+    
+    }
+    function buttonClick(left,top,wide,tall){
+    //document.title = mX
+    //mX mY mDown
+    let hit = false;
+    let mod = 16*(zoom/100)
+      if(mX>left*mod && mX<left*mod+wide*(zoom/100) && mY>top*mod && mY<top*mod+tall*(zoom/100)  && mDown==true){
+      mDown=false;
+      hit=true
+      }
+    return hit
+    }
+    function drawButton(x,y,text,w,h){
+      if(w==null){w=16}
+      if(h==null){h=16}
+    let border = 2
+    ctx.fillStyle = "#25131a"
+    ctx.fillRect(x*16, y*16, w, h);
+    ctx.fillStyle = "#78514f"
+    ctx.fillRect(x*16+border, y*16+border, w-border*2, h-border*2);
+    ctx.fillStyle = "#ffffff"
+    drawText(x,y,text,14,5,4)
+    }
+  
   }
-  
-  nmeMoves = [];
-  move=false;
-}
-// Create the canvas
-var c = document.createElement("canvas");
-var ctx = c.getContext("2d");
-//alert(window.innerHeight)//alert(window.innerWidth) 657 by 1024
-
-c.width =  224;
-c.height = 224;
-zoom = (window.innerHeight/c.height)*95 
-document.body.style.zoom = zoom+"%";
-let left = Math.floor((window.innerWidth-c.width*(zoom/100))/6)
-//alert(left) //zoom 278
-c.style.position = 'absolute';
-c.style.left = left + 'px'
-c.style.top = 5 + 'px'
-c.style.backgroundColor = "#3D253B";
-//c.style.display = 'block';
-document.body.appendChild(c);
-// Handle keyboard controls
-var keysDown = {
-};
-var mDown = false;
-var mX = -1;
-var mY = -1;
-var cLeft = c.offsetLeft*(zoom/100);
-var cTop = c.offsetTop*(zoom/100);
-addEventListener("keydown",(e)=>{
-  keysDown[e.keyCode] = true;
-}
-                 , false);
-addEventListener("keyup",(e)=>{
-  delete keysDown[e.keyCode];
-}
-                 , false);
-addEventListener("mousedown",(e)=>{
-  mDown=true;
-}
-                 ,false);
-addEventListener("mouseup",(e)=>{
-  mDown=false}
-                 ,false);
-addEventListener("mousemove",(e)=>{
-  mX=e.x-cLeft;
-  mY=e.y-cTop;
-}
-                 ,false);
-// Reset the game 
-var reset = function () {
-};
-// The main game loop
-var main = function () {
-  var now = Date.now();
-  var delta = now - then;
-  update(delta / 1000);
-  render();
-  then = now;
-  // Request to do this again ASAP
-  requestAnimationFrame(main);
-};
-// Cross-browser support for requestAnimationFrame
-var w = window;
-requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
-// Let's play this game!
-var then = Date.now();
-reset();
-main();
-function resetMap(map){
-
-}
-function drawKeyboard(){
-  let top = 9.5;
-  let left = 4;
-  let tall = 24;
-  let wide= 32;
-  drawButton(left,top,'7',wide,tall);
-  if(buttonClick(left,top,wide,tall)){answer+='7'}
-  drawButton(left+2,top,'8',wide,tall);
-  if(buttonClick(left+2,top,wide,tall)){answer+='8'}
-  drawButton(left+4,top,'9',wide,tall);
-  if(buttonClick(left+4,top,wide,tall)){answer+='9'}
-  drawButton(left,top+1.5,'4',wide,tall);
-  if(buttonClick(left,top+1.5,wide,tall)){answer+='4'}
-  drawButton(left+2,top+1.5,'5',wide,tall);
-  if(buttonClick(left+2,top+1.5,wide,tall)){answer+='5'}
-  drawButton(left+4,top+1.5,'6',wide,tall);
-  if(buttonClick(left+4,top+1.5,wide,tall)){answer+='6'}
-  drawButton(left,top+3,'1',wide,tall);
-  if(buttonClick(left,top+3,wide,tall)){answer+='1'}
-  drawButton(left+2,top+3,'2',wide,tall);
-  if(buttonClick(left+2,top+3,wide,tall)){answer+='2'}
-  drawButton(left+4,top+3,'3',wide,tall);
-  if(buttonClick(left+4,top+3,wide,tall)){answer+='3'}
-  drawButton(left-2,top+3,'0',wide,tall);
-  if(buttonClick(left-2,top+3,wide,tall)){answer+='0'}
-  drawButton(left+6,top+1.5,'Clear',wide*1.5,tall);
-  if(buttonClick(left+6,top+1.5,wide*1.5,tall)){answer=''}
-  drawButton(left+6,top+3,'Enter',wide*1.5,tall);
-  if(buttonClick(left+6,top+3,wide*1.5,tall)){check()}
-  
-}
-function buttonClick(left,top,wide,tall){
-  //document.title = mX
- //mX mY mDown 
-  let hit = false;
-  let mod = 16*(zoom/100)
- if(mX>left*mod && mX<left*mod+wide*(zoom/100) && mY>top*mod && mY<top*mod+tall*(zoom/100)  && mDown==true){
- 	mDown=false;
-   hit=true
- }
-  return hit	
-}
-function drawButton(x,y,text,w,h){
-  if(w==null){w=16}
-  if(h==null){h=16}
-  let border = 2
-  ctx.fillStyle = "#25131a"
-  ctx.fillRect(x*16, y*16, w, h);
-  ctx.fillStyle = "#78514f"
-  ctx.fillRect(x*16+border, y*16+border, w-border*2, h-border*2);
-  ctx.fillStyle = "#ffffff"
-  drawText(x,y,text,14,5,4)
-}
-
-}
 </script>
 </body>
 </html>
