@@ -91,6 +91,15 @@
 <div id="editor"></div>
 <div id="functs"></div>
 <script>
+  window.addEventListener('focus', function(e){
+    if(localStorage.getItem('Eline')!=null){
+    let enumber = localStorage.getItem('Eline')
+    editor.getInputField().focus();
+      editor.setCursor({ line: enumber, ch: 1 });
+      editor.scrollIntoView({line: enumber, ch: 1}, 200)
+    localStorage.removeItem('Eline')
+    }
+  });
   function nope(){}
 var code=''
 var codeSize = 14;
@@ -113,6 +122,7 @@ var fnum = 0;
   code = editor.getValue();
   localStorage.setItem(document.title, code);
   });
+
   editor.getWrapperElement().addEventListener('click', function(event) {dis=null;fnum = 0});
 document.getElementsByClassName("CodeMirror")[0].style.fontSize = codeSize +"px";
 // Load button click function
@@ -176,13 +186,13 @@ document.getElementsByClassName("CodeMirror")[0].style.fontSize = codeSize +"px"
   });
 // TEST! button click function
   document.getElementById("pretty").addEventListener("click", function () {
-    let tempCursor = editor.getCursor();
-    editor.setValue(formatCode(code))
-    
-     editor.getInputField().focus();
-      editor.setCursor({ line: tempCursor.line, ch: tempCursor.ch });
-      editor.scrollIntoView({line: tempCursor.line, ch: tempCursor.ch}, 200)
- 
+  let tempCursor = editor.getCursor();
+  editor.setValue(formatCode(code))
+  
+  editor.getInputField().focus();
+    editor.setCursor({ line: tempCursor.line, ch: tempCursor.ch });
+    editor.scrollIntoView({line: tempCursor.line, ch: tempCursor.ch}, 200)
+  
   });
 // TEST! button click function
   document.getElementById("test").addEventListener("click", function () {
@@ -245,6 +255,48 @@ var funData = [];
   buttDad.innerHTML=""
   funData = []
   }
+  function popUp(info,size,time){
+  // this is nice for debugging ect.
+    if(size==null){size=24}
+    if(time==null){time=3000}
+  var p=document.createElement('div');
+  p.id = "showMe"
+  p.style.position='fixed';
+  p.style.top='0';
+  p.style.left='0';
+  let w = info.length*size;
+  let h = size;
+  p.style.width=w+'px';
+  p.style.height=h+'px';
+  p.style.backgroundColor='rgba(0,0,0,1)';
+  p.style.display='flex';
+  p.style.justifyContent='center';
+  p.style.alignItems='center';
+  p.style.zIndex='9999';
+  p.style.color='#fff';
+  p.style.fontSize='24px';
+  p.style.marginBottom='20px';
+  p.innerText = info;
+    var offer = setTimeout(function(){let s = document.getElementById('showMe');document.body.removeChild(s)},time)
+  document.body.appendChild(p);
+    p.addEventListener('click',function(){
+    clearTimeout(offer);
+    document.body.removeChild(p);
+    });
+  
+  }
+  function extractJavaScript(htmlDocument) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlDocument, 'text/html');
+  const scriptElements = doc.querySelectorAll('script');
+  let jsCode = '';
+    scriptElements.forEach((script) => {
+    jsCode += script.textContent + '\n';
+    });
+  return jsCode.trim();
+  }
+
+
   function formatCode(inputCode) {
   // Split the code into lines
   const lines = inputCode.split('\n');
@@ -301,18 +353,18 @@ return formattedCode;
     };
   reader.readAsText(input.files[0]);
   };
-
   function run(){
   cursor = editor.getCursor();
   var c = editor.getValue()
-  var myWindow = window.open();
-  //myWindow.document.title = 'testing';
-  myWindow.document.write(c);
-  var t = document.title.split('.');
-  myWindow.document.title= '###'+t[0]+'###';
-  editor.getInputField().focus();
-    editor.setCursor({ line: cursor.line, ch: cursor.ch });
-  }
+var myWindow = window.open();
+//myWindow.document.title = 'testing';
+myWindow.document.write(c);
+var t = document.title.split('.');
+//myWindow.document.title= '###'+t[0]+'###';
+editor.getInputField().focus();
+  editor.setCursor({ line: cursor.line, ch: cursor.ch });
+
+}
   function download(filename, text) {
   var element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
