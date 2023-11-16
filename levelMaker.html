@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-  <html>
-  <head>
-  <style>
-  /* Style for the parent div */
+<html>
+<head>
+<style>
+/* Style for the parent div */
   .container {
-    position: absolute;
-    width: 160px;
-    height: 160px;
-    display: grid;
-    margin: 0px;
-    padding: 0px;
-    grid-template-columns: repeat(10, 1fr);
-    grid-gap: 0px;
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  display: grid;
+  margin: 0px;
+  padding: 0px;
+  grid-template-columns: repeat(10, 1fr);
+  grid-gap: 0px;
   }
-.mapContainer {
+  .mapContainer {
   position: absolute;
   left: 50%;
   width: 224px;
@@ -23,9 +23,9 @@
   padding: 0px;
   grid-template-columns: repeat(14, 1fr);
   grid-gap: 0px;
-}
+  }
 /* Style for the child divs */
-.cell {
+  .cell {
   width: 100%;
   height: 100%;
   background-color: #ccc;
@@ -37,9 +37,9 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
-}
+  }
 /* Style for the child divs */
-.map {
+  .map {
   width: 100%;
   height: 100%;
   background-color: #ccc;
@@ -51,21 +51,24 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
-}
+  }
 </style>
 </head>
 
 <body>
-  <input id="fread" type='file' style="display: none" accept='.txt , .json ' onchange='openFile(event)'>
-  <div id='app'>
-    <div class="container" id="grid-container"></div>
+<input id="fread" type='file' style="display: none" accept='.txt , .json ' onchange='openFile(event)'>
+<div id='app'>
+<div class="container" id="grid-container"></div>
 <div class="mapContainer" id="map-container" style='background-color: #3D253B;'></div>
 <div style='cursor: pointer; position:absolute; border: 1px solid #000; top:180px'onclick="saveTextToFile()">SAVE</div>
 <div style='cursor: pointer; position:absolute; border: 1px solid #000; top:200px'onclick=" loadLevel()">LOAD</div>
+<div style='cursor: pointer; position:absolute; border: 1px solid #000; top:220px'onclick=" genLevel(3)">GENERATE</div>
 <textarea id='exporter'style='display: none; cursor: pointer; position:absolute; border: 1px solid #000; top:180px; left:80px'> </textarea>
 </div>
 <script>
-  var tile = 1
+var tile = 1
+var exit = -1;
+var entrance = -1;
 document.title='levelMaker';
 document.body.style.zoom = '180%';
 var dungeon = 'DungeonTimesTiles.png'
@@ -75,244 +78,296 @@ gridContainer.style.backgroundImage = 'url("'+dungeon+'")';
 gridContainer.style.backgroundPosition = '0px 0px';
 gridContainer.style.backgroundSize = '160px 160px';
 // Create 100 divs with unique ids
-for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 100; i++) {
   const cell = document.createElement('div');
   cell.className = 'cell';
   cell.id = 'cell' + i;
   //cell.textContent = i;
   cell.style.backgroundColor = 'transparent';
-  cell.addEventListener('click', function() {
+    cell.addEventListener('click', function() {
     unselectAll();
     cell.style.borderColor = "#16ff05";
     document.title='tile: '+i;
     tile = i;
     cell.Tid=tile
-  }
-                       );
+    }
+  );
   gridContainer.appendChild(cell);
-}
+  }
 var mDown=-1;
-addEventListener("mousedown",(e)=>{
+  addEventListener("mousedown",(e)=>{
   mDown = e.button;
-}
-                 ,false);
-addEventListener("mouseup",(e)=>{
+  }
+,false);
+  addEventListener("mouseup",(e)=>{
   mDown=-1}
-                 ,false);
+,false);
 const mapContainer = document.getElementById('map-container');
 // Create 100 divs with unique ids
-for (let i = 1; i <= 196; i++) {
+  for (let i = 1; i <= 196; i++) {
   const cell = document.createElement('div');
   cell.className = 'map';
   cell.id = 'map' + i;
-  //cell.textContent = i; 
+  //cell.textContent = i;
   var row = Math.floor(i/10)
   var col = i % 10;
   cell.Tid=0;
   cell.style.backgroundColor = 'transparent';
-  cell.addEventListener('mousedown', function(e) {
+    cell.addEventListener('mousedown', function(e) {
     mDown = e.button;
-    if(mDown==0){
+      if(mDown==0){
       cell.Tid = tile
       cell.style.backgroundImage = 'url("'+dungeon+'")';
       var row = Math.floor(tile/10)*16;
       var col = (tile % 10)*16;
       cell.style.backgroundPosition = -col +'px '+ -row +'px';
       cell.style.backgroundSize = '160px 160px'
-
-    }
-    if(mDown==2){
+      
+      }
+      if(mDown==2){
       cell.Tid = 0;
       cell.flipH = 1;
       cell.flipV = 1;
       cell.style.backgroundImage='none';
+      }
     }
-  }
-                       );
-  cell.addEventListener('mouseenter', function() {
+  );
+    cell.addEventListener('mouseenter', function() {
     cell.style.border = '1px solid #fff';
     document.title=cell.Tid;
-  });
-  cell.addEventListener('mouseleave', function() {
+    });
+    cell.addEventListener('mouseleave', function() {
     cell.style.border = '1px solid #000';
-  });
-  cell.addEventListener('mousemove', function() {
-    if(mDown==0){
+    });
+    cell.addEventListener('mousemove', function() {
+      if(mDown==0){
       cell.Tid = tile
       cell.style.backgroundImage = 'url("'+dungeon+'")';
       var row = Math.floor(tile/10)*16;
       var col = (tile % 10)*16;
       cell.style.backgroundPosition = -col +'px '+ -row +'px';
       cell.style.backgroundSize = '160px 160px';
-
-    }
-    if(mDown==2){
+      
+      }
+      if(mDown==2){
       cell.Tid = 0;
       cell.flipV = 1;
       cell.flipH = 1;
       cell.style.backgroundImage='none';
+      }
     }
-  }
-                       );
-  cell.addEventListener('contextmenu', function(e) {
+  );
+    cell.addEventListener('contextmenu', function(e) {
     mDown=2;
     e.preventDefault();
-  }
-                       );
+    }
+  );
   //cell.addEventListener("contextmenu", e => e.preventDefault());
   mapContainer.appendChild(cell);
-}
-function unselectAll() {
-  const cells = document.querySelectorAll('.cell');
-  cells.forEach(function(cell) {
-    cell.style.borderColor = 'black';
   }
-               );
-}
+  function unselectAll() {
+  const cells = document.querySelectorAll('.cell');
+    cells.forEach(function(cell) {
+    cell.style.borderColor = 'black';
+    }
+  );
+  }
 var cH = 160;
 var cW = 160;
 // Handle keyboard controls
-var keysDown = {
-};
+  var keysDown = {
+  };
 
 // Event listeners
-addEventListener("keydown", (e) => {
+  addEventListener("keydown", (e) => {
   // Handle keydown event here
-  if(e.keyCode==32){
+    if(e.keyCode==32){
     var cells = document.querySelectorAll('.cell');
-    cells.forEach(function(cell) {
+      cells.forEach(function(cell) {
       cell.style.borderColor = 'transparent';
+      }
+    );
     }
-                 );
-  }
-  if(e.keyCode==13){
+    if(e.keyCode==13){
     //enter key draws map to canvas for downloading
     output(cW,cH);
-  }
-
+    }
   
-  if(e.keyCode==8){
+  
+    if(e.keyCode==8){
     //backspace key gets rid of the above canvas.
     document.getElementById('outputCanvas').remove();
-  }
-  if(e.keyCode==37){
+    }
+    if(e.keyCode==37){
     adjCan(-16,0)};
   //left
-  if(e.keyCode==38){
+    if(e.keyCode==38){
     adjCan(0,-16)};
   //up
-  if(e.keyCode==39){
+    if(e.keyCode==39){
     adjCan(16,0)};
   //right
-  if(e.keyCode==40){
+    if(e.keyCode==40){
     adjCan(0,16)};
   //down
   keysDown[e.keyCode] = true;
-}
-                        ,false);
-addEventListener("keyup", (e) => {
-  // Handle keyup event here
-  if(e.keyCode==32){
-    var cells = document.querySelectorAll('.cell');
-    cells.forEach(function(cell) {
-      cell.style.borderColor = 'black';
-      if(cell.Tid==tile){
-        cell.style.borderColor = "#16ff05"}
-    }
-                 );
   }
-
+,false);
+  addEventListener("keyup", (e) => {
+  // Handle keyup event here
+    if(e.keyCode==32){
+    var cells = document.querySelectorAll('.cell');
+      cells.forEach(function(cell) {
+      cell.style.borderColor = 'black';
+        if(cell.Tid==tile){
+        cell.style.borderColor = "#16ff05"}
+      }
+    );
+    }
+  
   delete keysDown[e.keyCode];
-}
-                        ,false);
-function exportMap(){
+  }
+,false);
+//var exit = -1;
+//var entrance = -1;
+  function genLevel(ent){
+  let exit = Math.floor(Math.random()*9)+2
+  let top = [];
+  let map = [];
+    for(i=0;i<14;i++){
+    let temp = 2
+      if(i==0){temp=1}
+      if(i==13){temp=3}
+      if(i+1==exit){temp=41}
+      if(i==exit){temp=98}
+      if(i-1==exit){temp=41}
+    top.push(temp)
+    }
+  
+  map.push(top)
+  map.push([1,76,76,76,76,76,76,76,76,76,76,76,76,3])
+  map.push([1,76,76,76,76,76,76,76,76,76,76,76,76,3])
+  map.push([1,76,76,76,76,76,76,76,76,76,76,76,76,3])
+  map.push([1,76,76,76,76,76,76,76,76,76,76,76,76,3])
+  map.push([1,76,76,76,76,76,76,76,76,76,76,76,76,3])
+  map.push([1,76,76,76,76,76,76,76,76,76,76,76,76,3])
+  map.push([1,76,76,76,76,76,76,76,76,76,76,76,76,3])
+  map.push([1,76,76,76,76,76,76,76,76,76,76,76,76,3])
+  map.push([1,76,76,76,76,76,76,76,76,76,76,76,76,3])
+  map.push([1,76,76,76,76,76,76,76,76,76,76,76,76,3])
+  map.push([1,76,76,76,76,76,76,76,76,76,76,76,76,3])
+  map.push([1,76,76,76,76,76,76,76,76,76,76,76,76,3])
+  top=[]
+    entrance = ent//Math.floor(Math.random()*9)+2
+    for(i=0;i<14;i++){
+    let temp = 12
+      if(i==0){temp=11}
+      if(i==13){temp=13}
+      if(i==entrance){temp=36}
+    top.push(temp)
+    }
+  map.push(top)
+  map = carveMap(map)
+  let realMap = '';
+  realMap+=map
+  importMap(realMap)
+  }
+  function carveMap(m){
+    for(i=0;i<14;i++){
+      for(ii=0;ii<14;ii++){
+      	if(m[i][ii]==76){if(Math.floor(Math.random()*10)>5){m[i][ii]=0}}
+      }
+    }
+    return m;
+  }
+  function exportMap(){
   var array = '[[';
   var cells = document.querySelectorAll('.map');
   var row = 0
-  var col = 0 
-  cells.forEach(function(cell) {
+  var col = 0
+    cells.forEach(function(cell) {
     array+=cell.Tid
     col++
-    if(col<14){
+      if(col<14){
       array+=','}
-    else{
-      if(row<13){
-        array+='],['}
       else{
+        if(row<13){
+        array+='],['}
+        else{
         array+='],];'}
       col=0;
       row++
+      }
     }
-  }
-               );
+  );
   document.getElementById('exporter').value=array;
   //alert(cleanLevel(array));
   return cleanLevel(array);
-}
+  }
 /*    */
-function cleanLevel(input){
- return input.replace(/\s/g, "");
-}
-function loadLevel(){
-		
-    document.getElementById('fread').click();
-}
-openFile = function(event) {
-    var input = event.target; 
+  function cleanLevel(input){
+  return input.replace(/\s/g, "");
+  }
+  function loadLevel(){
+  
+  document.getElementById('fread').click();
+  }
+  openFile = function(event) {
+  var input = event.target;
   var reader = new FileReader();
     reader.onload = function(){
-      var text = reader.result; 
-      var name = document.getElementById('fread');
-      var saveName=name.files.item(0).name
-      importMap(text)
-	  document.title=saveName;
-      document.getElementById('fread').value='';
+    var text = reader.result;
+    var name = document.getElementById('fread');
+    var saveName=name.files.item(0).name
+    importMap(text)
+    document.title=saveName;
+    document.getElementById('fread').value='';
     };
-    reader.readAsText(input.files[0]);
+  reader.readAsText(input.files[0]);
   };
-function importMap(map2d){
- clearMap();
+  function importMap(map2d){
+  clearMap();
   var map1d = ''
-  for(i=0;i<map2d.length;i++){
+    for(i=0;i<map2d.length;i++){
     let t = map2d.charAt(i);
-    if (t!='[' && t!=']' && t!=';'){map1d+=map2d.charAt(i)}
-  }
+      if (t!='[' && t!=']' && t!=';'){map1d+=map2d.charAt(i)}
+    }
   var map = map1d.split(',')
   var cells = document.querySelectorAll('.map');
   var mapCell = 0;
-  cells.forEach(function(cell) {
+    cells.forEach(function(cell) {
     cell.Tid = map[mapCell];
     mapCell++;
-    if(cell.Tid!=0){cell.style.backgroundImage = 'url("'+dungeon+'")';}
+      if(cell.Tid!=0){cell.style.backgroundImage = 'url("'+dungeon+'")';}
     var row = Math.floor(cell.Tid/10)*16;
     var col = (cell.Tid % 10)*16;
     cell.style.backgroundPosition = -col +'px '+ -row +'px';
     cell.style.backgroundSize = '160px 160px';
+    }
+  );
   }
-               );
-}
 
-function clearMap(){
+  function clearMap(){
   var cells = document.querySelectorAll('.map');
-  cells.forEach(function(cell) {
-      cell.Tid = 0;
-      cell.style.backgroundImage='none';
+    cells.forEach(function(cell) {
+    cell.Tid = 0;
+    cell.style.backgroundImage='none';
     
+    }
+  );
   }
-               ); 
-}
 
 
 
-function adjCan(h,w){
-  if( document.getElementById('outputCanvas')){
+  function adjCan(h,w){
+    if( document.getElementById('outputCanvas')){
     document.getElementById('outputCanvas').remove();
     cH += w;
     cW += h;
     output(cW,cH);
+    }
   }
-}
-function output(W,H){
+  function output(W,H){
   // Create the canvas
   var c = document.createElement("canvas");
   c.id='outputCanvas'
@@ -329,110 +384,110 @@ function output(W,H){
   eval('var map = '+exportMap());
   
   // Execute the code
-  for (let y = 0; y < map.length; y++) {
-    for (let x = 0; x < map[y].length; x++) {
+    for (let y = 0; y < map.length; y++) {
+      for (let x = 0; x < map[y].length; x++) {
       const tile = map[y][x];
       var row = Math.floor(tile/10)
       var col = tile % 10;
-      if(tile!=0){ctx.drawImage(bgImage, col*16, row*16, 16, 16, x*16, y*16, 16, 16)}
+        if(tile!=0){ctx.drawImage(bgImage, col*16, row*16, 16, 16, x*16, y*16, 16, 16)}
+      }
     }
   }
-}
-function drawMap(map) {
-  for (let y = 0; y < map.length; y++) {
-    for (let x = 0; x < map[y].length; x++) {
+  function drawMap(map) {
+    for (let y = 0; y < map.length; y++) {
+      for (let x = 0; x < map[y].length; x++) {
       const tile = map[y][x];
       var row = Math.floor(tile/10)
       var col = tile % 10;
       ctx.drawImage(bgImage, col*16, row*16, 16, 16, x*16, y*16, 16, 16);
+      }
     }
   }
-}
 /*
 const map1 = [
-    [ 0, 1, 2, 3, 2, 1, 2, 3, 4, 5],
-    [10,12,12,12,12,12,12,12,12,15],
-    [20,12,12,12,12,12,12,12,12,25],
-    [10,12,12,12,12,12,12,12,12,15],
-    [20,12,12,12,12,12,12,12,12,25],
-    [10,12,12,12,12,12,12,12,12,15],
-    [20,12,12,12,12,12,12,12,12,25],
-    [10,12,12,12,12,12,12,12,12,15],
-    [20,12,12,12,12,12,12,12,12,25],
-    [40,41,42,43,42,41,42,43,44,45],
+[ 0, 1, 2, 3, 2, 1, 2, 3, 4, 5],
+[10,12,12,12,12,12,12,12,12,15],
+[20,12,12,12,12,12,12,12,12,25],
+[10,12,12,12,12,12,12,12,12,15],
+[20,12,12,12,12,12,12,12,12,25],
+[10,12,12,12,12,12,12,12,12,15],
+[20,12,12,12,12,12,12,12,12,25],
+[10,12,12,12,12,12,12,12,12,15],
+[20,12,12,12,12,12,12,12,12,25],
+[40,41,42,43,42,41,42,43,44,45],
 ];
 */
-function handleFileSelect(event) {
+  function handleFileSelect(event) {
   const input = document.createElement('input');
   input.type = 'file';
-  input.onchange = (e) => {
+    input.onchange = (e) => {
     const file = e.target.files[0];
-    if (file) {
+      if (file) {
       const reader = new FileReader();
-      reader.onload = function (e) {
+        reader.onload = function (e) {
         const image = new Image();
         image.src = e.target.result;
-        image.onload = function () {
+          image.onload = function () {
           // Create an object to store the file information
-          const picture = {
+            const picture = {
             name: file.name,
             path: e.target.result,
-            dimensions: {
+              dimensions: {
               width: this.width,
               height: this.height
-            }
+              }
             ,
             base64: e.target.result
-          };
+            };
           // Store the 'picture' object in a global variable
           window.picture = picture;
           savePictureToLocalStorage()
           // You can access the information using window.picture
           console.log(window.picture);
+          };
         };
-      };
       reader.readAsDataURL(file);
-    }
-  };
+      }
+    };
   // Trigger the file input dialog
   input.click();
-}
+  }
 // Attach the event handler to the button
 const filePickerButton = document.getElementById('filePicker');
 filePickerButton.addEventListener('click', handleFileSelect);
-function savePictureToLocalStorage() {
-  if (window.picture) {
+  function savePictureToLocalStorage() {
+    if (window.picture) {
     localStorage.setItem('picture', JSON.stringify(window.picture));
     console.log('Picture saved to localStorage');
+    }
   }
-}
-function loadPictureFromLocalStorage() {
+  function loadPictureFromLocalStorage() {
   const storedPicture = localStorage.getItem('picture');
-  if (storedPicture) {
+    if (storedPicture) {
     window.picture = JSON.parse(storedPicture);
     console.log('Picture loaded from localStorage');
+    }
   }
-}
 
-function saveTextToFile() {
-            // Get the text from the textarea
-            const text = exportMap();
-            // Create a Blob object containing the text
-            const blob = new Blob([text], { type: 'text/plain' });
-            // Create a temporary URL for the Blob
-            const url = URL.createObjectURL(blob);
-            // Create a download link
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'text_file.txt';
-            a.style.display = 'none';
-            // Add the link to the DOM and trigger a click event to start the download
-            document.body.appendChild(a);
-            a.click();
-            // Clean up
-            URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        }
+  function saveTextToFile() {
+  // Get the text from the textarea
+  const text = exportMap();
+  // Create a Blob object containing the text
+    const blob = new Blob([text], { type: 'text/plain' });
+  // Create a temporary URL for the Blob
+  const url = URL.createObjectURL(blob);
+  // Create a download link
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'text_file.txt';
+  a.style.display = 'none';
+  // Add the link to the DOM and trigger a click event to start the download
+  document.body.appendChild(a);
+  a.click();
+  // Clean up
+  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+  }
 
 </script>
 </body>
