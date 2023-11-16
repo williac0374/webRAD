@@ -24,10 +24,11 @@
 </head>
 <body>
 <canvas id="gameCanvas" width="400" height="400"></canvas>
-
+<script src='error.js'></script>
 <script>
 //ENGINE
-  window.addEventListener('resize', function(){});// resize in editor load for standalone
+
+   window.addEventListener('resize', function(){});// resize in editor load for standalone
 // Create variables to work with the canvas
 var c = document.getElementById("gameCanvas");
 var ctx = c.getContext("2d");
@@ -98,9 +99,9 @@ var actors = [];
   
   }
   function popUp(info,size,time){
-    // this is nice for debugging ect.
-  if(size==null){size=24}
-  if(time==null){time=3000}
+  // this is nice for debugging ect.
+    if(size==null){size=24}
+    if(time==null){time=3000}
   var p=document.createElement('div');
   p.id = "showMe"
   p.style.position='fixed';
@@ -109,20 +110,21 @@ var actors = [];
   let w = info.length*size;
   let h = size;
   p.style.width=w+'px';
-  p.style.height=h+'px';
+  p.style.height=h*2+'px';
   p.style.backgroundColor='rgba(0,0,0,1)';
   p.style.display='flex';
-  p.style.justifyContent='center';
+  p.style.border='8px solid #1eff00'
+  p.style.justifyContent='left';
   p.style.alignItems='center';
   p.style.zIndex='9999';
-  p.style.color='#fff';
+  p.style.color='#1eff00';
   p.style.fontSize='24px';
   p.style.marginBottom='20px';
   p.innerText = info;
-  var offer = setTimeout(function(){let s = document.getElementById('showMe');document.body.removeChild(s)},time)
+    var offer = setTimeout(function(){let s = document.getElementById('showMe');document.body.removeChild(s)},time)
   document.body.appendChild(p);
     p.addEventListener('click',function(){
-      clearTimeout(offer);
+    clearTimeout(offer);
     document.body.removeChild(p);
     });
   
@@ -211,7 +213,7 @@ main();
   }
   function loop(){
   //go('hero',0,64)
-  
+     
   // get input
     if(keyPress(LEFT)){goLeft('hero')}
     if(keyPress(RIGHT)){goRight('hero')}
