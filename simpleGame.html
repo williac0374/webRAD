@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>simpleEngine</title>
+<style>
+  body{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: gray;
+  
+  }
+  canvas {
+  border: 2px solid #000;
+  //width: 300px;
+  //height:300px;
+  background-color: blue;
+  }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas" width="400" height="400"></canvas>
+
+<script>
+//ENGINE
+  window.addEventListener('resize', function(){});// resize in editor load for standalone
+// Create variables to work with the canvas
+var c = document.getElementById("gameCanvas");
+var ctx = c.getContext("2d");
+const LEFT=37,UP=38,RIGHT=39,DOWN=40,SPACE=32;
+var timeShift = 1
+var FPS = 0
+var actors = [];
+  function actor(name,l,t,tall,wide,color,depth,speed){
+  this.name=name;
+  this.left = l;
+  this.top = t;
+  this.tall = tall;
+  this.wide = wide;
+  this.speed = speed;
+  this.fall =
+  this.color = color;
+  this.depth = depth;
+  }
+  function New(name,left,top,tall,wide,color,depth,speed){
+  let temp = new actor(name,left,top,tall,wide,color,depth,speed);
+  actors.push(temp)
+  }
+  function getActor(name){
+  let index = -1
+    for(i=0;i<actors.length;i++){
+      if (actors[i].name==name){return actors[i]}
+    }
+  }
+  function goLeft(what){getActor(what).left -= getActor(what).speed*timeShift;}
+  function goRight(what){getActor(what).left += getActor(what).speed*timeShift;}
+  function goUp(what){getActor(what).top -= getActor(what).speed*timeShift;}
+  function goDown(what){getActor(what).top += getActor(what).speed*timeShift;}
+  function go(what,hSpeed,vSpeed){
+  getActor(what).left += hSpeed*timeShift;
+  getActor(what).top += vSpeed*timeShift;
+  }
+  function goto(what,targetX,targetY,speed){
+  let disX = getActor(what).left-targetX;
+  let disY = getActor(what).top-targetY;
+  
+  let xSpeed = 0;
+  let ySpeed = 0;
+    if(Math.abs(disX)>Math.abs(disY)){
+    ySpeed=speed*(disY/disX)*timeShift;
+    xSpeed=speed*timeShift;
+      }else{
+    xSpeed=speed*(disX/disY)*timeShift;
+    ySpeed=speed*timeShift;
+    }
+  //getActor(what).left += hSpeed*timeShift;
+  //getActor(what).top += vSpeed*timeShift;
+  }
+  function drawActors(){
+  actors.sort((a,b) => a.depth - b.depth);
+  ctx.clearRect(0, 0, c.width, c.height);
+  for(i=0;i<actors.length;i++)
+    {
+      if(actors[i].color.indexOf(".")==-1){
+      ctx.fillStyle = actors[i].color
+      ctx.fillRect(actors[i].left, actors[i].top, actors[i].wide, actors[i].tall);
+        }else{
+      let temp = new Image();
+      temp.src = actors[i].color;
+      ctx.drawImage(temp, actors[i].left, actors[i].top, actors[i].wide, actors[i].tall);
+      delete temp;
+      }
+    }
+  
+  }
+  function popUp(info,size,time){
+    // this is nice for debugging ect.
+  if(size==null){size=24}
+  if(time==null){time=3000}
+  var p=document.createElement('div');
+  p.id = "showMe"
+  p.style.position='fixed';
+  p.style.top='0';
+  p.style.left='0';
+  let w = info.length*size;
+  let h = size;
+  p.style.width=w+'px';
+  p.style.height=h+'px';
+  p.style.backgroundColor='rgba(0,0,0,1)';
+  p.style.display='flex';
+  p.style.justifyContent='center';
+  p.style.alignItems='center';
+  p.style.zIndex='9999';
+  p.style.color='#fff';
+  p.style.fontSize='24px';
+  p.style.marginBottom='20px';
+  p.innerText = info;
+  var offer = setTimeout(function(){let s = document.getElementById('showMe');document.body.removeChild(s)},time)
+  document.body.appendChild(p);
+    p.addEventListener('click',function(){
+      clearTimeout(offer);
+    document.body.removeChild(p);
+    });
+  
+  }
+
+
+
+
+
+  function rnd(max){return Math.floor(Math.random()*max);}
+  function keyPress(key){let down=false;if (key in keysDown) {down=true;delete keysDown[key]};return down;}
+  function keyDown(key){let down=false;if (key in keysDown) {down=true};return down;}
+  function rndColor(){
+  let r=Math.floor(Math.random()*255);
+  let g=Math.floor(Math.random()*255);
+  let b=Math.floor(Math.random()*255);
+  return 'rgb('+r+','+g+','+b+')';
+  }
+
+
+
+
+  function stage(w,h,col){
+  c.remove();
+  // Create the canvas
+  c = document.createElement("canvas");
+  ctx = c.getContext("2d");
+  c.id='gameCanvas';
+  c.width =  w ;
+  c.height = h;
+  c.style.backgroundColor=col
+  document.body.appendChild(c);
+  }
+// Handle keyboard controls
+  var keysDown = {};
+var mDown = false;
+var mX = -1;
+var mY = -1;
+  addEventListener("keydown",(e)=>{keysDown[e.keyCode] = true;}, false);
+  addEventListener("keyup",(e)=>{delete keysDown[e.keyCode];}, false);
+  addEventListener("mousedown",(e)=>{mDown=true; },false);
+  addEventListener("mouseup",(e)=>{mDown=false},false);
+  addEventListener("mousemove",(e)=>{mX=e.x-c.offsetLeft;mY=e.y-c.offsetTop;},false);
+// The main game loop
+  function main(){
+  var now = Date.now();
+  var delta = now - then;
+  then = now;
+  timeShift=delta / 1000
+  FPS = Math.floor(1/timeShift);
+  document.title = FPS
+  loop();
+  drawActors();
+  // Request to do this again ASAP
+  requestAnimationFrame(main);
+  };
+// Cross-browser support for requestAnimationFrame
+var w = window;
+requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+// Let's play this game!
+var then = Date.now();
+start()
+main();
+
+
+
+
+  function Do(what,times){
+    for (i=0;i<times;i++){
+    let tempFunction = new Function(what);
+    tempFunction();
+    }
+  }
+
+
+
+/// GAME
+  function start(){
+  stage(256,256,'blue')
+  
+  
+  New('hero',0,0,32,32,'face.png',1000,256)
+  Do('New("player"+i,rnd(300),rnd(300),50,50,rndColor(),i)',999)
+    //for(i=0;i<100;i++){New("player"+i,rnd(300),rnd(300),50,50,"rgb("+rnd(255)+","+rnd(255)+","+rnd(255)+")",i)}
+  
+  }
+  function loop(){
+  //go('hero',0,64)
+  
+  // get input
+    if(keyPress(LEFT)){goLeft('hero')}
+    if(keyPress(RIGHT)){goRight('hero')}
+    if(keyPress(UP)){goUp('hero')}
+    if(keyPress(DOWN)){goDown('hero')}
+    if(keyPress(SPACE)){popUp('Hi');}//goto('hero',mX,mY,64)}
+  }
+
+
+
+
+
+
+
+
+
+</script>
+</body>
+</html>
