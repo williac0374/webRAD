@@ -176,7 +176,13 @@ document.getElementsByClassName("CodeMirror")[0].style.fontSize = codeSize +"px"
   });
 // TEST! button click function
   document.getElementById("pretty").addEventListener("click", function () {
-  editor.setValue(formatCode(code))
+    let tempCursor = editor.getCursor();
+    editor.setValue(formatCode(code))
+    
+     editor.getInputField().focus();
+      editor.setCursor({ line: tempCursor.line, ch: tempCursor.ch });
+      editor.scrollIntoView({line: tempCursor.line, ch: tempCursor.ch}, 200)
+ 
   });
 // TEST! button click function
   document.getElementById("test").addEventListener("click", function () {
@@ -204,20 +210,20 @@ var funData = [];
     
     }
   //alphabetize funData
-    var fabc = [];
-    var tempFun = []
+  var fabc = [];
+  var tempFun = []
     for (let i = 1; i < funData.length; i++) {
-      //funData[i]['name'] funData[i].line
-      fabc.push(funData[i]['name']+','+funData[i].line)
+    //funData[i]['name'] funData[i].line
+    fabc.push(funData[i]['name']+':'+funData[i].line)
     }
-    console.log(fabc)
-    fabc.sort();
+  console.log(fabc)
+  fabc.sort();
   const buttonContainer = document.getElementById('functs');
   //alert(funData.length)
   buttonContainer.style.zIndex = '9999'
     for (let i = 0; i < fabc.length; i++) {
     const button = document.createElement('button');
-      let fd=fabc[i].split(',');
+    let fd=fabc[i].split(':');
       button.textContent = `${fd[0]}`;
       button.id = `${fd[1]}`;
     button.style.fontSize = codeSize +'px';
