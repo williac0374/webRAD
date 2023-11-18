@@ -86,6 +86,9 @@
 <button id="bGo">B-Go</button>
 <button id="find">Find</button>
 <button id="pretty">Pretty</button>
+<button id="compress">Compress</button>
+<button id="expand">Expand</button>
+<button id="base64">Base64</button>
 <button id="test">TEST!</button>
 </div>
 <div id="editor"></div>
@@ -194,6 +197,27 @@ document.getElementsByClassName("CodeMirror")[0].style.fontSize = codeSize +"px"
     editor.scrollIntoView({line: tempCursor.line, ch: tempCursor.ch}, 200)
   
   });
+// compress button click function
+  document.getElementById("compress").addEventListener("click", function () {
+  let what = editor.getSelection();
+    let smaller = what.replace(/\n/g, ';').replace(/;;/g, ';').replace(/;;/g, ';').replace(/\{\;/g, '{').replace(/\}\;/g, '}')
+  editor.replaceSelection(smaller);
+  });
+// expand button click function
+  document.getElementById("expand").addEventListener("click", function () {
+  let what = editor.getSelection();
+    let bigger = what.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/;/g, ';\n')
+  editor.replaceSelection(bigger);
+  });
+
+// expand button click function
+  document.getElementById("base64").addEventListener("click", function () {
+  b64()
+  });
+
+
+
+
 // TEST! button click function
   document.getElementById("test").addEventListener("click", function () {
   // Open file dialog and handle file loading
@@ -250,40 +274,116 @@ var funData = [];
       });
     }
   }
-  function removeButts(){
-  const buttDad = document.getElementById('functs');
-  buttDad.innerHTML=""
-  funData = []
-  }
-  function popUp(info,size,time){
-  // this is nice for debugging ect.
-    if(size==null){size=24}
-    if(time==null){time=3000}
-  var p=document.createElement('div');
-  p.id = "showMe"
-  p.style.position='fixed';
-  p.style.top='0';
-  p.style.left='0';
-  let w = info.length*size;
-  let h = size;
-  p.style.width=w+'px';
-  p.style.height=h+'px';
-  p.style.backgroundColor='rgba(0,0,0,1)';
-  p.style.display='flex';
-  p.style.justifyContent='center';
-  p.style.alignItems='center';
-  p.style.zIndex='9999';
-  p.style.color='#fff';
-  p.style.fontSize='24px';
-  p.style.marginBottom='20px';
-  p.innerText = info;
-    var offer = setTimeout(function(){let s = document.getElementById('showMe');document.body.removeChild(s)},time)
-  document.body.appendChild(p);
-    p.addEventListener('click',function(){
-    clearTimeout(offer);
-    document.body.removeChild(p);
-    });
-  
+  function b64() {
+    cursor = editor.getCursor();
+    // Create popup container
+    var popup = document.createElement('div');
+    popup.id = 'popup';
+
+    // Apply styles to popup container
+    popup.style.display = 'none';
+    popup.style.position = 'fixed';
+    popup.style.top = '0';
+    popup.style.left = '0';
+    popup.style.width = '100%';
+    popup.style.height = '100%';
+    popup.style.background = 'rgba(0, 0, 0, 0.7)';
+    popup.style.justifyContent = 'center';
+    popup.style.alignItems = 'center';
+    popup.style.zIndex = '999';
+
+    // Create popup content
+    var popupContent = document.createElement('div');
+    popupContent.id = 'popup-content';
+
+    // Apply styles to popup content
+    popupContent.style.background = '#fff';
+    popupContent.style.padding = '20px';
+    popupContent.style.borderRadius = '5px';
+    popupContent.style.textAlign = 'center';
+
+    // Create load button
+    var loadButton = document.createElement('button');
+    loadButton.id = 'loadButton';
+    loadButton.innerText = 'Load Image';
+    loadButton.style.padding = '10px';
+    loadButton.style.margin = '5px';
+    loadButton.style.cursor = 'pointer';
+    loadButton.onclick = function() {
+      // Create file input
+      var fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        if (file) {
+          // Read the file as base64
+          var reader = new FileReader();
+          reader.onload = function(readerEvent) {
+            // Set the base64 value to the text box
+            textBox.value = readerEvent.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Trigger the file input click
+      fileInput.click();
+    };
+
+    // Create copy button
+    var copyButton = document.createElement('button');
+    copyButton.id = 'copyButton';
+    copyButton.innerText = 'Copy';
+    copyButton.style.padding = '10px';
+    copyButton.style.margin = '5px';
+    copyButton.style.cursor = 'pointer';
+    copyButton.onclick = function() {
+      // Copy the contents of the text box to the clipboard
+      textBox.select();
+      document.execCommand('copy');
+      // Remove the popup
+      document.body.removeChild(popup);
+      editor.getInputField().focus();
+    editor.setCursor({ line: cursor.line, ch: cursor.ch });
+    };
+
+    // Create exit button
+    var exitButton = document.createElement('button');
+    exitButton.id = 'exitButton';
+    exitButton.innerText = 'Exit';
+    exitButton.style.padding = '10px';
+    exitButton.style.margin = '5px';
+    exitButton.style.cursor = 'pointer';
+    exitButton.onclick = function() {
+      // Remove the popup
+      document.body.removeChild(popup);
+      editor.getInputField().focus();
+    editor.setCursor({ line: cursor.line, ch: cursor.ch });
+    };
+
+    // Create text box
+    var textBox = document.createElement('textarea');
+    textBox.id = 'textBox';
+    textBox.placeholder = 'Base64 value of the loaded image';
+    textBox.style.width = '100%';
+    textBox.style.padding = '10px';
+    textBox.style.marginTop = '10px';
+
+    // Append elements to the popup content
+    popupContent.appendChild(loadButton);
+    popupContent.appendChild(copyButton);
+    popupContent.appendChild(exitButton);
+    popupContent.appendChild(textBox);
+
+    // Append popup content to the popup container
+    popup.appendChild(popupContent);
+
+    // Append the popup to the body
+    document.body.appendChild(popup);
+
+    // Display the popup
+    popup.style.display = 'flex';
   }
   function extractJavaScript(htmlDocument) {
   const parser = new DOMParser();
@@ -354,17 +454,32 @@ return formattedCode;
   reader.readAsText(input.files[0]);
   };
   function run(){
+  
   cursor = editor.getCursor();
-  var c = editor.getValue()
-var myWindow = window.open();
-//myWindow.document.title = 'testing';
-myWindow.document.write(c);
-var t = document.title.split('.');
-//myWindow.document.title= '###'+t[0]+'###';
-editor.getInputField().focus();
-  editor.setCursor({ line: cursor.line, ch: cursor.ch });
-
-}
+  let c = editor.getValue()
+  let code=''
+  let lines = c.split('\n')
+  let insertLine = -1
+    for(i=0;i<lines.length;i++){
+      if(lines[i].indexOf('<script>')!=-1){
+      insertLine = i
+      }
+    };
+  lines.splice(insertLine,0,'<scr'+'ipt src= "error.js"></scr'+'ipt>')
+    for(i=0;i<lines.length;i++){
+    code+=lines[i]+'\n'
+    }
+  
+  console.log(code)
+  var myWindow = window.open();
+  //myWindow.document.title = 'testing';
+  myWindow.document.write(code);
+  var t = document.title.split('.');
+  //myWindow.document.title= '###'+t[0]+'###';
+  editor.getInputField().focus();
+    editor.setCursor({ line: cursor.line, ch: cursor.ch });
+  
+  }
   function download(filename, text) {
   var element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
