@@ -114,24 +114,44 @@
             }
 
             const div = document.getElementById("main");
-            const bubble = document.createElement("div");
-
+            var bubble=null;
+            recognition.start();
             // Toggle between left and right bubble styles based on "who"
             if (who === 0) {
-                bubble.className = "bubble-left";
-                bubble.textContent = "Hello, World!";
-                who = 1; // Switch to 1 for next bubble
+  
             } else {
+                bubble = document.createElement("div");
                 bubble.className = "bubble-right";
                 bubble.textContent = "Hello, World!";
                 who = 0; // Switch back to 0 for next bubble
+                div.appendChild(bubble);
             }
 
-            div.appendChild(bubble);
+            
 
             // Scroll to the bottom of the div whenever new content is added
             div.scrollTop = div.scrollHeight;
         }
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            if (who === 0) {
+              const div = document.getElementById("main");
+                bubble = document.createElement("div");
+                bubble.className = "bubble-left";
+                bubble.textContent = transcript;
+                div.appendChild(bubble);
+                who = 1; // Switch to 1 for next bubble
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Error occurred in recognition: ' + event.error);
+        };
     </script>
 </body>
 </html>
