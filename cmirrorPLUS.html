@@ -8,42 +8,44 @@
 <link rel="stylesheet" href="css/base16-dark.css">
 <script src= "js/matchbrackets.js"></script>
 <style>
-  body {
+body {
   margin: 0;
   height: availHeight;
   font-family: Arial, Helvetica, sans-serif;
   background-color: #1EFF00
-  }
-  #menu {
+}
+#menu {
   position: absolute;
   left:0.5%;
   top:1%;
-  height: 7%;
-  width: 99%;
+  height:20%;
+  width: 98.3vw;
   background-color:  #151515;
   color: #1EFF00;
   display: flex;
-  }
-  #menu button {
+}
+#menu button {
   background-color:  #151515;
   color: #1EFF00;
-  border: none;
-  padding: 10px 15px;
+  border: 4px solid #1EFF00;
+  font-size:5vw;
+  padding: 20px 20px;
+  width: 16.6666666667vw;
   cursor: pointer;
-  }
-  #menu button:hover {
+}
+#menu button:hover {
   background-color:  #1EFF00;
   color: #151515;
-  }
-  #editor{
+}
+#editor{
   position: absolute;
   left:0.5%;
-  top:9%;
+  top:21%;
   width: 99%;
-  height: 90%;
+  height: 89%;
   background-color: black;
-  }
-  #functs{
+}
+#functs{
   position: absolute;
   left:0.5%;
   top:9%;
@@ -52,8 +54,8 @@
   background-color: black;
   z-index: -9999;
   overflow: auto;
-  }
-  #functs button {
+}
+#functs button {
   background-color:  #151515;
   color: #f28831;
   border: none;
@@ -64,15 +66,15 @@
   border: 2px solid #1EFF00;
   cursor: pointer;
   
-  }
-  #functs button:hover {
+}
+#functs button:hover {
   background-color:  #1EFF00;
   color: #151515;
-  }
-  .CodeMirror {
+}
+.CodeMirror {
   height: 100%;
   background: white;
-  }
+}
 </style>
 </head>
 <body>
@@ -81,37 +83,31 @@
 <button id="load">Load</button>
 <button id="save">Save</button>
 <button id="zoom">Zoom</button>
-<button id="gFun" onclick = "getFuns()">getFun</button>
-<button id="bSet">B-Set</button>
-<button id="bGo">B-Go</button>
+<button id="gFun" onclick = "getFuns()">Func</button>
 <button id="find">Find</button>
-<button id="pretty">Pretty</button>
-<button id="compress">Compress</button>
-<button id="expand">Expand</button>
-<button id="base64">Base64</button>
-<button id="test">TEST!</button>
+<button id="test">TEST</button>
 </div>
 <div id="editor"></div>
 <div id="functs"></div>
 <script>
-  window.addEventListener('focus', function(e){
-    if(localStorage.getItem('Eline')!=null){
+window.addEventListener('focus', function(e){
+  if(localStorage.getItem('Eline')!=null){
     let enumber = localStorage.getItem('Eline')
     editor.getInputField().focus();
-      editor.setCursor({ line: enumber, ch: 1 });
-      editor.scrollIntoView({line: enumber, ch: 1}, 200)
+  editor.setCursor({ line: enumber, ch: 1 });
+  editor.scrollIntoView({line: enumber, ch: 1}, 200)
     localStorage.removeItem('Eline')
-    }
-  });
-  function nope(){}
+  }
+});
+function nope(){}
 var code=''
-var codeSize = 14;
+var codeSize = 8;
 var cursor = null;
 var dis = null;
 var list = [];
 var fnum = 0;
 // Initialize CodeMirror
-  var editor = CodeMirror(document.getElementById("editor"), {
+var editor = CodeMirror(document.getElementById("editor"), {
   mode: "javascript",
   theme: "base16-dark",
   lineNumbers: true,
@@ -119,285 +115,285 @@ var fnum = 0;
   lineWrapping: true,
   autoCloseBrackets: true,
   styleActiveLine: true
-  });
+});
 
-  editor.on("change",function(cm,change){
+editor.on("change",function(cm,change){
   code = editor.getValue();
   localStorage.setItem(document.title, code);
-  });
+});
 
-  editor.getWrapperElement().addEventListener('click', function(event) {dis=null;fnum = 0});
+editor.getWrapperElement().addEventListener('click', function(event) {dis=null;fnum = 0});
 document.getElementsByClassName("CodeMirror")[0].style.fontSize = codeSize +"px";
 // Load button click function
-  document.getElementById("load").addEventListener("click", function () {
+document.getElementById("load").addEventListener("click", function () {
   // Open file dialog and handle file loading
   load();
-  });
+});
 
 // Save button click function
-  document.getElementById("save").addEventListener("click", function () {
+document.getElementById("save").addEventListener("click", function () {
   // Open save file dialog and save the editor content to a file
   save();
-  });
+});
 
 // zoom button click function
-  document.getElementById("zoom").addEventListener("click", function () {
+document.getElementById("zoom").addEventListener("click", function () {
   codeSize = prompt("codeSize?",codeSize)
   document.getElementsByClassName("CodeMirror")[0].style.fontSize =   codeSize+"px";
-  });
+});
 
 // bSet
-  document.getElementById("bSet").addEventListener("click", function () {
+document.getElementById("bSet").addEventListener("click", function () {
   //saves cursor position
   cursor = editor.getCursor();
   editor.getInputField().focus();
-  });
+});
 // bGo
-  document.getElementById("bGo").addEventListener("click", function () {
+document.getElementById("bGo").addEventListener("click", function () {
   // if theres a cursor position saved it sets the cursor to that
-    if(cursor!=null){
+  if(cursor!=null){
     editor.getInputField().focus();
-      editor.setCursor({ line: cursor.line, ch: cursor.ch });
-      editor.scrollIntoView({line: cursor.line, ch: cursor.ch}, 200)
-    }
+  editor.setCursor({ line: cursor.line, ch: cursor.ch });
+  editor.scrollIntoView({line: cursor.line, ch: cursor.ch}, 200)
+  }
   
-  });
+});
 
 // find
-  document.getElementById("find").addEventListener("click", function () {
+document.getElementById("find").addEventListener("click", function () {
   //finds selected word(s)
-    if(dis==null){  // find attempt
+  if(dis==null){  // find attempt
     dis = editor.getSelection();
-      if(dis==''){dis=prompt('find what?')};
-      if(dis==null){dis=''};
+  if(dis==''){dis=prompt('find what?')};
+  if(dis==null){dis=''};
     list=[]
     let temp = code.split("\n")
-      for(i=0;i<temp.length;i++){ // loops thru code line by line
+    for(i=0;i<temp.length;i++){ // loops thru code line by line
       let hit = temp[i].indexOf(dis)
-        if(hit!=-1){ // finds if the word is on the line
-          list.push({line:i,start:temp[i].indexOf(dis),end:temp[i].indexOf(dis)+dis.length})
-        }
+      if(hit!=-1){ // finds if the word is on the line
+      list.push({line:i,start:temp[i].indexOf(dis),end:temp[i].indexOf(dis)+dis.length})
       }
-    
     }
-    let startPos = { line: list[fnum].line, ch: list[fnum].start }; // Start position
-    let endPos = { line: list[fnum].line, ch: list[fnum].end };  // End position
+    
+  }
+let startPos = { line: list[fnum].line, ch: list[fnum].start }; // Start position
+let endPos = { line: list[fnum].line, ch: list[fnum].end };  // End position
   editor.setSelection(startPos, endPos);
-    if(fnum>0){editor.scrollIntoView({line:list[fnum].line, char:0}, 200)}
-    if(fnum<list.length-1){fnum++}else{fnum=0}
+if(fnum>0){editor.scrollIntoView({line:list[fnum].line, char:0}, 200)}
+if(fnum<list.length-1){fnum++}else{fnum=0}
   
-  });
+});
 // TEST! button click function
-  document.getElementById("pretty").addEventListener("click", function () {
+document.getElementById("pretty").addEventListener("click", function () {
   let tempCursor = editor.getCursor();
   editor.setValue(formatCode(code))
   
   editor.getInputField().focus();
-    editor.setCursor({ line: tempCursor.line, ch: tempCursor.ch });
-    editor.scrollIntoView({line: tempCursor.line, ch: tempCursor.ch}, 200)
+editor.setCursor({ line: tempCursor.line, ch: tempCursor.ch });
+editor.scrollIntoView({line: tempCursor.line, ch: tempCursor.ch}, 200)
   
-  });
+});
 // compress button click function
-  document.getElementById("compress").addEventListener("click", function () {
+document.getElementById("compress").addEventListener("click", function () {
   let what = editor.getSelection();
-    let smaller = what.replace(/\n/g, ';').replace(/;;/g, ';').replace(/;;/g, ';').replace(/\{\;/g, '{').replace(/\}\;/g, '}')
+let smaller = what.replace(/\n/g, ';').replace(/;;/g, ';').replace(/;;/g, ';').replace(/\{\;/g, '{').replace(/\}\;/g, '}')
   editor.replaceSelection(smaller);
-  });
+});
 // expand button click function
-  document.getElementById("expand").addEventListener("click", function () {
+document.getElementById("expand").addEventListener("click", function () {
   let what = editor.getSelection();
-    let bigger = what.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/;/g, ';\n')
+let bigger = what.replace(/{/g, '{\n').replace(/}/g, '}\n').replace(/;/g, ';\n')
   editor.replaceSelection(bigger);
-  });
+});
 
 // expand button click function
-  document.getElementById("base64").addEventListener("click", function () {
+document.getElementById("base64").addEventListener("click", function () {
   b64()
-  });
+});
 
 
 
 
 // TEST! button click function
-  document.getElementById("test").addEventListener("click", function () {
+document.getElementById("test").addEventListener("click", function () {
   // Open file dialog and handle file loading
   document.body.style.backgroundColor = "#151515"
-    setTimeout(function(){run();document.body.style.backgroundColor = "#1EFF00"}, 100);
-  });
+setTimeout(function(){run();document.body.style.backgroundColor = "#1EFF00"}, 100);
+});
 var funData = [];
-  function getFuns(){
+function getFuns(){
   let c = editor.getValue();
   let lines = c.split('\n');
   // lines = lines.sort();
-    for(i=0;i<lines.length;i++){
+  for(i=0;i<lines.length;i++){
     let leftJustified = lines[i].trim() // removes preceeding spaces
     //console.log(leftJustified);
     
     let fIn = leftJustified.indexOf('function')
-      if(fIn==0){ // this finds the word function in a line of code
+    if(fIn==0){ // this finds the word function in a line of code
       let fOut = leftJustified.indexOf(')')
       let tempLn = leftJustified.slice(fIn+9,fOut+1)
-        let temp = {name:tempLn,line:i}
+    let temp = {name:tempLn,line:i}
       funData.push(temp);
-      }
+    }
     let funS = lines[i].split(' ');
     
-    }
+  }
   //alphabetize funData
   var fabc = [];
   var tempFun = []
-    for (let i = 1; i < funData.length; i++) {
+  for (let i = 1; i < funData.length; i++) {
     //funData[i]['name'] funData[i].line
     fabc.push(funData[i]['name']+':'+funData[i].line)
-    }
+  }
   console.log(fabc)
   fabc.sort();
   const buttonContainer = document.getElementById('functs');
   //alert(funData.length)
   buttonContainer.style.zIndex = '9999'
-    for (let i = 0; i < fabc.length; i++) {
+  for (let i = 0; i < fabc.length; i++) {
     const button = document.createElement('button');
     let fd=fabc[i].split(':');
-      button.textContent = `${fd[0]}`;
-      button.id = `${fd[1]}`;
+  button.textContent = `${fd[0]}`;
+  button.id = `${fd[1]}`;
     button.style.fontSize = codeSize +'px';
     buttonContainer.appendChild(button);
     
     // Add a click event listener to each button
-      button.addEventListener('click', function () {
+    button.addEventListener('click', function () {
       //alert(this.id);
       buttonContainer.style.zIndex=-9999;
       editor.getInputField().focus();
-        editor.setCursor({ line: this.id, ch: 0 });
-        editor.scrollIntoView({line:this.id, char:0}, 200)
-        setTimeout(function(){removeButts()},100);
-      });
-    }
+    editor.setCursor({ line: this.id, ch: 0 });
+    editor.scrollIntoView({line:this.id, char:0}, 200)
+    setTimeout(function(){removeButts()},100);
+    });
   }
-  function b64() {
-    cursor = editor.getCursor();
-    // Create popup container
-    var popup = document.createElement('div');
-    popup.id = 'popup';
-
-    // Apply styles to popup container
-    popup.style.display = 'none';
-    popup.style.position = 'fixed';
-    popup.style.top = '0';
-    popup.style.left = '0';
-    popup.style.width = '100%';
-    popup.style.height = '100%';
-    popup.style.background = 'rgba(0, 0, 0, 0.7)';
-    popup.style.justifyContent = 'center';
-    popup.style.alignItems = 'center';
-    popup.style.zIndex = '999';
-
-    // Create popup content
-    var popupContent = document.createElement('div');
-    popupContent.id = 'popup-content';
-
-    // Apply styles to popup content
-    popupContent.style.background = '#fff';
-    popupContent.style.padding = '20px';
-    popupContent.style.borderRadius = '5px';
-    popupContent.style.textAlign = 'center';
-
-    // Create load button
-    var loadButton = document.createElement('button');
-    loadButton.id = 'loadButton';
-    loadButton.innerText = 'Load Image';
-    loadButton.style.padding = '10px';
-    loadButton.style.margin = '5px';
-    loadButton.style.cursor = 'pointer';
-    loadButton.onclick = function() {
-      // Create file input
-      var fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = 'image/*';
-      fileInput.addEventListener('change', function(event) {
-        var file = event.target.files[0];
-        if (file) {
-          // Read the file as base64
-          var reader = new FileReader();
-          reader.onload = function(readerEvent) {
-            // Set the base64 value to the text box
-            textBox.value = readerEvent.target.result;
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      // Trigger the file input click
-      fileInput.click();
-    };
-
-    // Create copy button
-    var copyButton = document.createElement('button');
-    copyButton.id = 'copyButton';
-    copyButton.innerText = 'Copy';
-    copyButton.style.padding = '10px';
-    copyButton.style.margin = '5px';
-    copyButton.style.cursor = 'pointer';
-    copyButton.onclick = function() {
-      // Copy the contents of the text box to the clipboard
-      textBox.select();
-      document.execCommand('copy');
-      // Remove the popup
-      document.body.removeChild(popup);
-      editor.getInputField().focus();
-    editor.setCursor({ line: cursor.line, ch: cursor.ch });
-    };
-
-    // Create exit button
-    var exitButton = document.createElement('button');
-    exitButton.id = 'exitButton';
-    exitButton.innerText = 'Exit';
-    exitButton.style.padding = '10px';
-    exitButton.style.margin = '5px';
-    exitButton.style.cursor = 'pointer';
-    exitButton.onclick = function() {
-      // Remove the popup
-      document.body.removeChild(popup);
-      editor.getInputField().focus();
-    editor.setCursor({ line: cursor.line, ch: cursor.ch });
-    };
-
-    // Create text box
-    var textBox = document.createElement('textarea');
-    textBox.id = 'textBox';
-    textBox.placeholder = 'Base64 value of the loaded image';
-    textBox.style.width = '100%';
-    textBox.style.padding = '10px';
-    textBox.style.marginTop = '10px';
-
-    // Append elements to the popup content
-    popupContent.appendChild(loadButton);
-    popupContent.appendChild(copyButton);
-    popupContent.appendChild(exitButton);
-    popupContent.appendChild(textBox);
-
-    // Append popup content to the popup container
-    popup.appendChild(popupContent);
-
-    // Append the popup to the body
-    document.body.appendChild(popup);
-
-    // Display the popup
-    popup.style.display = 'flex';
-  }
-  function extractJavaScript(htmlDocument) {
+}
+function b64() {
+  cursor = editor.getCursor();
+  // Create popup container
+  var popup = document.createElement('div');
+  popup.id = 'popup';
+  
+  // Apply styles to popup container
+  popup.style.display = 'none';
+  popup.style.position = 'fixed';
+  popup.style.top = '0';
+  popup.style.left = '0';
+  popup.style.width = '100%';
+  popup.style.height = '100%';
+  popup.style.background = 'rgba(0, 0, 0, 0.7)';
+  popup.style.justifyContent = 'center';
+  popup.style.alignItems = 'center';
+  popup.style.zIndex = '999';
+  
+  // Create popup content
+  var popupContent = document.createElement('div');
+  popupContent.id = 'popup-content';
+  
+  // Apply styles to popup content
+  popupContent.style.background = '#fff';
+  popupContent.style.padding = '20px';
+  popupContent.style.borderRadius = '5px';
+  popupContent.style.textAlign = 'center';
+  
+  // Create load button
+  var loadButton = document.createElement('button');
+  loadButton.id = 'loadButton';
+  loadButton.innerText = 'Load Image';
+  loadButton.style.padding = '10px';
+  loadButton.style.margin = '5px';
+  loadButton.style.cursor = 'pointer';
+  loadButton.onclick = function() {
+    // Create file input
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.addEventListener('change', function(event) {
+      var file = event.target.files[0];
+      if (file) {
+        // Read the file as base64
+        var reader = new FileReader();
+        reader.onload = function(readerEvent) {
+          // Set the base64 value to the text box
+          textBox.value = readerEvent.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    // Trigger the file input click
+    fileInput.click();
+  };
+  
+  // Create copy button
+  var copyButton = document.createElement('button');
+  copyButton.id = 'copyButton';
+  copyButton.innerText = 'Copy';
+  copyButton.style.padding = '10px';
+  copyButton.style.margin = '5px';
+  copyButton.style.cursor = 'pointer';
+  copyButton.onclick = function() {
+    // Copy the contents of the text box to the clipboard
+    textBox.select();
+    document.execCommand('copy');
+    // Remove the popup
+    document.body.removeChild(popup);
+    editor.getInputField().focus();
+  editor.setCursor({ line: cursor.line, ch: cursor.ch });
+  };
+  
+  // Create exit button
+  var exitButton = document.createElement('button');
+  exitButton.id = 'exitButton';
+  exitButton.innerText = 'Exit';
+  exitButton.style.padding = '10px';
+  exitButton.style.margin = '5px';
+  exitButton.style.cursor = 'pointer';
+  exitButton.onclick = function() {
+    // Remove the popup
+    document.body.removeChild(popup);
+    editor.getInputField().focus();
+  editor.setCursor({ line: cursor.line, ch: cursor.ch });
+  };
+  
+  // Create text box
+  var textBox = document.createElement('textarea');
+  textBox.id = 'textBox';
+  textBox.placeholder = 'Base64 value of the loaded image';
+  textBox.style.width = '100%';
+  textBox.style.padding = '10px';
+  textBox.style.marginTop = '10px';
+  
+  // Append elements to the popup content
+  popupContent.appendChild(loadButton);
+  popupContent.appendChild(copyButton);
+  popupContent.appendChild(exitButton);
+  popupContent.appendChild(textBox);
+  
+  // Append popup content to the popup container
+  popup.appendChild(popupContent);
+  
+  // Append the popup to the body
+  document.body.appendChild(popup);
+  
+  // Display the popup
+  popup.style.display = 'flex';
+}
+function extractJavaScript(htmlDocument) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlDocument, 'text/html');
   const scriptElements = doc.querySelectorAll('script');
   let jsCode = '';
-    scriptElements.forEach((script) => {
+  scriptElements.forEach((script) => {
     jsCode += script.textContent + '\n';
-    });
+  });
   return jsCode.trim();
-  }
+}
 
 
-  function formatCode(inputCode) {
+function formatCode(inputCode) {
   // Split the code into lines
   const lines = inputCode.split('\n');
   // Define the number of spaces for one level of indentation
@@ -406,102 +402,102 @@ var funData = [];
   let currentIndent = 0;
   // Loop through each line and format the code
   const formattedCode = lines
-    .map((line) => {
+  .map((line) => {
     // Trim leading and trailing whitespaces
     const trimmedLine = line.trim();
     // Check if the line contains an opening brace
-      if (trimmedLine.includes('{')) {
+    if (trimmedLine.includes('{')) {
       // Increase the indentation level
       currentIndent++;
-      }
+    }
     
     // Create the indented line by adding spaces based on the current indentation level
     const indentedLine = ' '.repeat(spacesPerIndent * currentIndent) + trimmedLine;
     // Check if the line contains a closing brace
-      if (trimmedLine.includes('}')) {
+  if (trimmedLine.includes('}')) {
     // Decrease the indentation level
     currentIndent = Math.max(currentIndent - 1, 0);
-    }
+  }
   return indentedLine;
-  })
+})
 .join('\n');
 return formattedCode;
 }
-  function load(){
+function load(){
+
+document.getElementById('fread').click();
+}
+openFile = function(event) {
+var input = event.target; var reader = new FileReader();
+reader.onload = function(){
+  var text = reader.result; var name = document.getElementById('fread');
+  saveName=name.files.item(0).name
   
-  document.getElementById('fread').click();
-  }
-  openFile = function(event) {
-  var input = event.target; var reader = new FileReader();
-    reader.onload = function(){
-    var text = reader.result; var name = document.getElementById('fread');
-    saveName=name.files.item(0).name
-    
-    let temp = saveName.split('.')
-    document.title=temp[0];
-      if(localStorage.getItem(document.title)!=null){
-      code = localStorage.getItem(document.title)
-        if(text!=code){
-          if(confirm('restore from local storage?')){
-          text=code;
-          }
-        }
-      };
-    
-    editor.setValue(text);
-    document.getElementById('fread').value='';
-    };
-  reader.readAsText(input.files[0]);
-  };
-  function run(){
-  
-  cursor = editor.getCursor();
-  let c = editor.getValue()
-  let code=''
-  let lines = c.split('\n')
-  let insertLine = -1
-    for(i=0;i<lines.length;i++){
-      if(lines[i].indexOf('<script>')!=-1){
-      insertLine = i
+  let temp = saveName.split('.')
+  document.title=temp[0];
+  if(localStorage.getItem(document.title)!=null){
+    code = localStorage.getItem(document.title)
+    if(text!=code){
+      if(confirm('restore from local storage?')){
+        text=code;
       }
-    };
-  lines.splice(insertLine,0,'<scr'+'ipt src= "error.js"></scr'+'ipt>')
-    for(i=0;i<lines.length;i++){
-    code+=lines[i]+'\n'
     }
+  };
   
-  console.log(code)
-  var myWindow = window.open();
-  //myWindow.document.title = 'testing';
-  myWindow.document.write(code);
-  var t = document.title.split('.');
-  //myWindow.document.title= '###'+t[0]+'###';
-  editor.getInputField().focus();
-    editor.setCursor({ line: cursor.line, ch: cursor.ch });
-  
+  editor.setValue(text);
+  document.getElementById('fread').value='';
+};
+reader.readAsText(input.files[0]);
+};
+function run(){
+
+cursor = editor.getCursor();
+let c = editor.getValue()
+let code=''
+let lines = c.split('\n')
+let insertLine = -1
+for(i=0;i<lines.length;i++){
+  if(lines[i].indexOf('<script>')!=-1){
+    insertLine = i
   }
-  function download(filename, text) {
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', filename);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
-  }
-  function save(){
-  var c = editor.getValue()
-  download(prompt("game name?",document.title.split('.')[0]) + ".html",c)
-  }
-  function format(){
-  // this formats code
-  var range = getSelectedRange();
-  //alert(range.from)
-  editor.autoFormatRange(range.from, range.to);
-  }
-  function getSelectedRange() {
-    return { from: editor.getCursor(true), to: editor.getCursor(false) };
-  }
+};
+lines.splice(insertLine,0,'<scr'+'ipt src= "error.js"></scr'+'ipt>')
+for(i=0;i<lines.length;i++){
+  code+=lines[i]+'\n'
+}
+
+console.log(code)
+var myWindow = window.open();
+//myWindow.document.title = 'testing';
+myWindow.document.write(code);
+var t = document.title.split('.');
+//myWindow.document.title= '###'+t[0]+'###';
+editor.getInputField().focus();
+editor.setCursor({ line: cursor.line, ch: cursor.ch });
+
+}
+function download(filename, text) {
+var element = document.createElement('a');
+element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+element.setAttribute('download', filename);
+element.style.display = 'none';
+document.body.appendChild(element);
+element.click();
+document.body.removeChild(element);
+}
+function save(){
+var c = editor.getValue()
+download(prompt("game name?",document.title.split('.')[0]) + ".html",c)
+}
+function format(){
+// this formats code
+var range = getSelectedRange();
+//alert(range.from)
+editor.autoFormatRange(range.from, range.to);
+}
+function getSelectedRange() {
+return { from: editor.getCursor(true), to: editor.getCursor(false) };
+}
 </script>
 </body>
 </html>
