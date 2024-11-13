@@ -29,20 +29,36 @@
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+
+        function resizeCanvas() {
+            const scaleX = canvas.width / window.innerWidth;
+            const scaleY = canvas.height / window.innerHeight;
+            playerX *= scaleX;
+            playerY *= scaleY;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            draw();
+        }
+
         function goFullscreen() {
-                    const element = document.documentElement;
-                    if (element.requestFullscreen) {
-                        element.requestFullscreen();
-                    } else if (element.mozRequestFullScreen) {
-                        element.mozRequestFullScreen();
-                    } else if (element.webkitRequestFullscreen) {
-                        element.webkitRequestFullscreen();
-                    } else if (element.msRequestFullscreen) {
-                        element.msRequestFullscreen();
-                    }
-                }
+            const element = document.documentElement;
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen();
+            }
+        }
+
+        // Listen for fullscreen change events to adjust canvas size
+        document.addEventListener("fullscreenchange", resizeCanvas);
+        document.addEventListener("webkitfullscreenchange", resizeCanvas);
+        document.addEventListener("mozfullscreenchange", resizeCanvas);
+        document.addEventListener("msfullscreenchange", resizeCanvas);
+
         // Variables to track touch start and end positions
         let startX = 0, startY = 0;
         let endX = 0, endY = 0;
@@ -53,8 +69,7 @@
             const touch = e.touches[0];
             startX = touch.clientX;
             startY = touch.clientY;
-            goFullscreen()
-           // alert(`Touch started at (${startX}, ${startY})`);
+            goFullscreen();
         });
 
         // Detect touch end event to determine swipe direction
@@ -62,8 +77,6 @@
             const touch = e.changedTouches[0];
             endX = touch.clientX;
             endY = touch.clientY;
-
-           // alert(`Touch ended at (${endX}, ${endY})`);
             detectSwipe();
             playerX = endX;
             playerY = endY;
@@ -77,28 +90,27 @@
             const absDeltaX = Math.abs(deltaX);
             const absDeltaY = Math.abs(deltaY);
 
-            if (absDeltaX > 20 || absDeltaY > 20) { // Set a minimum threshold for swipe detection
+            if (absDeltaX > 20 || absDeltaY > 20) {
                 let direction = "";
                 if (absDeltaX > absDeltaY) {
                     direction = deltaX > 0 ? "right" : "left";
                 } else {
                     direction = deltaY > 0 ? "down" : "up";
                 }
-                return direction
-              //  alert(`Swipe detected: ${direction}`);
+                return direction;
             } else {
-                return null
-              //  alert("Touch event without swipe.");
+                return null;
             }
         }
 
         // Simple function to draw on the canvas
         function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawings
             ctx.fillStyle = "#FF0000";
             ctx.fillRect(playerX, playerY, 100, 100); // Example rectangle for testing
         }
 
-        draw();
+        resizeCanvas();
     </script>
 </body>
 </html>
