@@ -7,6 +7,7 @@
 <script src= "js/javascript.js"></script>
 <link rel="stylesheet" href="css/base16-dark.css">
 <script src= "js/matchbrackets.js"></script>
+<script src= "help.js"></script>
 <style>
 body {
   margin: 0;
@@ -18,8 +19,8 @@ body {
   position: absolute;
   left:0.5%;
   top:1%;
-  height:20%;
-  width: 98.3vw;
+  height: 7%;
+  width: 99%;
   background-color:  #151515;
   color: #1EFF00;
   display: flex;
@@ -27,10 +28,8 @@ body {
 #menu button {
   background-color:  #151515;
   color: #1EFF00;
-  border: 4px solid #1EFF00;
-  font-size:5vw;
-  padding: 20px 20px;
-  width: 16.6666666667vw;
+  border: none;
+  padding: 10px 15px;
   cursor: pointer;
 }
 #menu button:hover {
@@ -40,9 +39,9 @@ body {
 #editor{
   position: absolute;
   left:0.5%;
-  top:21%;
+  top:9%;
   width: 99%;
-  height: 89%;
+  height: 90%;
   background-color: black;
 }
 #functs{
@@ -82,14 +81,32 @@ body {
 <div id="menu">
 <button id="load">Load</button>
 <button id="save">Save</button>
-<button id="zoom">Zoom</button>
-<button id="gFun" onclick = "getFuns()">Func</button>
+<button onwheel = 'adjustV(event)' id="zoom">Zoom</button>
+<button id="gFun" onmouseup = "getFuns()">getFun</button>
+<button id="ghelp" onmouseup = "helpBox()">Help</button>
+<button id="bSet">B-Set</button>
+<button id="bGo">B-Go</button>
 <button id="find">Find</button>
-<button id="test">TEST</button>
+<button id="pretty">Pretty</button>
+<button id="compress">Compress</button>
+<button id="expand">Expand</button>
+<button id="base64">Base64</button>
+<button id="test">TEST!</button>
 </div>
 <div id="editor"></div>
 <div id="functs"></div>
 <script>
+
+var shiftMod = false;
+addEventListener("keydown", function(e){if (e.keyCode==16){shiftMod=true}}, false);
+//addEventListener("keyup", function(e){if (e.keyCode==16){shiftMod=false}}, false);
+
+
+window.addEventListener('beforeunload', function(e){
+  var message = 'are you sure you want to leave?';
+  (e || window.event).returnValue = message;
+  return message;
+});
 window.addEventListener('focus', function(e){
   if(localStorage.getItem('Eline')!=null){
     let enumber = localStorage.getItem('Eline')
@@ -101,7 +118,7 @@ window.addEventListener('focus', function(e){
 });
 function nope(){}
 var code=''
-var codeSize = 8;
+var codeSize = 14;
 var cursor = null;
 var dis = null;
 var list = [];
@@ -141,7 +158,16 @@ document.getElementById("zoom").addEventListener("click", function () {
   codeSize = prompt("codeSize?",codeSize)
   document.getElementsByClassName("CodeMirror")[0].style.fontSize =   codeSize+"px";
 });
-
+function adjustV(event){
+  event.preventDefault();
+  var delta = Math.sign(event.deltaY);
+  var newValue = codeSize + delta;
+  let minV = 1
+if(event.target.id=='viewX' || event.target.id=='viewY'){minV=0}
+  newValue = Math.max(minV, Math.min(newValue, 100));
+  codeSize=newValue
+  document.getElementsByClassName("CodeMirror")[0].style.fontSize =   codeSize+"px";
+}
 // bSet
 document.getElementById("bSet").addEventListener("click", function () {
   //saves cursor position
@@ -196,7 +222,11 @@ editor.scrollIntoView({line: tempCursor.line, ch: tempCursor.ch}, 200)
 // compress button click function
 document.getElementById("compress").addEventListener("click", function () {
   let what = editor.getSelection();
-let smaller = what.replace(/\n/g, ';').replace(/;;/g, ';').replace(/;;/g, ';').replace(/\{\;/g, '{').replace(/\}\;/g, '}')
+  let lines = what.split('\n')
+  
+for(let i=0;i<lines.length;i++){lines[i] = lines[i].trim()}
+  let smaller = lines.join('');
+//let smaller = what.replace(/\n/g, ';').replace(/;;/g, ';').replace(/;;/g, ';').replace(/\{\;/g, '{').replace(/\}\;/g, '}')
   editor.replaceSelection(smaller);
 });
 // expand button click function
@@ -222,6 +252,10 @@ setTimeout(function(){run();document.body.style.backgroundColor = "#1EFF00"}, 10
 });
 var funData = [];
 function getFuns(){
+  cursor = editor.getCursor();
+  funData = [];
+funData.push({name:'CANCEL',line:cursor.line});
+funData.push({name:'CANCEL',line:cursor.line});
   let c = editor.getValue();
   let lines = c.split('\n');
   // lines = lines.sort();
@@ -246,7 +280,7 @@ function getFuns(){
     //funData[i]['name'] funData[i].line
     fabc.push(funData[i]['name']+':'+funData[i].line)
   }
-  console.log(fabc)
+  //console.log(fabc)
   fabc.sort();
   const buttonContainer = document.getElementById('functs');
   //alert(funData.length)
@@ -261,15 +295,96 @@ function getFuns(){
     
     // Add a click event listener to each button
     button.addEventListener('click', function () {
-      //alert(this.id);
+      var bc = document.getElementById('functs');
+      bc.innerHTML='';
+      funData = [];
       buttonContainer.style.zIndex=-9999;
       editor.getInputField().focus();
     editor.setCursor({ line: this.id, ch: 0 });
     editor.scrollIntoView({line:this.id, char:0}, 200)
-    setTimeout(function(){removeButts()},100);
     });
   }
 }
+function printFuns(){
+  let c = editor.getValue();
+  let lines = c.split('\n');
+  // lines = lines.sort();
+  for(i=0;i<lines.length;i++){
+    let leftJustified = lines[i].trim() // removes preceeding spaces
+    //console.log(leftJustified);
+    
+    let fIn = leftJustified.indexOf('function')
+    if(fIn==0){ // this finds the word function in a line of code
+      let fOut = leftJustified.indexOf(')')
+      let tempLn = leftJustified.slice(fIn+9,fOut+1)
+    let temp = {name:tempLn,line:i}
+      funData.push(temp);
+    }
+    let funS = lines[i].split(' ');
+    
+  }
+  //alphabetize funData
+  var fabc = [];
+  var tempFun = []
+  for (let i = 1; i < funData.length; i++) {
+    //funData[i]['name'] funData[i].line
+    fabc.push(funData[i]['name']+':'+funData[i].line)
+  }
+  //console.log(fabc)
+  fabc.sort();
+  var help = '';
+  for (let i = 0; i < fabc.length; i++) {
+    let fd=fabc[i].split(':');
+  help += `${fd[0]}`;
+    help += '\n'
+  }
+  helpBox()
+}
+function helpBox() {
+  //helptext
+  if(document.getElementById("customTextBox")!=null){
+    const element = document.getElementById("customTextBox");
+    element.remove();
+    return;
+  }
+  // Create a div element for the textbox
+  var textBox = document.createElement('div');
+  textBox.id = 'customTextBox';
+  
+  // Set styles for the textbox
+  textBox.style.position = 'fixed';
+  textBox.style.top = '50%';
+  textBox.style.left = '50%';
+  textBox.style.transform = 'translate(-50%, -50%)';
+  textBox.style.width = '50%';
+  textBox.style.height = '50%';
+  textBox.style.padding = '20px';
+  textBox.style.backgroundColor = '#fff';
+  textBox.style.border = '1px solid #ccc';
+  textBox.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+  textBox.style.zIndex = '9999';
+  //textBox.innerText = helpText;
+  textBox.style.overflow = 'auto';
+  // Append the textbox to the body
+  document.body.appendChild(textBox);
+  for (let i = 0; i < helpText.length; i++) {
+    const button = document.createElement('button');
+  button.textContent = `${helpText[i]}`;
+  button.id = `${helpText[i]}`;
+    button.style.fontSize = codeSize +'px';
+    textBox.appendChild(button);
+    textBox.appendChild(document.createElement('br'))
+    // Add a click event listener to each button
+    button.addEventListener('click', function () {
+      //alert(this.id)
+      navigator.clipboard.writeText(this.id);
+      const element = document.getElementById("customTextBox");
+      element.remove();
+    });
+  }
+}
+
+
 function b64() {
   cursor = editor.getCursor();
   // Create popup container
@@ -395,109 +510,101 @@ function extractJavaScript(htmlDocument) {
 
 function formatCode(inputCode) {
   // Split the code into lines
-  const lines = inputCode.split('\n');
+  var lines = inputCode.split('\n');
   // Define the number of spaces for one level of indentation
-  const spacesPerIndent = 2;
-  // Initialize an indentation level
-  let currentIndent = 0;
-  // Loop through each line and format the code
-  const formattedCode = lines
-  .map((line) => {
-    // Trim leading and trailing whitespaces
-    const trimmedLine = line.trim();
-    // Check if the line contains an opening brace
-    if (trimmedLine.includes('{')) {
-      // Increase the indentation level
-      currentIndent++;
+  const spaces = 2;
+  // Initialize an indentation level trimmedLine.includes('{')  .join('\n') spaces = ' '.repeat(numberOfSpaces);
+    let Indent = 0;
+    let pre = ''
+  for(let i = 0 ; i < lines.length; i++){lines[i] = lines[i].trim()}
+    
+    for(let i = 0 ; i < lines.length; i++){
+      if(i>0){
+      if(lines[i-1].includes('{')){Indent+=spaces}
+      if(lines[i].includes('}')){Indent-=spaces}
+        
+      }
+    if(Indent>0){pre = ' '.repeat(Indent)}else{pre = ''}
+      lines[i] = pre+lines[i];
+    }
+    return lines.join('\n')
+  }
+  
+  function load(){
+    
+    document.getElementById('fread').click();
+  }
+  openFile = function(event) {
+    var input = event.target; var reader = new FileReader();
+    reader.onload = function(){
+      var text = reader.result; var name = document.getElementById('fread');
+      saveName=name.files.item(0).name
+      
+      let temp = saveName.split('.')
+      document.title=temp[0];
+      if(localStorage.getItem(document.title)!=null){
+        code = localStorage.getItem(document.title)
+        if(text!=code){
+          if(confirm('restore from local storage?')){
+            text=code;
+          }
+        }
+      };
+      
+      editor.setValue(text);
+      document.getElementById('fread').value='';
+    };
+    reader.readAsText(input.files[0]);
+  };
+  function run(){
+    
+    cursor = editor.getCursor();
+    let c = editor.getValue()
+    let code=''
+    let lines = c.split('\n')
+    let insertLine = -1
+    for(i=0;i<lines.length;i++){
+      if(lines[i].indexOf('<script>')!=-1){
+        insertLine = i
+      }
+    };
+    for(i=0;i<lines.length;i++){
+      code+=lines[i]+'\n'
     }
     
-    // Create the indented line by adding spaces based on the current indentation level
-    const indentedLine = ' '.repeat(spacesPerIndent * currentIndent) + trimmedLine;
-    // Check if the line contains a closing brace
-  if (trimmedLine.includes('}')) {
-    // Decrease the indentation level
-    currentIndent = Math.max(currentIndent - 1, 0);
+    console.log(code)
+    var myWindow = window.open();
+    //myWindow.document.title = 'testing';
+    myWindow.document.write(code);
+    var t = document.title.split('.');
+    //myWindow.document.title= '###'+t[0]+'###';
+    editor.getInputField().focus();
+  editor.setCursor({ line: cursor.line, ch: cursor.ch });
+    
   }
-  return indentedLine;
-})
-.join('\n');
-return formattedCode;
-}
-function load(){
-
-document.getElementById('fread').click();
-}
-openFile = function(event) {
-var input = event.target; var reader = new FileReader();
-reader.onload = function(){
-  var text = reader.result; var name = document.getElementById('fread');
-  saveName=name.files.item(0).name
-  
-  let temp = saveName.split('.')
-  document.title=temp[0];
-  if(localStorage.getItem(document.title)!=null){
-    code = localStorage.getItem(document.title)
-    if(text!=code){
-      if(confirm('restore from local storage?')){
-        text=code;
-      }
-    }
-  };
-  
-  editor.setValue(text);
-  document.getElementById('fread').value='';
-};
-reader.readAsText(input.files[0]);
-};
-function run(){
-
-cursor = editor.getCursor();
-let c = editor.getValue()
-let code=''
-let lines = c.split('\n')
-let insertLine = -1
-for(i=0;i<lines.length;i++){
-  if(lines[i].indexOf('<script>')!=-1){
-    insertLine = i
+  function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   }
-};
-lines.splice(insertLine,0,'<scr'+'ipt src= "error.js"></scr'+'ipt>')
-for(i=0;i<lines.length;i++){
-  code+=lines[i]+'\n'
-}
-
-console.log(code)
-var myWindow = window.open();
-//myWindow.document.title = 'testing';
-myWindow.document.write(code);
-var t = document.title.split('.');
-//myWindow.document.title= '###'+t[0]+'###';
-editor.getInputField().focus();
-editor.setCursor({ line: cursor.line, ch: cursor.ch });
-
-}
-function download(filename, text) {
-var element = document.createElement('a');
-element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-element.setAttribute('download', filename);
-element.style.display = 'none';
-document.body.appendChild(element);
-element.click();
-document.body.removeChild(element);
-}
-function save(){
-var c = editor.getValue()
-download(prompt("game name?",document.title.split('.')[0]) + ".html",c)
-}
-function format(){
-// this formats code
-var range = getSelectedRange();
-//alert(range.from)
-editor.autoFormatRange(range.from, range.to);
-}
-function getSelectedRange() {
-return { from: editor.getCursor(true), to: editor.getCursor(false) };
-}
-</script>
-</body>
-</html>
+  function save(){
+    var c = editor.getValue()
+    download(prompt("game name?",document.title.split('.')[0]) + ".html",c)
+  }
+  function format(){
+    // this formats code
+    var range = getSelectedRange();
+    //alert(range.from)
+    editor.autoFormatRange(range.from, range.to);
+  }
+  function getSelectedRange() {
+  return { from: editor.getCursor(true), to: editor.getCursor(false) };
+  }
+  </script>
+  </body>
+  </html>
+  
