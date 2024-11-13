@@ -6,36 +6,75 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#000000">
-    <link rel="apple-touch-icon" href="icon.png">
     <title>Mobile Game</title>
     <style>
-        html, body {
+        /* Basic game styling */
+        body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            touch-action: none;
             overflow: hidden;
         }
         #gameCanvas {
             width: 100vw;
             height: 100vh;
-            background-color: #0f0;
+            background-color: #222;
         }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
     <script>
-        // Game JavaScript code here
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        // Example game setup
+        // Variables to track touch start and end positions
+        let startX = 0, startY = 0;
+        let endX = 0, endY = 0;
+
+        // Detect touch start event
+        canvas.addEventListener("touchstart", (e) => {
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            console.log(`Touch started at (${startX}, ${startY})`);
+        });
+
+        // Detect touch end event to determine swipe direction
+        canvas.addEventListener("touchend", (e) => {
+            const touch = e.changedTouches[0];
+            endX = touch.clientX;
+            endY = touch.clientY;
+
+            console.log(`Touch ended at (${endX}, ${endY})`);
+            detectSwipe();
+        });
+
+        // Function to detect swipe direction
+        function detectSwipe() {
+            const deltaX = endX - startX;
+            const deltaY = endY - startY;
+            const absDeltaX = Math.abs(deltaX);
+            const absDeltaY = Math.abs(deltaY);
+
+            if (absDeltaX > 20 || absDeltaY > 20) { // Set a minimum threshold for swipe detection
+                let direction = "";
+                if (absDeltaX > absDeltaY) {
+                    direction = deltaX > 0 ? "right" : "left";
+                } else {
+                    direction = deltaY > 0 ? "down" : "up";
+                }
+                alert(`Swipe detected: ${direction}`);
+            } else {
+                alert("Touch event without swipe.");
+            }
+        }
+
+        // Simple function to draw on the canvas
         function draw() {
             ctx.fillStyle = "#FF0000";
             ctx.fillRect(50, 50, 100, 100); // Example rectangle for testing
