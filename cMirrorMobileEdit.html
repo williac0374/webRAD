@@ -379,6 +379,8 @@ function formatCode(inputCode) {
 .join('\n');
 return formattedCode;
 }
+
+var baseURL = "";  // Global variable to store the base URL 
 function load(){
 
 document.getElementById('fread').click();
@@ -386,9 +388,12 @@ document.getElementById('fread').click();
 openFile = function(event) {
 var input = event.target; var reader = new FileReader();
 reader.onload = function(){
-  var text = reader.result; var name = document.getElementById('fread');
-  saveName=name.files.item(0).name
-  
+var text = reader.result; var name = document.getElementById('fread');
+saveName=name.files.item(0).name
+ // Extract directory path from the file path
+baseURL = name.files[0].webkitRelativePath
+? name.files[0].webkitRelativePath.split('/').slice(0, -1).join('/') + '/'
+ : ''; // Set the base URL, or empty if no path info is available
   let temp = saveName.split('.')
   document.title=temp[0];
   if(localStorage.getItem(document.title)!=null){
@@ -402,6 +407,7 @@ reader.onload = function(){
   
   editor.setValue(text);
   document.getElementById('fread').value='';
+  alert(baseURL);
 };
 reader.readAsText(input.files[0]);
 };
