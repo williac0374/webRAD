@@ -46,6 +46,7 @@
         // Variables to track touch start and end positions
         let startX = 0, startY = 0;
         let endX = 0, endY = 0;
+        let playerX = 0, playerY = 0;
 
         // Detect touch start event
         canvas.addEventListener("touchstart", (e) => {
@@ -53,7 +54,7 @@
             startX = touch.clientX;
             startY = touch.clientY;
             goFullscreen()
-            alert(`Touch started at (${startX}, ${startY})`);
+           // alert(`Touch started at (${startX}, ${startY})`);
         });
 
         // Detect touch end event to determine swipe direction
@@ -62,8 +63,11 @@
             endX = touch.clientX;
             endY = touch.clientY;
 
-            alert(`Touch ended at (${endX}, ${endY})`);
+           // alert(`Touch ended at (${endX}, ${endY})`);
             detectSwipe();
+            playerX = endX;
+            playerY = endY;
+            draw();
         });
 
         // Function to detect swipe direction
@@ -80,16 +84,18 @@
                 } else {
                     direction = deltaY > 0 ? "down" : "up";
                 }
-                alert(`Swipe detected: ${direction}`);
+                return direction
+              //  alert(`Swipe detected: ${direction}`);
             } else {
-                alert("Touch event without swipe.");
+                return null
+              //  alert("Touch event without swipe.");
             }
         }
 
         // Simple function to draw on the canvas
         function draw() {
             ctx.fillStyle = "#FF0000";
-            ctx.fillRect(50, 50, 100, 100); // Example rectangle for testing
+            ctx.fillRect(playerX, playerY, 100, 100); // Example rectangle for testing
         }
 
         draw();
