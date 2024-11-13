@@ -9,6 +9,11 @@
 <link rel="stylesheet" href="css/base16-dark.css">
 <script src= "js/matchbrackets.js"></script>
 <style>
+  html, body {
+    touch-action: pan-x pan-y; /* Disables pinch-zoom and restricts scrolling to horizontal and vertical swipes */
+    overflow: hidden; /* Prevents additional scrolling */
+}
+
 body {
   margin: 0;
   height: availHeight;
