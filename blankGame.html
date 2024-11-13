@@ -31,7 +31,18 @@
         const ctx = canvas.getContext("2d");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-
+        function goFullscreen() {
+                    const element = document.documentElement;
+                    if (element.requestFullscreen) {
+                        element.requestFullscreen();
+                    } else if (element.mozRequestFullScreen) {
+                        element.mozRequestFullScreen();
+                    } else if (element.webkitRequestFullscreen) {
+                        element.webkitRequestFullscreen();
+                    } else if (element.msRequestFullscreen) {
+                        element.msRequestFullscreen();
+                    }
+                }
         // Variables to track touch start and end positions
         let startX = 0, startY = 0;
         let endX = 0, endY = 0;
@@ -41,7 +52,8 @@
             const touch = e.touches[0];
             startX = touch.clientX;
             startY = touch.clientY;
-            console.log(`Touch started at (${startX}, ${startY})`);
+            goFullscreen()
+            alert(`Touch started at (${startX}, ${startY})`);
         });
 
         // Detect touch end event to determine swipe direction
@@ -50,7 +62,7 @@
             endX = touch.clientX;
             endY = touch.clientY;
 
-            console.log(`Touch ended at (${endX}, ${endY})`);
+            alert(`Touch ended at (${endX}, ${endY})`);
             detectSwipe();
         });
 
