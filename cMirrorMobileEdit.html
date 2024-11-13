@@ -407,7 +407,10 @@ baseURL = name.files[0].webkitRelativePath
   
   editor.setValue(text);
   document.getElementById('fread').value='';
-  alert(baseURL);
+  setTimeout(function() {
+    alert(baseURL);
+}, 3000);
+  
 };
 reader.readAsText(input.files[0]);
 };
