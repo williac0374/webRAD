@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Page</title>
+    <style>
+        /* Add some styles for the drawing area */
+        #canvas {
+            border: 1px solid #000;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to the Dynamic Page</h1>
+    <p>This page can respond to URL parameters.</p>
+
+    <!-- Canvas area for drawing -->
+    <canvas id="canvas" width="200" height="200"></canvas>
+
+    <script>
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const action = urlParams.get('action');
+        const message = urlParams.get('message');
+
+        // Function to draw on canvas
+        function drawPicture() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(50, 50, 100, 100);  // Draw a simple square
+            ctx.fillStyle = 'white';
+            ctx.font = '16px Arial';
+            ctx.fillText('Hello!', 70, 120); // Text in the square
+        }
+
+        // Perform actions based on URL parameters
+        if (action === 'draw') {
+            drawPicture();
+        }
+
+        if (message) {
+            alert(message);  // Show an alert with the specified message
+        }
+    </script>
+
+</body>
+</html>
