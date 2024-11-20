@@ -112,12 +112,16 @@ for (let i = 0; i < 20; i++) {
   // Assign Sprite component
   sprites[entity] = catSprite;
   if(i==12){
-  const now = Date.now();
-  const then = now + 5000;
-  addTimer(entity,now,then,howdy);
+    const now = Date.now();
+    const then = now + 5000;
+    addTimer(entity,then,howdy);
   }
   
 }
+function howdy(){
+  alert('howdy')
+}
+
 // hud text entity
 let ent = createEntity();
 positions[ent] = {x: 5, y: 5 };
@@ -128,9 +132,8 @@ positions[ent] = {x: 160, y: 5 };
 addText(ent,'title','Bouncing Cats (ECS)')
 
 
-function addTimer(entity,start,end,action){
+function addTimer(entity,end,action){
   timers[entity] = {
-    start: start,
     end: end,
     action: action
     
@@ -157,9 +160,9 @@ rectangles[entity] = { // width, height, color, outline }
   thick:thick
 };
 }
-  //circles
+//circles
 function addCirc(entity,radius,palleteColor,outline,thick){
-circles[entity] = { 
+circles[entity] = {
   radius: radius,
   color:colors[palleteColor],
   outline:outline,
@@ -183,6 +186,7 @@ for (let i = entities.length - 1; i >= 0; i--) {
   const text = texts[entity];
   const rect = rectangles[entity]
   const circ = circles[entity]
+  const timer = timers[entity]
   
   // Handle click detection and removal
   if (lastClick && position && sprite) {
@@ -206,531 +210,14 @@ for (let i = entities.length - 1; i >= 0; i--) {
       continue; // Skip further processing for this entity
     }
   }
-  
-  // Update positions based on velocities (movement logic)
-  if (position && velocity) {
-    position.x += velocity.dx;
-    position.y += velocity.dy;
-    
-    // Check for collisions with the edges and bounce
-    if (position.x <= 0 || position.x >= canvas.width - sprite.width) {
-      velocity.dx *= -1; // Reverse horizontal direction
-    }
-    if (position.y <= 0 || position.y >= canvas.height - sprite.height) {
-      velocity.dy *= -1; // Reverse vertical direction
-    }
-    
-    // Keep the entity within bounds
-    position.x = Math.max(0, Math.min(position.x, canvas.width - sprite.width));
-    position.y = Math.max(0, Math.min(position.y, canvas.height - sprite.height));
-  }
-  
-  // Draw the sprite (rendering logic)
-  ctx.fillStyle = colors[5];
-  ctx.strokeStyle = colors[5];
-  if (position && sprite) {
-    ctx.drawImage(sprite, position.x, position.y, sprite.width, sprite.height);
-  }
-  // Draw the text if any
-  if (position && text) {
-    if(text.name=='score'){
-      ctx.font = "20px Helvetica";
-      text.text = "score : "+score.toString();
-    }//title
-    if(text.name=='title'){
-      ctx.font = "40px Helvetica";
-      text.text = 'Bouncing Cats (ECS)';
-    }
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    ctx.fillText(text.text,position.x, position.y);
-  }
-  // Draw rectangles
-  //rect
-  if (position && rect) { //width, height, color, outline
-    ctx.beginPath();
-    ctx.lineWidth = rect.thick;
-    ctx.fillStyle = rect.color;
-    ctx.strokeStyle = rect.color;
-    if(rect.outline){
-      ctx.strokeRect( position.x,position.y,rect.width,rect.height)
-    }else{
-      ctx.fillRect( position.x,position.y,rect.width,rect.height );
+  // check for timer completion
+  if(timer){
+    //start,end,action
+    if(Date.now()>timer.end){
+      timer.action();
+      delete timers[entity];
     }
   }
-  //circ
-  if (position && circ) { //entity,radius,palleteColor,outline,thick
-    ctx.beginPath();
-    ctx.lineWidth = circ.thick;
-    ctx.fillStyle = circ.color;
-    ctx.strokeStyle = circ.color;
-    //arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-    ctx.arc(position.x+circ.radius,position.y+circ.radius,circ.radius,0,Math.PI * 2,circ.outline );
-    ctx.closePath();
-    if(circ.outline){
-      ctx.stroke();
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bouncing Cats (ECS)</title>
-<style>
-canvas {
-  display: block;
-  margin: 0 auto;
-  background: lightblue; /* Light blue background for the canvas */
-}
-</style>
-</head>
-<body>
-<canvas id="gameCanvas" width="800" height="600"></canvas>
-<script>
-// Palette colors
-const colors = [
-'#140c1c', '#442434', '#30346d', '#4e4a4e', '#854c30',
-'#346524', '#d04648', '#757161', '#597dce', '#d27d2c',
-'#8595a1', '#6daa2c', '#d2aa99', '#6dc2ca', '#dad45e',
-'#deeed6'
-];
-const spriteData = "12 t1 a3 t3 a3  t3 a1 h2 a1 t1 a1 h2 a1  t3 a1 h2 a3 h2 a2  t2  a14 p2 a2 p2  a6 p1 j1 a2 j1 p1   a20 m2  a10 m2 a4  t2 a2 b1 a4 b1 a2  t3 a2 b4 a2  t5 a7 t2";
-/**
-* Function to decode and render a sprite.
-* @param {string} spriteData - Encoded sprite string (e.g., "4 a6 b1 a4 b2 a1 b4").
-* @returns {HTMLImageElement} - Rendered sprite as an HTML image.
-*/
-function decodeAndRenderSprite(spriteData,scale) {
-  const parts = spriteData.split(" ");
-  const size = parseInt(parts.shift(), 10); // Get size (n x n)
-  
-  // Decode sprite data
-  const spriteArray = [];
-  parts.forEach((segment) => {
-    const colorCode = segment[0];
-    const count = parseInt(segment.slice(1), 10);
-    for (let i = 0; i < count; i++) {
-      spriteArray.push(colorCode);
-    }
-  });
-  
-  // Create an offscreen canvas
-  const offCanvas = document.createElement('canvas');
-  offCanvas.width = size*scale;
-  offCanvas.height = size*scale;
-  const offCtx = offCanvas.getContext('2d');
-  
-  // Draw the sprite on the offscreen canvas
-  const pixelSize = scale; // Set pixel size (1 pixel per array element)
-  spriteArray.forEach((colorCode, index) => {
-    const x = index % size;
-    const y = Math.floor(index / size);
-    if (colorCode !== 't') { // Skip transparent pixels
-      offCtx.fillStyle = colors[colorCode.charCodeAt(0) - 97]; // Map 'a' to 0, 'b' to 1, ..., 'p' to 15
-      offCtx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-    }
-  });
-  
-  // Convert the offscreen canvas to an image
-  const img = new Image();
-  img.src = offCanvas.toDataURL();
-  
-  // Clean up: Destroy the offscreen canvas
-  offCanvas.remove();
-  
-  return img;
-}
-
-// Get the canvas element and set up the drawing context
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-var score = 0;
-// --- ECS Components ---
-const positions = {}; // Stores { entityId: { x, y } }
-const velocities = {}; // Stores { entityId: { dx, dy } }
-const sprites = {};   // Stores { entityId: image }
-const texts = {};   // Stores { entityId: { text } }
-const rectangles = {}; // Stores { entityId: { width, height, color, outline } }
-const timers = {} // Stores { entityId:{ startTime, endTime, actionFunction}}
-const circles = {}; // Stores { entityId: { radius, color, outline } }
-// --- ECS Entities ---
-const entities = [];
-let nextEntityId = 0;
-// Function to create a new entity
-function createEntity() {
-  const entityId = nextEntityId++;
-  entities.push(entityId);
-  return entityId;
-}
-// Variables to store the last click position
-let lastClick = null;
-// Handle user clicks
-canvas.addEventListener("click", (event) => {
-  // Get the click position relative to the canvas
-  const rect = canvas.getBoundingClientRect();
-  const clickX = event.clientX - rect.left;
-  const clickY = event.clientY - rect.top;
-lastClick = { x: clickX, y: clickY }; // Store the click position
-});
-// --- Game Setup ---
-const catSprite = decodeAndRenderSprite(spriteData,6);
-// Create 20 cat entities
-for (let i = 0; i < 20; i++) {
-  const entity = createEntity();
-  // Assign Position component
-  addPositions(entity);
-  // Assign Velocity component
-  addVelocity(entity)
-  // Assign Sprite component
-  sprites[entity] = catSprite;
-  if(i==12){
-  const now = Date.now();
-  const then = now + 5000;
-  addTimer(entity,now,then,howdy);
-  }
-  
-}
-// hud text entity
-let ent = createEntity();
-positions[ent] = {x: 5, y: 5 };
-addText(ent,'score',"score : "+score.toString())
-// title text entity
-ent = createEntity();
-positions[ent] = {x: 160, y: 5 };
-addText(ent,'title','Bouncing Cats (ECS)')
-
-
-function addTimer(entity,start,end,action){
-  timers[entity] = {
-    start: start,
-    end: end,
-    action: action
-    
-  };
-}
-function addText(entity,name,text){
-  texts[entity] = {
-    name: name ,
-    text: text
-  };
-}
-function addPositions(entity){
-  positions[entity] = {
-    x: Math.random() * (canvas.width),
-    y: Math.random() * (canvas.height)
-  };
-}
-function addRect(entity,width,height,palleteColor,outline,thick){
-rectangles[entity] = { // width, height, color, outline }
-  width: width,
-  height:height,
-  color:colors[palleteColor],
-  outline:outline,
-  thick:thick
-};
-}
-  //circles
-function addCirc(entity,radius,palleteColor,outline,thick){
-circles[entity] = { 
-  radius: radius,
-  color:colors[palleteColor],
-  outline:outline,
-  thick:thick
-};
-}
-function addVelocity(entity){
-velocities[entity] = {
-  dx: (Math.random() - 0.5) * 4, // Random horizontal speed between -2 and 2
-  dy: (Math.random() - 0.5) * 4  // Random vertical speed between -2 and 2
-};
-}
-function entityHandler() {
-ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-
-for (let i = entities.length - 1; i >= 0; i--) {
-  const entity = entities[i];
-  const position = positions[entity];
-  const velocity = velocities[entity];
-  const sprite = sprites[entity];
-  const text = texts[entity];
-  const rect = rectangles[entity]
-  const circ = circles[entity]
-  
-  // Handle click detection and removal
-  if (lastClick && position && sprite) {
-    if (
-    lastClick.x >= position.x &&
-    lastClick.x <= position.x + sprite.width &&
-    lastClick.y >= position.y &&
-    lastClick.y <= position.y + sprite.height
-    ) {
-      ent = createEntity();
-    positions[ent] = {x: position.x, y: position.y };
-      //addRect(ent,sprite.width, sprite.height,rnd(0,15),true,rnd(1,6))
-      addCirc(ent,sprite.width/2,rnd(0,15),true,rnd(1,6));
-      // Destroy the cat
-      entities.splice(i, 1);
-      delete positions[entity];
-      delete velocities[entity];
-      delete sprites[entity];
-      lastClick = null; // Reset lastClick after processing
-      score++;
-      continue; // Skip further processing for this entity
-    }
-  }
-  
-  // Update positions based on velocities (movement logic)
-  if (position && velocity) {
-    position.x += velocity.dx;
-    position.y += velocity.dy;
-    
-    // Check for collisions with the edges and bounce
-    if (position.x <= 0 || position.x >= canvas.width - sprite.width) {
-      velocity.dx *= -1; // Reverse horizontal direction
-    }
-    if (position.y <= 0 || position.y >= canvas.height - sprite.height) {
-      velocity.dy *= -1; // Reverse vertical direction
-    }
-    
-    // Keep the entity within bounds
-    position.x = Math.max(0, Math.min(position.x, canvas.width - sprite.width));
-    position.y = Math.max(0, Math.min(position.y, canvas.height - sprite.height));
-  }
-  
-  // Draw the sprite (rendering logic)
-  ctx.fillStyle = colors[5];
-  ctx.strokeStyle = colors[5];
-  if (position && sprite) {
-    ctx.drawImage(sprite, position.x, position.y, sprite.width, sprite.height);
-  }
-  // Draw the text if any
-  if (position && text) {
-    if(text.name=='score'){
-      ctx.font = "20px Helvetica";
-      text.text = "score : "+score.toString();
-    }//title
-    if(text.name=='title'){
-      ctx.font = "40px Helvetica";
-      text.text = 'Bouncing Cats (ECS)';
-    }
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    ctx.fillText(text.text,position.x, position.y);
-  }
-  // Draw rectangles
-  //rect
-  if (position && rect) { //width, height, color, outline
-    ctx.beginPath();
-    ctx.lineWidth = rect.thick;
-    ctx.fillStyle = rect.color;
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bouncing Cats (ECS)</title>
-<style>
-canvas {
-  display: block;
-  margin: 0 auto;
-  background: lightblue; /* Light blue background for the canvas */
-}
-</style>
-</head>
-<body>
-<canvas id="gameCanvas" width="800" height="600"></canvas>
-<script>
-// Palette colors
-const colors = [
-'#140c1c', '#442434', '#30346d', '#4e4a4e', '#854c30',
-'#346524', '#d04648', '#757161', '#597dce', '#d27d2c',
-'#8595a1', '#6daa2c', '#d2aa99', '#6dc2ca', '#dad45e',
-'#deeed6'
-];
-const spriteData = "12 t1 a3 t3 a3  t3 a1 h2 a1 t1 a1 h2 a1  t3 a1 h2 a3 h2 a2  t2  a14 p2 a2 p2  a6 p1 j1 a2 j1 p1   a20 m2  a10 m2 a4  t2 a2 b1 a4 b1 a2  t3 a2 b4 a2  t5 a7 t2";
-/**
-* Function to decode and render a sprite.
-* @param {string} spriteData - Encoded sprite string (e.g., "4 a6 b1 a4 b2 a1 b4").
-* @returns {HTMLImageElement} - Rendered sprite as an HTML image.
-*/
-function decodeAndRenderSprite(spriteData,scale) {
-  const parts = spriteData.split(" ");
-  const size = parseInt(parts.shift(), 10); // Get size (n x n)
-  
-  // Decode sprite data
-  const spriteArray = [];
-  parts.forEach((segment) => {
-    const colorCode = segment[0];
-    const count = parseInt(segment.slice(1), 10);
-    for (let i = 0; i < count; i++) {
-      spriteArray.push(colorCode);
-    }
-  });
-  
-  // Create an offscreen canvas
-  const offCanvas = document.createElement('canvas');
-  offCanvas.width = size*scale;
-  offCanvas.height = size*scale;
-  const offCtx = offCanvas.getContext('2d');
-  
-  // Draw the sprite on the offscreen canvas
-  const pixelSize = scale; // Set pixel size (1 pixel per array element)
-  spriteArray.forEach((colorCode, index) => {
-    const x = index % size;
-    const y = Math.floor(index / size);
-    if (colorCode !== 't') { // Skip transparent pixels
-      offCtx.fillStyle = colors[colorCode.charCodeAt(0) - 97]; // Map 'a' to 0, 'b' to 1, ..., 'p' to 15
-      offCtx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-    }
-  });
-  
-  // Convert the offscreen canvas to an image
-  const img = new Image();
-  img.src = offCanvas.toDataURL();
-  
-  // Clean up: Destroy the offscreen canvas
-  offCanvas.remove();
-  
-  return img;
-}
-
-// Get the canvas element and set up the drawing context
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-var score = 0;
-// --- ECS Components ---
-const positions = {}; // Stores { entityId: { x, y } }
-const velocities = {}; // Stores { entityId: { dx, dy } }
-const sprites = {};   // Stores { entityId: image }
-const texts = {};   // Stores { entityId: { text } }
-const rectangles = {}; // Stores { entityId: { width, height, color, outline } }
-const timers = {} // Stores { entityId:{ startTime, endTime, actionFunction}}
-const circles = {}; // Stores { entityId: { radius, color, outline } }
-// --- ECS Entities ---
-const entities = [];
-let nextEntityId = 0;
-// Function to create a new entity
-function createEntity() {
-  const entityId = nextEntityId++;
-  entities.push(entityId);
-  return entityId;
-}
-// Variables to store the last click position
-let lastClick = null;
-// Handle user clicks
-canvas.addEventListener("click", (event) => {
-  // Get the click position relative to the canvas
-  const rect = canvas.getBoundingClientRect();
-  const clickX = event.clientX - rect.left;
-  const clickY = event.clientY - rect.top;
-lastClick = { x: clickX, y: clickY }; // Store the click position
-});
-// --- Game Setup ---
-const catSprite = decodeAndRenderSprite(spriteData,6);
-// Create 20 cat entities
-for (let i = 0; i < 20; i++) {
-  const entity = createEntity();
-  // Assign Position component
-  addPositions(entity);
-  // Assign Velocity component
-  addVelocity(entity)
-  // Assign Sprite component
-  sprites[entity] = catSprite;
-  if(i==12){
-  const now = Date.now();
-  const then = now + 5000;
-  addTimer(entity,now,then,howdy);
-  }
-  
-}
-// hud text entity
-let ent = createEntity();
-positions[ent] = {x: 5, y: 5 };
-addText(ent,'score',"score : "+score.toString())
-// title text entity
-ent = createEntity();
-positions[ent] = {x: 160, y: 5 };
-addText(ent,'title','Bouncing Cats (ECS)')
-
-
-function addTimer(entity,start,end,action){
-  timers[entity] = {
-    start: start,
-    end: end,
-    action: action
-    
-  };
-}
-function addText(entity,name,text){
-  texts[entity] = {
-    name: name ,
-    text: text
-  };
-}
-function addPositions(entity){
-  positions[entity] = {
-    x: Math.random() * (canvas.width),
-    y: Math.random() * (canvas.height)
-  };
-}
-function addRect(entity,width,height,palleteColor,outline,thick){
-rectangles[entity] = { // width, height, color, outline }
-  width: width,
-  height:height,
-  color:colors[palleteColor],
-  outline:outline,
-  thick:thick
-};
-}
-  //circles
-function addCirc(entity,radius,palleteColor,outline,thick){
-circles[entity] = { 
-  radius: radius,
-  color:colors[palleteColor],
-  outline:outline,
-  thick:thick
-};
-}
-function addVelocity(entity){
-velocities[entity] = {
-  dx: (Math.random() - 0.5) * 4, // Random horizontal speed between -2 and 2
-  dy: (Math.random() - 0.5) * 4  // Random vertical speed between -2 and 2
-};
-}
-function entityHandler() {
-ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-
-for (let i = entities.length - 1; i >= 0; i--) {
-  const entity = entities[i];
-  const position = positions[entity];
-  const velocity = velocities[entity];
-  const sprite = sprites[entity];
-  const text = texts[entity];
-  const rect = rectangles[entity]
-  const circ = circles[entity]
-  
-  // Handle click detection and removal
-  if (lastClick && position && sprite) {
-    if (
-    lastClick.x >= position.x &&
-    lastClick.x <= position.x + sprite.width &&
-    lastClick.y >= position.y &&
-    lastClick.y <= position.y + sprite.height
-    ) {
-      ent = createEntity();
-    positions[ent] = {x: position.x, y: position.y };
-      //addRect(ent,sprite.width, sprite.height,rnd(0,15),true,rnd(1,6))
-      addCirc(ent,sprite.width/2,rnd(0,15),true,rnd(1,6));
-      // Destroy the cat
-      entities.splice(i, 1);
-      delete positions[entity];
-      delete velocities[entity];
-      delete sprites[entity];
-      lastClick = null; // Reset lastClick after processing
-      score++;
-      continue; // Skip further processing for this entity
-    }
-  }
-  
   // Update positions based on velocities (movement logic)
   if (position && velocity) {
     position.x += velocity.dx;
@@ -807,11 +294,11 @@ lastClick = null; // Reset
 requestAnimationFrame(gameLoop); // Schedule next frame
 }
 function fullCanvas() {
-  // Get 100vw in pixels
-  canvas.width = window.innerWidth;
+// Get 100vw in pixels
+canvas.width = window.innerWidth;
 
-  // Get 100vh in pixels
-  canvas.height = window.innerHeight;
+// Get 100vh in pixels
+canvas.height = window.innerHeight;
 }
 fullCanvas();
 gameLoop(); // Start the loop
