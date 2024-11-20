@@ -79,7 +79,9 @@ const velocities = {}; // Stores { entityId: { dx, dy } }
 const sprites = {};   // Stores { entityId: image }
 const texts = {};   // Stores { entityId: { text } }
 const rectangles = {}; // Stores { entityId: { width, height, color, outline } }
-const timers = {} // Stores { entityId:{ startTime, endTime, actionFunction}}
+const timers1 = {} // Stores { entityId:{ startTime, endTime, actionFunction}}
+const timers2 = {} // Stores { entityId:{ startTime, endTime, actionFunction}}
+const timers3 = {} // Stores { entityId:{ startTime, endTime, actionFunction}}
 const circles = {}; // Stores { entityId: { radius, color, outline } }
 // --- ECS Entities ---
 const entities = [];
@@ -111,15 +113,21 @@ for (let i = 0; i < 20; i++) {
   addVelocity(entity)
   // Assign Sprite component
   sprites[entity] = catSprite;
-  if(i==12){
-    const now = Date.now();
-    const then = now + 5000;
-    addTimer(entity,then,howdy);
-  }
   
 }
-function howdy(){
-  alert('howdy')
+function destroy(i){
+  // this destroys the entity that called it an all associated components
+  let entity = entities[i];
+  entities.splice(i, 1);
+  delete positions[entity];
+  delete velocities[entity];
+  delete sprites[entity];
+  delete texts[entity];
+  delete rectangles[entity];
+  delete timers1[entity];
+  delete timers2[entity];
+  delete timers3[entity];
+  delete circles[entity];
 }
 
 // hud text entity
@@ -132,8 +140,24 @@ positions[ent] = {x: 160, y: 5 };
 addText(ent,'title','Bouncing Cats (ECS)')
 
 
-function addTimer(entity,end,action){
-  timers[entity] = {
+function addTimer1(entity,end,action){ //addTimer1(ent,2000,destroy)
+  let now = Date.now();
+  let then = now + end;
+  timers1[entity] = {
+    end: then,
+    action: action
+    
+  };
+}
+function addTimer2(entity,end,action){
+  timers1[entity] = {
+    end: end,
+    action: action
+    
+  };
+}
+function addTimer3(entity,end,action){
+  timers1[entity] = {
     end: end,
     action: action
     
@@ -186,7 +210,7 @@ for (let i = entities.length - 1; i >= 0; i--) {
   const text = texts[entity];
   const rect = rectangles[entity]
   const circ = circles[entity]
-  const timer = timers[entity]
+  const timer1 = timers1[entity]
   
   // Handle click detection and removal
   if (lastClick && position && sprite) {
@@ -198,24 +222,22 @@ for (let i = entities.length - 1; i >= 0; i--) {
     ) {
       ent = createEntity();
     positions[ent] = {x: position.x, y: position.y };
+      addTimer1(ent,rnd(200,2000),destroy)
       //addRect(ent,sprite.width, sprite.height,rnd(0,15),true,rnd(1,6))
       addCirc(ent,sprite.width/2,rnd(0,15),true,rnd(1,6));
       // Destroy the cat
-      entities.splice(i, 1);
-      delete positions[entity];
-      delete velocities[entity];
-      delete sprites[entity];
+      destroy(i)
       lastClick = null; // Reset lastClick after processing
       score++;
       continue; // Skip further processing for this entity
     }
   }
   // check for timer completion
-  if(timer){
+  if(timer1){
     //start,end,action
-    if(Date.now()>timer.end){
-      timer.action();
-      delete timers[entity];
+    if(Date.now()>timer1.end){
+      timer1.action(i);
+      delete timers1[entity];
     }
   }
   // Update positions based on velocities (movement logic)
