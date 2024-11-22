@@ -6,19 +6,28 @@
 // initialize keys states (u,r,d,l for directions, k for all the keyboard)
 c=a.getContext`2d`,k=[u=r=d=l=s=0]
 
-// (initialize your global variables here)
-
+// variables for touch or mouse movement
+let startX, startY, endX, endY;
+// global variables
+let words = 'swipe screen'
 // update u,l,d,r globals when an arrow key/wasd/zqsd is pressed or released
 // update k[keyCode] if any other key is pressed/released
 onkeydown=onkeyup=e=>k[e.which]=self['lld*rlurdu'[e.which%32%17]]=e.type[5]
 
 // start game loop (60fps)
-// the canvas is cleared and adjusted to fullscreen at each frame
-// draw each screen in the switch's cases
-// in each screen, you can make key presses update the game state
-// ex: "press enter to open the menu" => `if(k[13])s=1;`
 setInterval(e=>{
   a.width=innerWidth,a.height=innerHeight;
+  // Draw a custom dashed border
+  c.setLineDash([10, 5]); // [dash length, gap length]
+  c.lineWidth = 10;        // Border thickness
+  c.strokeStyle = 'black'; // Border color
+  
+  c.font="84px sans-serif",c.fillText(words,50,150);
+
+
+
+  // Draw the border inside the canvas
+  c.strokeRect(1, 1, a.width - 2, a.height - 2); // Adjust for border width
   switch(s){
     case 0: // ex: draw title screen
     case 1: // ex: draw menu screen
@@ -28,16 +37,52 @@ setInterval(e=>{
 },16)
 
 // handle click/touch events
-// globals x and y contain the pointer's coordinates
-// in each screen, you can make a click update the game state
-// ex: "game over if we click on the bottom half of the screen" => `if(y>h/2)s=3;`
 onclick=e=>{
   x=e.pageX;y=e.pageY;
   switch(s){
-    case 0: alert('tapX : '+x+' , tapY : '+y)// react to clicks on screen 0
+    case 0: // react to clicks on screen 0
     case 1: // react to clicks on screen 1
     case 2: // react to clicks on screen 2
     case 3: // react to clicks on screen 3
   }
 }
+
+// handle touch or mouse swipe (for mobile or desktop)
+ontouchstart=onmousedown=e=>{
+  startX=e.pageX; startY=e.pageY; // record initial touch/mouse position
+}
+
+ontouchend=onmouseup=e=>{
+  endX=e.pageX; endY=e.pageY; // record final touch/mouse position
+  
+  // detect swipe direction (left, right, up, down)
+  let dx = endX - startX;
+  let dy = endY - startY;
+  
+  // threshold to detect swipes
+  const threshold = 30;
+  
+  // horizontal swipe (left or right)
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > threshold) {
+    if (dx > 0) {
+      r=1;
+      words='Swiped right';
+    } else {
+      l=1;
+      words='Swiped left';
+    }
+  }
+  
+  // vertical swipe (up or down)
+  if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > threshold) {
+    if (dy > 0) {
+      d=1;
+      words='Swiped down';
+    } else {
+      u=1;
+      words='Swiped up';
+    }
+  }
+}
 </script>
+</body>
