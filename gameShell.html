@@ -8,8 +8,9 @@ c=a.getContext`2d`,k=[u=r=d=l=s=0]
 
 // variables for touch or mouse movement
 let startX, startY, endX, endY;
-// global variables
-let words = 'swipe screen'
+//global variables
+let words = 'swipe'
+
 // update u,l,d,r globals when an arrow key/wasd/zqsd is pressed or released
 // update k[keyCode] if any other key is pressed/released
 onkeydown=onkeyup=e=>k[e.which]=self['lld*rlurdu'[e.which%32%17]]=e.type[5]
@@ -22,12 +23,11 @@ setInterval(e=>{
   c.lineWidth = 10;        // Border thickness
   c.strokeStyle = 'black'; // Border color
   
-  c.font="84px sans-serif",c.fillText(words,50,150);
-
-
-
   // Draw the border inside the canvas
   c.strokeRect(1, 1, a.width - 2, a.height - 2); // Adjust for border width
+  
+   c.font="84px sans-serif",c.fillText(words,50,150);
+  
   switch(s){
     case 0: // ex: draw title screen
     case 1: // ex: draw menu screen
@@ -47,42 +47,73 @@ onclick=e=>{
   }
 }
 
-// handle touch or mouse swipe (for mobile or desktop)
-ontouchstart=onmousedown=e=>{
-  startX=e.pageX; startY=e.pageY; // record initial touch/mouse position
-}
+// handle touch start
+a.addEventListener('touchstart', e => {
+  const touch = e.touches[0];
+  startX = touch.pageX;
+  startY = touch.pageY;
+});
 
-ontouchend=onmouseup=e=>{
-  endX=e.pageX; endY=e.pageY; // record final touch/mouse position
-  
+// handle touch end
+a.addEventListener('touchend', e => {
+  const touch = e.changedTouches[0];
+  endX = touch.pageX;
+  endY = touch.pageY;
+
   // detect swipe direction (left, right, up, down)
   let dx = endX - startX;
   let dy = endY - startY;
-  
+
   // threshold to detect swipes
   const threshold = 30;
-  
+
   // horizontal swipe (left or right)
   if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > threshold) {
     if (dx > 0) {
-      r=1;
-      words='Swiped right';
+      r = 1;
+      words = 'Swiped right';
     } else {
-      l=1;
-      words='Swiped left';
+      l = 1;
+      words = 'Swiped left';
     }
   }
-  
+
   // vertical swipe (up or down)
   if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > threshold) {
     if (dy > 0) {
-      d=1;
-      words='Swiped down';
+      d = 1;
+      words = 'Swiped down';
     } else {
-      u=1;
-      words='Swiped up';
+      u = 1;
+      words = 'Swiped up';
     }
   }
-}
+});
+
+// handle mouse start and end for desktop
+a.addEventListener('mousedown', e => {
+  startX = e.pageX;
+  startY = e.pageY;
+});
+
+a.addEventListener('mouseup', e => {
+  endX = e.pageX;
+  endY = e.pageY;
+
+  // detect swipe direction (same logic as above)
+  let dx = endX - startX;
+  let dy = endY - startY;
+  const threshold = 30;
+
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > threshold) {
+    if (dx > 0) words = 'Swiped right';
+    else words = 'Swiped left';
+  }
+
+  if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > threshold) {
+    if (dy > 0) words = 'Swiped down';
+    else words = 'Swiped up';
+  }
+});
 </script>
 </body>
