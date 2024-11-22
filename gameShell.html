@@ -49,6 +49,7 @@ onclick=e=>{
 
 // handle touch start
 a.addEventListener('touchstart', e => {
+  e.preventDefault(); // Prevent default touch behavior
   const touch = e.touches[0];
   startX = touch.pageX;
   startY = touch.pageY;
@@ -56,6 +57,7 @@ a.addEventListener('touchstart', e => {
 
 // handle touch end
 a.addEventListener('touchend', e => {
+  e.preventDefault(); // Prevent default touch behavior
   const touch = e.changedTouches[0];
   endX = touch.pageX;
   endY = touch.pageY;
