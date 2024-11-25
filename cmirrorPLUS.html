@@ -189,6 +189,7 @@ document.getElementById("bGo").addEventListener("click", function () {
 
 // find
 document.getElementById("find").addEventListener("click", function () {
+  var hit=-1;
   //finds selected word(s)
   if(dis==null){  // find attempt
     dis = editor.getSelection();
@@ -197,19 +198,20 @@ document.getElementById("find").addEventListener("click", function () {
     list=[]
     let temp = code.split("\n")
     for(i=0;i<temp.length;i++){ // loops thru code line by line
-      let hit = temp[i].indexOf(dis)
+      hit = temp[i].indexOf(dis)
       if(hit!=-1){ // finds if the word is on the line
       list.push({line:i,start:temp[i].indexOf(dis),end:temp[i].indexOf(dis)+dis.length})
       }
     }
     
   }
-let startPos = { line: list[fnum].line, ch: list[fnum].start }; // Start position
-let endPos = { line: list[fnum].line, ch: list[fnum].end };  // End position
-  editor.setSelection(startPos, endPos);
-if(fnum>0){editor.scrollIntoView({line:list[fnum].line, char:0}, 200)}
-if(fnum<list.length-1){fnum++}else{fnum=0}
-  
+  if(hit!=-1){
+  let startPos = { line: list[fnum].line, ch: list[fnum].start }; // Start position
+  let endPos = { line: list[fnum].line, ch: list[fnum].end };  // End position
+    editor.setSelection(startPos, endPos);
+  if(fnum>0){editor.scrollIntoView({line:list[fnum].line, char:0}, 200)}
+  if(fnum<list.length-1){fnum++}else{fnum=0}
+  }
 });
 // TEST! button click function
 document.getElementById("pretty").addEventListener("click", function () {
