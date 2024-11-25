@@ -567,12 +567,7 @@ function formatCode(inputCode) {
     //canvas.width = window.innerWidth;
     //canvas.height = window.innerHeight;
     cursor = editor.getCursor();
-    let c = editor.getValue()
-    let temp=c.replace(/WIDE/g, window.innerWidth);
-    let code=temp.replace(/TALL/g, window.innerHeight);
-    
-    
-    console.log(code)
+    let code = editor.getValue()
     var myWindow = window.open();
     //myWindow.document.title = 'testing';
     myWindow.document.write(code);
@@ -593,8 +588,6 @@ function formatCode(inputCode) {
   }
   function save(){
     var c = editor.getValue()
-    let temp=c.replace(/WIDE/g, window.innerWidth);
-    c=temp.replace(/TALL/g, window.innerHeight);
     if(document.title!='none'){ // this is a new code file, not a loaded one
       let name = document.title.split('.')[0];
       let ext = document.title.split('.')[1];
