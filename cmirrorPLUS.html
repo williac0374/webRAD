@@ -78,6 +78,7 @@ body {
 </head>
 <body>
 <input id="fread" type='file' style="display: none" accept='.js , .json ,.html' onchange='openFile(event)'>
+
 <div id="menu">
 <button id="load">Load</button>
 <button id="save">Save</button>
@@ -89,14 +90,22 @@ body {
 <button id="find">Find</button>
 <button id="pretty">Pretty</button>
 <button id="compress">Compress</button>
-<button id="expand">Expand</button>
+<button id="expand">Expand</buhelpBoxtton>
 <button id="base64">Base64</button>
 <button id="test">TEST!</button>
 </div>
 <div id="editor"></div>
 <div id="functs"></div>
 <script>
-// the deployed link is https://williac0374.github.io/webRAD/cmirrorPLUS.html
+window.addEventListener("focus", () => {
+  if(localStorage.getItem('errorCursorIDE')!=null){
+    editor.getInputField().focus();
+    let eCur = JSON.parse(localStorage.getItem('errorCursorIDE'))
+  editor.setCursor({ line: eCur.line-1, ch: eCur.ch });
+  editor.scrollIntoView({line: eCur.line, ch: 1}, 200)
+    localStorage.removeItem("errorCursorIDE");
+  }
+});
 var shiftMod = false;
 addEventListener("keydown", function(e){if (e.keyCode==16){shiftMod=true}}, false);
 //addEventListener("keyup", function(e){if (e.keyCode==16){shiftMod=false}}, false);
@@ -106,15 +115,6 @@ window.addEventListener('beforeunload', function(e){
   var message = 'are you sure you want to leave?';
   (e || window.event).returnValue = message;
   return message;
-});
-window.addEventListener('focus', function(e){
-  if(localStorage.getItem('Eline')!=null){
-    let enumber = localStorage.getItem('Eline')
-    editor.getInputField().focus();
-  editor.setCursor({ line: enumber, ch: 1 });
-  editor.scrollIntoView({line: enumber, ch: 1}, 200)
-    localStorage.removeItem('Eline')
-  }
 });
 function nope(){}
 var code=''
@@ -137,6 +137,8 @@ var editor = CodeMirror(document.getElementById("editor"), {
 editor.on("change",function(cm,change){
   code = editor.getValue();
   localStorage.setItem(document.title, code);
+  localStorage.setItem('codeIDE', code);
+  localStorage.setItem('cursorIDE', JSON.stringify(editor.getCursor()))
 });
 
 editor.getWrapperElement().addEventListener('click', function(event) {dis=null;fnum = 0});
@@ -377,9 +379,13 @@ function helpBox() {
     // Add a click event listener to each button
     button.addEventListener('click', function () {
       //alert(this.id)
+      cursor = editor.getCursor();
+    editor.replaceRange(this.id, { line: cursor.line, ch: cursor.ch });
       navigator.clipboard.writeText(this.id);
       const element = document.getElementById("customTextBox");
       element.remove();
+      editor.getInputField().focus();
+      // navigator.clipboard.readText();
     });
   }
 }
@@ -539,9 +545,9 @@ function formatCode(inputCode) {
     reader.onload = function(){
       var text = reader.result; var name = document.getElementById('fread');
       saveName=name.files.item(0).name
-      
+      console.log(saveName)
       let temp = saveName.split('.')
-      document.title=temp[0];
+      document.title=saveName;
       if(localStorage.getItem(document.title)!=null){
         code = localStorage.getItem(document.title)
         if(text!=code){
@@ -556,21 +562,15 @@ function formatCode(inputCode) {
     };
     reader.readAsText(input.files[0]);
   };
+  
   function run(){
-    
+    //canvas.width = window.innerWidth;
+    //canvas.height = window.innerHeight;
     cursor = editor.getCursor();
     let c = editor.getValue()
-    let code=''
-    let lines = c.split('\n')
-    let insertLine = -1
-    for(i=0;i<lines.length;i++){
-      if(lines[i].indexOf('<script>')!=-1){
-        insertLine = i
-      }
-    };
-    for(i=0;i<lines.length;i++){
-      code+=lines[i]+'\n'
-    }
+    let temp=c.replace(/WIDE/g, window.innerWidth);
+    let code=temp.replace(/TALL/g, window.innerHeight);
+    
     
     console.log(code)
     var myWindow = window.open();
@@ -593,7 +593,16 @@ function formatCode(inputCode) {
   }
   function save(){
     var c = editor.getValue()
-    download(prompt("game name?",document.title.split('.')[0]) + ".html",c)
+    let temp=c.replace(/WIDE/g, window.innerWidth);
+    c=temp.replace(/TALL/g, window.innerHeight);
+    if(document.title!='none'){ // this is a new code file, not a loaded one
+      let name = document.title.split('.')[0];
+      let ext = document.title.split('.')[1];
+      download(prompt("game name?",name)+'.'+ext,c)
+    }else{// this assumes you want to save an html file
+      download(prompt("game name?",document.title.split('.')[0])+'.html',c)
+    }
+    
   }
   function format(){
     // this formats code
@@ -604,7 +613,9 @@ function formatCode(inputCode) {
   function getSelectedRange() {
   return { from: editor.getCursor(true), to: editor.getCursor(false) };
   }
+  
   </script>
   </body>
   </html>
+  
   
