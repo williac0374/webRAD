@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>div edit</title>
+<style>
+body{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: black;
+  
+}
+canvas {
+  // border: 2px solid #000;
+  background-color: #aaaaaa;
+  border: 4px solid white;
+  border-radius: 5px
+  
+}
+#dialog {
+  position: absolute;
+  display: none;
+  padding: 40px;
+  color: white;
+  background-color: #000000;
+  border: 4px solid white;
+  border-radius: 5px
+}
+input[type="color" i] {
+  position: absolute;
+  left:10px;
+  top: 10px;
+  border-radius: 4px;
+  inline-size: 110px;
+  block-size: 50px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(153, 153, 153);
+}
+#debug {
+  position: absolute;
+  left:4px;
+  top: 100px;
+  overflow: hidden;
+  width: 90px;
+  height: 300px;
+  padding: 10px;
+  border: 4px solid white;
+  border-radius: 5px
+}
+.menu {
+  color: white;
+  position: absolute;
+  top: 10px;
+  padding: 10px;
+  border: 4px solid white;
+  border-radius: 5px
+  user-select: none; /* Standard property */
+  -webkit-user-select: none; /* For WebKit browsers */
+  -moz-user-select: none; /* For older Firefox */
+  -ms-user-select: none; /* For Internet Explorer/Edge */
+}
+
+</style>
+</head>
+
+<body>
+<input type="file" id="fileInput" accept=".json" style="display:none">
+<input type="color" id="color-picker" onmouseenter = "hover(this)" value='#00ff00'onchange="gotColor(this.value)">
+<canvas id="canvas"></canvas>
+<div id='dialog'></div>
+<div id='debug' style='color:white'>hover or divs to see there specs!</div>
+<div id='help' class='menu' onmouseenter = "hover(this)" onclick = 'help()' style='left: 130px'>help</div>
+<div id='load' class='menu' onmouseenter = "hover(this)" onclick = 'load()' style='left: 320px'>Load</div>
+<div id='save' class='menu' onmouseenter = "hover(this)" onclick = 'save()' style='left: 400px'>Save</div>
+<div id='test' class='menu' onmouseenter = "hover(this)" onclick = 'makeHtml()' style='left: 480px'>Test</div>
+<div id='export' class='menu' onmouseenter = "hover(this)" onclick = 'downloadHTML(generateHTML(divs));' style='left: 550px'>Export</div>
+<div id='cellsH' class='menu' onmouseenter = "hover(this)" onwheel = 'adjustH(event)' style='left: 845px'>Horizontal cells : 12</div>
+<div id='cellsV' class='menu' onmouseenter = "hover(this)" onwheel = 'adjustV(event)' style='left: 1045px'>Vertical cells : 12</div>
+<script>
+
+
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+size = 0
+canvas.addEventListener('wheel', (event) => {
+  // Adjust size based on the wheel scroll
+  size += event.deltaY > 0 ? -1 : 1; // Decrease for down scroll, increase for up scroll
+  //size = Math.max(0, size); // Prevent size from going below 0
+  //document.title = size; // Update display
+});
+
+function help(){
+  let dialog = document.getElementById('dialog');
+  let canvas = document.getElementById('canvas');
+  canvas.style.display = 'none';
+  dialog.style.display = 'block'
+  
+}
+function adjustV(event){
+  event.preventDefault();
+  var delta = Math.sign(event.deltaY);
+  cellsV -= delta;
+if(cellsV<1){cellsV=1}
+  document.getElementById("cellsV").innerText = 'Vertical cells : '+cellsV
+}
+function adjustH(event){
+  event.preventDefault();
+  var delta = Math.sign(event.deltaY);
+  cellsH -= delta;
+if(cellsH<1){cellsH=1}
+  document.getElementById("cellsH").innerText = 'Horizontal cells : '+cellsH
+}
+
+canvas.width = 1360*.8;
+canvas.height = 596*.8;
+setTimeout(() => {
+  const canvasRect = document.getElementById("canvas").getBoundingClientRect();
+  const dialog = document.getElementById('dialog');
+  dialog.style.fontSize = '18px';
+  dialog.style.display = 'none';
+  dialog.innerText=`
+  ----------------------------------DIV_EDIT--------------------------------------
+  keyboard shortcuts:
+  -----s: saves the editor contents.
+  -----l: loads the editor contents.
+  -----t: tests the editor contents.
+  -----e: exports (html file) the editor contents.
+  -----i: for renaming the divs id.
+  -----c: if a div is highlighted changes its color to the current color picker color.
+  -----c: if no div is highlighted sets backgroung color instead.
+  -----p: if a div is highlighted changes the current picker color to its color.
+  -----p: if no div is highlighted changes the current picker color to the backgroung color.
+  -----arrow keys: moves highlighted div.
+  -----delete: deletes highlighted div.
+  -----mousewheel over Horizontal and Vertical cells to adjust.
+  -----cntrl + C copies div
+  -----cntrl + V pastes div
+  press escape to close help.
+  `
+  dialog.style.left = canvasRect.left + 'px';
+  dialog.style.top = canvasRect.top + 'px';
+  dialog.style.width = canvasRect.width*.919 + 'px';
+  dialog.style.height = canvasRect.height*.84 + 'px';
+}, 2); // 2000ms = 2 seconds
+
+
+idNum = 0
+divs = []
+dupeDiv = null;
+divSelected = false
+cellsV = 12;
+cellsH = 12;
+gridV = 50;
+gridH = 50;
+gridSize = 50
+divX = divY = divW = divH = 0;
+colR = 0;
+colG = 244;
+colB = 0;
+bgcolR = 255;
+bgcolG = 255;
+bgcolB = 255;
+divLn = 4;
+control = false;
+delay = false;
+function start(){
+  
+}
+
+function loop(){
+  
+  if(keyboard_check(vk_ctrl)){
+    control=true
+  }else{
+    control=false
+  }
+  if(keyboard_check_pressed(vk_v) && control==true){
+    let free=true;
+    for(let i = 0;i<divs.length;i++){
+      let mx = snap(mouse_x,gridH);
+      let my = snap(mouse_y,gridV);
+      let dx = divs[i].x;
+      let dy = divs[i].y;
+      if(mx==dx && my==dy){ // already a div here.
+        free=false
+      }
+    }
+    if(free){
+    let temp = {id: 'div'+idNum++, text:dupeDiv.text, textsize: dupeDiv.textsize, x: snap(mouse_x,gridH), y: snap(mouse_y,gridV), w: dupeDiv.w, h: dupeDiv.h, colR: dupeDiv.colR, colG: dupeDiv.colG, colB: dupeDiv.colB, tcolR: dupeDiv.tcolR, tcolG: dupeDiv.tcolG, tcolB: dupeDiv.tcolB,sel:false}
+      divs.push(temp)
+    }
+  }
+  calcGrid();
+  
+  if(mouse_x>=0){
+    if(!mouse_check()){ // mouse button not down
+      
+      if(divW==0){ // div not currently being drawn
+        divX = mouse_x;
+        divY = mouse_y;
+        // check if any prexisting divs are being selected.
+        loop_divs();
+      }else{
+        
+        // mouse button down
+      let temp = {id: 'div'+idNum++, text: 'Div'+(idNum-1).toString(), textsize: 22, x: divX, y: divY, w: divW, h: divH, colR: colR, colG: colG, colB: colB, tcolR: 255, tcolG: 255, tcolB: 255,sel:false}
+        let temp2 = div_correct(temp)
+        if(temp2.w>0 && temp2.h>0){
+          temp2.textsize = getDivTsize(temp2)
+          divs.push(temp2)
+        }
+        //free
+        divW = 0;
+        divH = 0;
+        show_mouse();
+        
+      }
+    }else{
+      if(divSelected==false){
+        hide_mouse();
+        divW = mouse_x - divX;
+        divH = mouse_y - divY;
+      }
+    }
+    divX = snap(divX,gridH);
+    divY = snap(divY,gridV);
+    divW = snap(divW,gridH);
+    divH = snap(divH,gridV);
+  }
+  if(mouse_check_released()){
+    show_mouse();
+  }
+  move_divs()
+  if(keyboard_check_pressed(vk_s)){
+    //save(JSON.stringify(divs))
+  }
+  if(keyboard_check_pressed(vk_l)){
+    //load()
+  }
+  if(keyboard_check_pressed(vk_e)){
+    //downloadHTML(generateHTML(divs));
+  }
+  if(keyboard_check_pressed(vk_escape)){
+    let dialog = document.getElementById('dialog');
+    let canvas = document.getElementById('canvas');
+    dialog.style.display = 'none'
+    canvas.style.display = 'block'
+  }
+  document.title=divSelected
+}
+
+function draw(){
+  draw_grid();
+  draw_divs();
+  
+  draw_set_color(255,0,0)
+  draw_set_linewidth(4)
+  draw_set_linedash([10,3])
+  draw_rectangle(divX, divY, divW, divH, true)
+}
+function rgbToHex(r, g, b) {
+  return (
+  '#' +
+  [r, g, b]
+  .map((x) => x.toString(16).padStart(2, '0')) // Convert each to hex
+  .join('')
+  );
+}
+function draw_divs(){
+  for(let i = 0; i < divs.length; i++){
+    if(divs[i].sel==false){
+      draw_set_color(divs[i].colR, divs[i].colG, divs[i].colB)
+    }else{
+      draw_set_color(244, 158, 78)
+    }
+    draw_set_linewidth(4)
+    draw_set_linedash([])
+    draw_set_alpha(0.7)
+    draw_rectangle(divs[i].x, divs[i].y, divs[i].w, divs[i].h, false)
+    draw_set_alpha(1)
+    draw_rectangle(divs[i].x, divs[i].y, divs[i].w, divs[i].h, true);
+    draw_set_color(divs[i].tcolR, divs[i].tcolG, divs[i].tcolB)
+    draw_centered_text(divs[i].x+(divs[i].w/2), divs[i].y+(divs[i].h/2), divs[i].text, divs[i].textsize)
+  }
+}
+function calcGrid(){
+  gridH = canvas.width/cellsH;
+  gridV = canvas.height/cellsV;
+}
+function snap(input,grid){
+  return grid * Math.round(input / grid);
+}
+function draw_grid(){
+  draw_set_alpha(0.3)
+  let x = y = 0;
+  draw_set_color(123,123,123)
+  draw_set_linewidth(4)
+  draw_set_linedash([])
+  while(x<canvas.width){
+    draw_line(x, y, x, y+canvas.height)
+    x+=gridH;
+  }
+  x=0;
+  while(y<canvas.height){
+    draw_line(x, y, x+canvas.width, y)
+    y+=gridV;
+  }
+  draw_set_alpha(1)
+}
+function hover(div){
+  let dbug = document.getElementById("debug")
+  let words=''
+  switch (div.id) {
+    case 'help':
+    words='click for help text';
+    break;
+    case 'load':
+    words='click to load json file';
+    break;
+    case 'save':
+    words='click to save json file';
+    break;
+    case 'test':
+    words='click to test html document';
+    break;
+    case 'export':
+    words='click to generate and save html document';
+    break;
+    case 'cellsH':
+    words='mouse wheel to adjust';
+    break;
+    case 'cellsV':
+    words='mouse wheel to adjust';
+    break;
+    case 'color-picker':
+    words='pick new color';
+    break;
+  }
+  dbug.innerText = words
+}
+
+function loop_divs(){
+  let dbug = document.getElementById("debug")
+  allClear=true
+  // clears all divs
+for(let i = 0; i < divs.length; i++){divs[i].sel=false}
+  // checks which if any divs are selected
+  for(let i = 0; i < divs.length; i++){
+    if(mouse_over(divs[i])){
+      divs[i].sel=true;
+      let temp = JSON.stringify(divs[i])
+      let temp2 = temp.replace(/,/g, '\n');
+      if(delay==false){
+        dbug.innerText = temp2
+      }
+      allClear=false
+      i=100000
+    }
+  }
+  if(allClear){
+    divSelected=false;
+  }else{
+    divSelected=true;
+  }
+}
+function move_divs(){
+  let sel = false
+  
+  for(let i = divs.length- 1; i >= 0; i--){
+    if(divs[i].sel){
+      divs[i].textsize += size
+      
+      sel=true;
+    if(keyboard_check_pressed(vk_left)){divs[i].x-=gridH}
+    if(keyboard_check_pressed(vk_right)){divs[i].x+=gridH}
+    if(keyboard_check_pressed(vk_up)){divs[i].y-=gridV}
+    if(keyboard_check_pressed(vk_down)){divs[i].y+=gridV}
+    if(divs[i].x<0){divs[i].x+=gridH}
+    if(divs[i].x+divs[i].w>canvas.width){divs[i].x -=gridH}
+    if(divs[i].y<0){divs[i].y+=gridV}
+    if(divs[i].y+divs[i].h>canvas.height){divs[i].y -=gridV}
+      if(keyboard_check_pressed(vk_delete)){
+        divs.splice(i, 1);
+      }
+      if(keyboard_check_pressed(vk_p)){
+        colR = divs[i].colR
+        colG = divs[i].colG
+        colB = divs[i].colB
+        document.getElementById("color-picker").value = rgbToHex(colR, colG, colB);
+      }
+      
+      if(keyboard_check_pressed(vk_c)){
+        if(control==false){
+          divs[i].colR = colR;
+          divs[i].colG = colG;
+          divs[i].colB = colB;
+        }else{
+          dupeDiv=null;
+        dupeDiv = { ...divs[i] };
+          let dbug = document.getElementById("debug").innerText = 'div Copied!!!';
+          delay=true
+        setTimeout(function(){delay=false},3000);
+        }
+      }
+      if(sel==false){
+        if(keyboard_check_pressed(vk_c) && control==false){
+          bgcolR = colR;
+          bgcolG = colG;
+          bgcolB = colB;
+          document.getElementById("canvas").style.backgroundColor='rgb('+bgcolR+','+bgcolG+','+bgcolB+')'
+        }
+        if(keyboard_check_pressed(vk_p)){
+          colR = bgcolR
+          colG = bgcolG
+          colB = bgcolB
+          document.getElementById("color-picker").value = rgbToHex(colR, colG, colB);
+        }
+      }
+      if(keyboard_check_pressed(vk_i)){
+        divs[i].id = prompt('div id ?',divs[i].id)
+      }
+      if(keyboard_check_pressed(vk_t)){
+        divs[i].text = prompt('div text ?',divs[i].text)
+      }
+      if(keyboard_check_pressed(vk_w)){
+        divs[i].tcolR = colR
+        divs[i].tcolG = colG
+        divs[i].tcolB = colB
+      }
+    }
+    
+  }
+  size=0
+}
+function makeHtml(){
+  var myWindow = window.open();
+  //myWindow.document.title = 'testing';
+  myWindow.document.write(generateHTML(divs));
+  show_mouse();
+}
+//JSON.stringify(originalObject)
+function save(info){
+  let all = JSON.stringify(divs)
+  downloadJSON(all)
+  //var myWindow = window.open();
+  //myWindow.document.title = 'testing';
+  //myWindow.document.write(all);
+  show_mouse();
+  
+}
+//JSON.parse(jsonString);
+function load(){
+  divs = [];
+  document.getElementById('fileInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/json') {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const fileContent = e.target.result;
+        divs = JSON.parse(fileContent);  // Display as string
+      };
+      reader.readAsText(file);  // Read the file content as text
+    } else {
+      alert('Please select a valid JSON file');
+    }
+  });
+  document.getElementById('fileInput').click();
+  show_mouse();
+}
+
+function kill_divs(){
+  for(let i = 0; i < divs.length; i++){
+    if(mouse_over(divs[i])){
+      divs[i].sel=true;
+      allClear=false
+      i=100000
+    }
+  }
+}
+
+function div_correct(obj){
+if(obj.w<0){obj.w*=-1;obj.x-=obj.w}
+if(obj.h<0){obj.h*=-1;obj.y-=obj.h}
+  return obj;
+}
+function mouse_over(obj){
+//{x: divX, y: divY, w: divW, h: divH, colR: colR, colG: colG, colB: colB,}
+  let mx = mouse_x;
+  let my = mouse_y;
+  if(mx>obj.x && mx< obj.x+obj.w && my>obj.y && my<obj.y+obj.h){
+    return true
+  }else{
+    return false;
+  }
+}
+function gotColor(color){
+  color = color.replace(/^#/, '');
+  colR = parseInt(color.slice(0, 2), 16);
+  colG = parseInt(color.slice(2, 4), 16);
+  colB = parseInt(color.slice(4, 6), 16);
+  show_mouse();
+  
+}
+function downloadHTML(htmlContent) {
+const blob = new Blob([htmlContent], { type: 'text/html' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'generated.html';
+  link.click();
+  show_mouse();
+}
+function downloadJSON(jsonContent) {
+const blob = new Blob([jsonContent], { type: 'text/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'generated.json';
+  link.click();
+  show_mouse();
+}
+function getDivTsize(div){
+  return Math.min(div.w/4, div.h/4);
+}
+function generateHTML(data) {
+  const editorWidth = canvas.width; // Fixed editor width
+  const editorHeight = canvas.height; // Fixed editor height
+  
+  let html = `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generated Page</title>
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  background-color: rgb(${bgcolR},${bgcolG},${bgcolB});
+  }
+  .container {
+    position: relative;
+  width: ${editorWidth}px;
+  height: ${editorHeight}px;
+    transform-origin: top left;
+  }
+  .generated-div {
+    position: absolute;
+  }
+  </style>
+  </head>
+  <body>
+  <div class="container">
+  `;
+  
+  // Generate single-line <div> elements
+  data.forEach(item => {
+  const backgroundColor = `rgb(${item.colR}, ${item.colG}, ${item.colB})`;
+    
+  html += `<div id="${item.id}" class="generated-div" style="left: ${item.x}px; top: ${item.y}px; width: ${item.w}px; height: ${item.h}px; color: rgb(${item.tcolR}, ${item.tcolG}, ${item.tcolB}); display: flex; justify-content: center; align-items: center; font-size: ${item.textsize}px;background-color: ${backgroundColor};" onclick="alert('You clicked on ${item.id}')">${item.text}</div>
+    `;
+  });
+  // Add the script to scale the container 
+  html += `
+  <script>
+  // Scale the container to fit the viewport while maintaining aspect ratio
+  function adjustScaling() {
+    const container = document.querySelector('.container');
+  const scaleX = window.innerWidth / ${editorWidth};
+  const scaleY = (window.innerHeight*0.95) / ${editorHeight};
+    const scale = Math.min(scaleX, scaleY); // Use the smaller scale factor
+    container.style.transform = 'scale(' + scaleX + ')';
+  }
+  window.addEventListener('resize', adjustScaling);
+  window.addEventListener('DOMContentLoaded', adjustScaling);
+  </sc`+`ript>
+  `;
+  
+  // Close the HTML structure
+  html += `
+  </body>
+  </html>
+  `;
+  
+  return html;
+}
+
+
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
