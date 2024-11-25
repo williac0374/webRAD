@@ -202,10 +202,11 @@ document.getElementById("find").addEventListener("click", function () {
       if(hit!=-1){ // finds if the word is on the line
       list.push({line:i,start:temp[i].indexOf(dis),end:temp[i].indexOf(dis)+dis.length})
       }
+      
     }
     
   }
-  if(hit!=-1){
+  if(list.length>0){
   let startPos = { line: list[fnum].line, ch: list[fnum].start }; // Start position
   let endPos = { line: list[fnum].line, ch: list[fnum].end };  // End position
     editor.setSelection(startPos, endPos);
