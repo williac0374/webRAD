@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -114,9 +115,8 @@ function adjustH(event){
 if(cellsH<1){cellsH=1}
   document.getElementById("cellsH").innerText = 'Horizontal cells : '+cellsH
 }
+setTimeout(() => {canvas.width=window.innerWidth*.8;canvas.height = window.innerHeight*.8;}, 2); 
 
-canvas.width = 1360*.8;
-canvas.height = 596*.8;
 setTimeout(() => {
   const canvasRect = document.getElementById("canvas").getBoundingClientRect();
   const dialog = document.getElementById('dialog');
