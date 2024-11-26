@@ -16,7 +16,7 @@ body{
   
 }
 canvas {
-  // border: 2px solid #000;
+  position: absolute;
   background-color: #aaaaaa;
   border: 4px solid white;
   border-radius: 5px
@@ -45,11 +45,12 @@ input[type="color" i] {
 #debug {
   position: absolute;
   left:4px;
-  top: 100px;
+  top: 65px;
   overflow: hidden;
-  width: 90px;
-  height: 300px;
+  width: 180px;
+  height: 522px;
   padding: 10px;
+  font-size: 24px;
   border: 4px solid white;
   border-radius: 5px
 }
@@ -65,25 +66,43 @@ input[type="color" i] {
   -moz-user-select: none; /* For older Firefox */
   -ms-user-select: none; /* For Internet Explorer/Edge */
 }
-
+.edit {
+  color: white;
+  padding: 10px;
+  border: 4px solid white;
+  border-radius: 5px
+  font-size: 24px;
+  user-select: none; /* Standard property */
+  -webkit-user-select: none; /* For WebKit browsers */
+  -moz-user-select: none; /* For older Firefox */
+  -ms-user-select: none; /* For Internet Explorer/Edge */
+}
 </style>
 </head>
 
 <body>
 <input type="file" id="fileInput" accept=".json" style="display:none">
-<input type="color" id="color-picker" onmouseenter = "hover(this)" value='#00ff00'onchange="gotColor(this.value)">
+<input type="color" id="color-picker" value='#00ff00'onchange="gotColor(this.value)">
 <canvas id="canvas"></canvas>
 <div id='dialog'></div>
-<div id='debug' style='color:white'>hover or divs to see there specs!</div>
-<div id='help' class='menu' onmouseenter = "hover(this)" onclick = 'help()' style='left: 130px'>help</div>
-<div id='load' class='menu' onmouseenter = "hover(this)" onclick = 'load()' style='left: 320px'>Load</div>
-<div id='save' class='menu' onmouseenter = "hover(this)" onclick = 'save()' style='left: 400px'>Save</div>
-<div id='test' class='menu' onmouseenter = "hover(this)" onclick = 'makeHtml()' style='left: 480px'>Test</div>
-<div id='export' class='menu' onmouseenter = "hover(this)" onclick = 'downloadHTML(generateHTML(divs));' style='left: 550px'>Export</div>
-<div id='cellsH' class='menu' onmouseenter = "hover(this)" onwheel = 'adjustH(event)' style='left: 845px'>Horizontal cells : 12</div>
-<div id='cellsV' class='menu' onmouseenter = "hover(this)" onwheel = 'adjustV(event)' style='left: 1045px'>Vertical cells : 12</div>
+<div id='debug' style='color:white'>
+<div id='id' class='edit'>none</div>
+<div id='text' class='edit' onclick = 'divEdit(this)' >none</div>
+<div id='tcolor' class='edit' onclick = 'divEdit(this)' >none</div>
+<div id='color' class='edit' onclick = 'divEdit(this)' >none</div>
+<div id='bcolor' class='edit' onclick = 'divEdit(this)' >none</div>
+<div id='bthick' class='edit' onclick = 'divEdit(this)' >none</div>
+<div id='brad' class='edit' onclick = 'divEdit(this)' >none</div>
+</div>
+<div id='help' class='menu' onclick = 'help()' style='left: 130px'>help</div>
+<div id='load' class='menu'  onclick = 'load()' style='left: 320px'>Load</div>
+<div id='save' class='menu'   onclick = 'save()' style='left: 400px'>Save</div>
+<div id='test' class='menu'  onclick = 'makeHtml()' style='left: 480px'>Test</div>
+<div id='export' class='menu'   onclick = 'downloadHTML(generateHTML(divs));' style='left: 550px'>Export</div>
+<div id='cellsH' class='menu'   onwheel = 'adjustH(event)' style='left: 845px'>Horizontal cells : 12</div>
+<div id='cellsV' class='menu' onwheel = 'adjustV(event)' style='left: 1045px'>Vertical cells : 12</div>
 <script>
-
+//document.getElementById("debug").innerText = ''
 
 window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
 size = 0
@@ -93,6 +112,7 @@ canvas.addEventListener('wheel', (event) => {
   //size = Math.max(0, size); // Prevent size from going below 0
   //document.title = size; // Update display
 });
+
 
 function help(){
   let dialog = document.getElementById('dialog');
@@ -115,8 +135,11 @@ function adjustH(event){
 if(cellsH<1){cellsH=1}
   document.getElementById("cellsH").innerText = 'Horizontal cells : '+cellsH
 }
-setTimeout(() => {canvas.width=window.innerWidth*.8;canvas.height = window.innerHeight*.8;}, 2); 
-
+setTimeout(() => {
+  canvas.width=window.innerWidth*.8;
+  canvas.height = window.innerHeight*.8;
+  document.getElementById("canvas").style.left=canvas.width*.21+'px';
+}, 2);
 setTimeout(() => {
   const canvasRect = document.getElementById("canvas").getBoundingClientRect();
   const dialog = document.getElementById('dialog');
@@ -125,12 +148,10 @@ setTimeout(() => {
   dialog.innerText=`
   ----------------------------------DIV_EDIT--------------------------------------
   keyboard shortcuts:
-  -----s: saves the editor contents.
-  -----l: loads the editor contents.
-  -----t: tests the editor contents.
-  -----e: exports (html file) the editor contents.
+  -----t: for changing the divs text.
   -----i: for renaming the divs id.
   -----c: if a div is highlighted changes its color to the current color picker color.
+  -----w: if a div is highlighted changes its text color to the current color picker color.
   -----c: if no div is highlighted sets backgroung color instead.
   -----p: if a div is highlighted changes the current picker color to its color.
   -----p: if no div is highlighted changes the current picker color to the backgroung color.
@@ -156,44 +177,18 @@ cellsV = 12;
 cellsH = 12;
 gridV = 50;
 gridH = 50;
-gridSize = 50
 divX = divY = divW = divH = 0;
-colR = 0;
-colG = 244;
-colB = 0;
-bgcolR = 255;
-bgcolG = 255;
-bgcolB = 255;
+color = '#00ff00'
+bgcolor = '#ffffff'
 divLn = 4;
-control = false;
 delay = false;
+sel = false
 function start(){
   
 }
 
 function loop(){
-  
-  if(keyboard_check(vk_ctrl)){
-    control=true
-  }else{
-    control=false
-  }
-  if(keyboard_check_pressed(vk_v) && control==true){
-    let free=true;
-    for(let i = 0;i<divs.length;i++){
-      let mx = snap(mouse_x,gridH);
-      let my = snap(mouse_y,gridV);
-      let dx = divs[i].x;
-      let dy = divs[i].y;
-      if(mx==dx && my==dy){ // already a div here.
-        free=false
-      }
-    }
-    if(free){
-    let temp = {id: 'div'+idNum++, text:dupeDiv.text, textsize: dupeDiv.textsize, x: snap(mouse_x,gridH), y: snap(mouse_y,gridV), w: dupeDiv.w, h: dupeDiv.h, colR: dupeDiv.colR, colG: dupeDiv.colG, colB: dupeDiv.colB, tcolR: dupeDiv.tcolR, tcolG: dupeDiv.tcolG, tcolB: dupeDiv.tcolB,sel:false}
-      divs.push(temp)
-    }
-  }
+  document.title=sel
   calcGrid();
   
   if(mouse_x>=0){
@@ -207,7 +202,7 @@ function loop(){
       }else{
         
         // mouse button down
-      let temp = {id: 'div'+idNum++, text: 'Div'+(idNum-1).toString(), textsize: 22, x: divX, y: divY, w: divW, h: divH, colR: colR, colG: colG, colB: colB, tcolR: 255, tcolG: 255, tcolB: 255,sel:false}
+      let temp = {id: 'div'+idNum++, text: 'Div'+(idNum-1).toString(), textsize: 22, x: divX, y: divY, w: divW, h: divH, color: color, tcolor: '#ffffff', bcolor: '#ffffff', bthick: 4, brad: 5,  sel:false}
         let temp2 = div_correct(temp)
         if(temp2.w>0 && temp2.h>0){
           temp2.textsize = getDivTsize(temp2)
@@ -239,7 +234,7 @@ function loop(){
     //save(JSON.stringify(divs))
   }
   if(keyboard_check_pressed(vk_l)){
-    //load()
+    alert('L KEY')
   }
   if(keyboard_check_pressed(vk_e)){
     //downloadHTML(generateHTML(divs));
@@ -250,7 +245,6 @@ function loop(){
     dialog.style.display = 'none'
     canvas.style.display = 'block'
   }
-  document.title=divSelected
 }
 
 function draw(){
@@ -269,22 +263,43 @@ function rgbToHex(r, g, b) {
   .map((x) => x.toString(16).padStart(2, '0')) // Convert each to hex
   .join('')
   );
-}
+} //drawRoundedRect(ctx, x, y, width, height, radius, fillCol, lineCol, lineThick, fillAlpha)
 function draw_divs(){
   for(let i = 0; i < divs.length; i++){
     if(divs[i].sel==false){
-      draw_set_color(divs[i].colR, divs[i].colG, divs[i].colB)
-    }else{
-      draw_set_color(244, 158, 78)
+      drawRoundedRect(ctx, divs[i].x, divs[i].y, divs[i].w, divs[i].h,  divs[i].brad, divs[i].color, divs[i].bcolor, divs[i].bthick, 1)
+    }else{  //bcolR
+      drawRoundedRect(ctx, divs[i].x, divs[i].y, divs[i].w, divs[i].h,  divs[i].brad, divs[i].color, '#ff0000', 4, 1)
     }
-    draw_set_linewidth(4)
-    draw_set_linedash([])
-    draw_set_alpha(0.7)
-    draw_rectangle(divs[i].x, divs[i].y, divs[i].w, divs[i].h, false)
-    draw_set_alpha(1)
-    draw_rectangle(divs[i].x, divs[i].y, divs[i].w, divs[i].h, true);
-    draw_set_color(divs[i].tcolR, divs[i].tcolG, divs[i].tcolB)
-    draw_centered_text(divs[i].x+(divs[i].w/2), divs[i].y+(divs[i].h/2), divs[i].text, divs[i].textsize)
+    ctx.fillStyle=divs[i].tcolor;
+    draw_centered_text(divs[i].x+divs[i].w/2, divs[i].y+divs[i].h/2, divs[i].text, divs[i].textsize)
+  }
+}
+function drawRoundedRect(ctx, x, y, width, height, radius, fillCol, lineCol, lineThick, fillAlpha) {
+  x+=lineThick/2,y+=lineThick/2,width-=lineThick,height-=lineThick;
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.arcTo(x + width, y, x + width, y + radius, radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+  ctx.lineTo(x + radius, y + height);
+  ctx.arcTo(x, y + height, x, y + height - radius, radius);
+  ctx.lineTo(x, y + radius);
+  ctx.arcTo(x, y, x + radius, y, radius);
+  ctx.closePath();
+  if (fillCol) {
+    ctx.save();
+    ctx.globalAlpha = fillAlpha !== undefined ? fillAlpha : 1.0;
+    ctx.fillStyle = fillCol;
+    ctx.fill();
+    ctx.restore();
+  }
+  if (lineCol && lineThick > 0) {
+    ctx.globalAlpha = 1
+    ctx.strokeStyle = lineCol;
+    ctx.lineWidth = lineThick;
+    ctx.stroke();
   }
 }
 function calcGrid(){
@@ -311,38 +326,42 @@ function draw_grid(){
   }
   draw_set_alpha(1)
 }
-function hover(div){
-  let dbug = document.getElementById("debug")
-  let words=''
-  switch (div.id) {
-    case 'help':
-    words='click for help text';
-    break;
-    case 'load':
-    words='click to load json file';
-    break;
-    case 'save':
-    words='click to save json file';
-    break;
-    case 'test':
-    words='click to test html document';
-    break;
-    case 'export':
-    words='click to generate and save html document';
-    break;
-    case 'cellsH':
-    words='mouse wheel to adjust';
-    break;
-    case 'cellsV':
-    words='mouse wheel to adjust';
-    break;
-    case 'color-picker':
-    words='pick new color';
-    break;
-  }
-  dbug.innerText = words
+/*
+{id: 'div'+idNum++, text: 'Div'+(idNum-1).toString(), textsize: 22, x: divX, y: divY, w: divW, h: divH, color: color, tcolor: '#ffffff', bcolor: '#ffffff', bthick: 4, brad: 5,  sel:false}
+*/
+function divRead(div){
+  document.getElementById("id").innerText = div.id
+  document.getElementById("text").innerText = div.text
+  document.getElementById("tcolor").innerText = div.tcolor
+  document.getElementById("color").innerText = div.color
+  document.getElementById("bcolor").innerText = div.bcolor
+  document.getElementById("bthick").innerText = div.bthick
+  document.getElementById("brad").innerText = div.brad
 }
-
+function divEdit(div){
+  temp =  document.getElementById(div.id)
+ temp.innerText = prompt('new value','dont know')
+  for(let i = 0; i < divs.length; i++){
+    if(divs[i].id==document.getElementById("id").innerText){
+     if(temp.id=="text"){divs[i].text=temp.innerText}
+      if(temp.id=="tcolor"){divs[i].tcolor=temp.innerText}
+      if(temp.id=="color"){divs[i].color=temp.innerText}
+      if(temp.id=="bcolor"){divs[i].bcolor=temp.innerText}
+      if(temp.id=="bthick"){divs[i].bthick=temp.innerText}
+      if(temp.id=="brad"){divs[i].brad=parseInt(temp.innerText)}
+    }
+  }
+}
+function reset(){
+  
+  document.getElementById("id").innerText = 'none'
+  document.getElementById("text").innerText = 'none'
+  document.getElementById("tcolor").innerText = 'none'
+  document.getElementById("color").innerText = 'none'
+  document.getElementById("bcolor").innerText = 'none'
+  document.getElementById("bthick").innerText = 'none'
+  document.getElementById("brad").innerText = 'none'
+}
 function loop_divs(){
   let dbug = document.getElementById("debug")
   allClear=true
@@ -352,13 +371,13 @@ for(let i = 0; i < divs.length; i++){divs[i].sel=false}
   for(let i = 0; i < divs.length; i++){
     if(mouse_over(divs[i])){
       divs[i].sel=true;
-      let temp = JSON.stringify(divs[i])
-      let temp2 = temp.replace(/,/g, '\n');
-      if(delay==false){
-        dbug.innerText = temp2
-      }
+      sel=true
+      // trigger debug window
+      divRead(divs[i]);
       allClear=false
       i=100000
+    }else{
+      sel=false
     }
   }
   if(allClear){
@@ -368,12 +387,15 @@ for(let i = 0; i < divs.length; i++){divs[i].sel=false}
   }
 }
 function move_divs(){
-  let sel = false
+  
   
   for(let i = divs.length- 1; i >= 0; i--){
     if(divs[i].sel){
-      divs[i].textsize += size
-      
+      if(!keyboard_check(vk_b)){
+        divs[i].textsize += size
+      }else{
+        alert('boom')
+      }
       sel=true;
     if(keyboard_check_pressed(vk_left)){divs[i].x-=gridH}
     if(keyboard_check_pressed(vk_right)){divs[i].x+=gridH}
@@ -386,54 +408,13 @@ function move_divs(){
       if(keyboard_check_pressed(vk_delete)){
         divs.splice(i, 1);
       }
-      if(keyboard_check_pressed(vk_p)){
-        colR = divs[i].colR
-        colG = divs[i].colG
-        colB = divs[i].colB
-        document.getElementById("color-picker").value = rgbToHex(colR, colG, colB);
-      }
       
-      if(keyboard_check_pressed(vk_c)){
-        if(control==false){
-          divs[i].colR = colR;
-          divs[i].colG = colG;
-          divs[i].colB = colB;
-        }else{
-          dupeDiv=null;
-        dupeDiv = { ...divs[i] };
-          let dbug = document.getElementById("debug").innerText = 'div Copied!!!';
-          delay=true
-        setTimeout(function(){delay=false},3000);
-        }
-      }
-      if(sel==false){
-        if(keyboard_check_pressed(vk_c) && control==false){
-          bgcolR = colR;
-          bgcolG = colG;
-          bgcolB = colB;
-          document.getElementById("canvas").style.backgroundColor='rgb('+bgcolR+','+bgcolG+','+bgcolB+')'
-        }
-        if(keyboard_check_pressed(vk_p)){
-          colR = bgcolR
-          colG = bgcolG
-          colB = bgcolB
-          document.getElementById("color-picker").value = rgbToHex(colR, colG, colB);
-        }
-      }
-      if(keyboard_check_pressed(vk_i)){
-        divs[i].id = prompt('div id ?',divs[i].id)
-      }
-      if(keyboard_check_pressed(vk_t)){
-        divs[i].text = prompt('div text ?',divs[i].text)
-      }
-      if(keyboard_check_pressed(vk_w)){
-        divs[i].tcolR = colR
-        divs[i].tcolG = colG
-        divs[i].tcolB = colB
-      }
+      
     }
     
   }
+  
+  
   size=0
 }
 function makeHtml(){
@@ -488,7 +469,7 @@ if(obj.h<0){obj.h*=-1;obj.y-=obj.h}
   return obj;
 }
 function mouse_over(obj){
-//{x: divX, y: divY, w: divW, h: divH, colR: colR, colG: colG, colB: colB,}
+//{ x: divX, y: divY, w: divW, h: divH, colR: colR, colG: colG, colB: colB,}
   let mx = mouse_x;
   let my = mouse_y;
   if(mx>obj.x && mx< obj.x+obj.w && my>obj.y && my<obj.y+obj.h){
@@ -566,7 +547,7 @@ function generateHTML(data) {
   html += `<div id="${item.id}" class="generated-div" style="left: ${item.x}px; top: ${item.y}px; width: ${item.w}px; height: ${item.h}px; color: rgb(${item.tcolR}, ${item.tcolG}, ${item.tcolB}); display: flex; justify-content: center; align-items: center; font-size: ${item.textsize}px;background-color: ${backgroundColor};" onclick="alert('You clicked on ${item.id}')">${item.text}</div>
     `;
   });
-  // Add the script to scale the container 
+  // Add the script to scale the container
   html += `
   <script>
   // Scale the container to fit the viewport while maintaining aspect ratio
