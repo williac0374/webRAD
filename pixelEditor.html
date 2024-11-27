@@ -39,8 +39,23 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background-color: #ffffff;
+  border: 4px solid purple;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
-
+#inner {
+   display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid green;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
 #colors {
   display: grid;
   grid-template-columns: repeat(16, 1fr);
@@ -54,6 +69,11 @@ body {
   padding: 0;
   cursor: pointer;
 }
+#notes {
+  margin: 80px;
+  
+  
+}
 
 #picEdit {
   height: 85vh; /* 90% of the viewport height */
@@ -62,7 +82,10 @@ body {
   margin: 4px;
   background-color: #555555;
 }
-
+#picEditContainer {
+  overflow: auto; 
+  border: 10px solid blue;
+}
 #picEdit div {
   background-color: #140c1c;
   
@@ -80,14 +103,19 @@ body {
 
 <div id="picEditWrapper">
   <div id="colors"></div>
-  <div id="picEditContainer"style="width: 88vh; height: 88vh; overflow: auto; border: 1px solid black;">
-    <div id="picEdit"></div>
+  <div id="inner">
+  <textarea id="notes" name="w3review" rows="4" cols="50">
+At w3schools.com you will learn how to make a website. They offer free tutorials in all web development technologies.
+</textarea>
+    <div id="picEditContainer">
+      <div id="picEdit"></div>
+    </div>
   </div>
 </div>
 
 <script>
 let size = 8;
-let color = '#442434';
+let color = '#140c1c';
 let mouseDown = false;
 let rightButton = false;
 document.addEventListener('mousedown', (event) => {
@@ -108,6 +136,16 @@ document.body.onmouseup = () => mouseDown = false;
 document.addEventListener('contextmenu', (event) => {
   event.preventDefault(); // Disable the context menu for the entire document
 });
+document.addEventListener('dragstart', (event) => {
+  event.preventDefault();
+});
+document.addEventListener('dragover', (event) => {
+  event.preventDefault();
+});
+document.addEventListener('drop', (event) => {
+  event.preventDefault();
+});
+
 
 const colors = [
 '#140c1c', '#442434', '#30346d', '#4e4a4e', '#854c30',
@@ -130,15 +168,15 @@ let cNum = 0;
 let zoomLevel = 1; // Initial zoom level
 
 picEditDiv.addEventListener("wheel", (event) => {
-    event.preventDefault(); // Prevent default scrolling behavior
-
-    // Adjust the zoom level based on the wheel delta
-    const zoomChange = event.deltaY > 0 ? -0.1 : 0.1;
-    zoomLevel = Math.min(Math.max(zoomLevel + zoomChange, 0.1), 3); // Clamp zoom level between 0.1 and 3
-
-    // Apply the zoom to the element
-    picEditDiv.style.transform = `scale(${zoomLevel})`;
-    picEditDiv.style.transformOrigin = "0 0"; // Scale from top-left corner
+  event.preventDefault(); // Prevent default scrolling behavior
+  
+  // Adjust the zoom level based on the wheel delta
+  const zoomChange = event.deltaY > 0 ? -0.1 : 0.1;
+  zoomLevel = Math.min(Math.max(zoomLevel + zoomChange, 0.1), 3); // Clamp zoom level between 0.1 and 3
+  
+  // Apply the zoom to the element
+picEditDiv.style.transform = `scale(${zoomLevel})`;
+  picEditDiv.style.transformOrigin = "50% 50%"; // Scale from top-left corner
 });
 
 
@@ -147,7 +185,7 @@ colors.forEach(col => {
   const button = document.createElement('button');
   button.style.backgroundColor = col;
   button.style.color = "#ffffff";
-  button.style.draggable="false";
+  button.setAttribute("draggable", "false");
   button.innerText = cButtNum;
 if(cButtNum==0){button.style.fontSize = '2rem';}
   cButtNum++;
@@ -179,7 +217,7 @@ picEditDiv.style.gridTemplateRows = `repeat(${size}, 1fr)`;
     const cell = document.createElement('div');
     cell.style.margin = "1px";
     cell.style.backgroundColor = '#666666';
-    cell.style.draggable="false";
+    cell.setAttribute("draggable", "false");
     cell.id = -1 ;
     cell.addEventListener('mousemove', () => {
       if (mouseDown) {
@@ -303,31 +341,20 @@ if(parseInt(margin, 10) == 1){
 });
 exportBtn.addEventListener('click', () => {
 const output = getOutput().flat();
-const encoded = encodeImageData(output)
-const textarea = document.createElement('textarea');
-textarea.value = encoded;
-textarea.style.position = 'absolute';
-textarea.style.top = '5%';
-textarea.style.left = '10%';
-textarea.style.width = '90vh';
-textarea.style.height = '90vh';
-textarea.style.zIndex = 1000;
-document.body.appendChild(textarea);
-textarea.focus();
-textarea.addEventListener('blur', () => {
-document.body.removeChild(textarea);
+let  encoded = encodeImageData(output)
+if(navigator.clipboard.writeText(encoded.toString())){
+alert('rle copied to clipboard')
+}
 });
-});
+
 
 function encodeImageData(pixels) {
 // Calculate the size of the square image
 const size = Math.sqrt(pixels.length);
-
 // If the array length isn't a perfect square, throw an error
 if (size % 1 !== 0) {
 throw new Error("The input array length is not a perfect square.");
 }
-
 let encodedString = size.toString();  // Start with the size as the first part of the string
 let currentColor = null;
 let currentCount = 0;
@@ -364,7 +391,6 @@ if ((i + 1) % size === 0) {
   encodedString += ` `;
 }
 }
-
 return encodedString.trim();
 }
 
