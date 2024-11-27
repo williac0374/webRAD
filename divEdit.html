@@ -365,8 +365,8 @@ function drawRoundedRect(ctx, x, y, width, height, radius, fillCol, lineCol, lin
   }
 }
 function calcGrid(){
-  gridH = canvas.width/cellsH;
-  gridV = canvas.height/cellsV;
+  gridH = Math.floor(canvas.width/cellsH);
+  gridV = Math.floor(canvas.height/cellsV);
 }
 function snap(input,grid){
   return grid * Math.round(input / grid);
