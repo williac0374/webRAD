@@ -90,8 +90,8 @@ input[type="color" i] {
 <div id='tcolor' class='edit' onclick = 'divEdit(this)' >none</div>
 <div id='color' class='edit' onclick = 'divEdit(this)' >none</div>
 <div id='bcolor' class='edit' onclick = 'divEdit(this)' >none</div>
-<div id='bthick' class='edit' onclick = 'divEdit(this)' >none</div>
-<div id='brad' class='edit' onclick = 'divEdit(this)' >none</div>
+<div id='bthick' class='edit' onclick = 'divEdit(this)' onwheel = "adjustB(event)" >none</div>
+<div id='brad' class='edit' onclick = 'divEdit(this)'  onwheel = "adjustBrad(event)" >none</div>
 </div>
 <div id='help' class='menu' onclick = 'help()' style='left: 130px'>help</div>
 <div id='load' class='menu'  onclick = 'load()' style='left: 230px'>Load</div>
@@ -124,6 +124,36 @@ function help(){
   canvas.style.display = 'none';
   dialog.style.display = 'block'
   
+}
+function adjustBrad(event){
+  //tempBthick
+  event.preventDefault();
+  var delta = Math.sign(event.deltaY);
+  tempBrad -= delta;
+if(tempBrad<1){tempBrad=1}
+  let bt = document.getElementById("brad");
+  bt.innerText = tempBrad;
+  let id = document.getElementById("id");
+  for(let i = 0; i < divs.length; i++){
+    if(divs[i].id==id.innerText){
+      divs[i].brad = tempBrad;
+    }
+  }
+}
+function adjustB(event){
+  //tempBthick
+  event.preventDefault();
+  var delta = Math.sign(event.deltaY);
+  tempBthick -= delta;
+if(tempBthick<1){tempBthick=1}
+  let bt = document.getElementById("bthick");
+  bt.innerText = tempBthick;
+  let id = document.getElementById("id");
+  for(let i = 0; i < divs.length; i++){
+    if(divs[i].id==id.innerText){
+      divs[i].bthick = tempBthick;
+    }
+  }
 }
 function adjustV(event){
   event.preventDefault();
@@ -187,6 +217,8 @@ bgcolor = '#ffffff'
 divLn = 4;
 delay = false;
 sel = false
+tempBthick = 1;
+tempBrad = 1;
 document.getElementById('bgset').style.backgroundColor = bgcolor;
 document.getElementById('bgset').style.color = getOppositeHex(bgcolor);
 
@@ -195,7 +227,7 @@ function start(){
 }
 
 function loop(){
-  document.title=sel
+  document.title=tempBthick
   calcGrid();
   
   if(mouse_x>=0){
@@ -244,7 +276,7 @@ function loop(){
     alert('L KEY')
   }
   if(keyboard_check_pressed(vk_e)){
-    //downloadHTML(generateHTML(divs));
+    
   }
   if(keyboard_check_pressed(vk_escape)){
     let dialog = document.getElementById('dialog');
@@ -363,12 +395,23 @@ function divRead(div){
   document.getElementById("tcolor").innerText = div.tcolor
   document.getElementById("color").innerText = div.color
   document.getElementById("bcolor").innerText = div.bcolor
-  document.getElementById("bthick").innerText = div.bthick
-  document.getElementById("brad").innerText = div.brad
+  document.getElementById("bthick").innerText = tempBthick = div.bthick
+  document.getElementById("brad").innerText = tempBrad = div.brad
+  colorCorrect(div)
+}
+function colorCorrect(div){
+  let tc = document.getElementById("tcolor");
+  let c = document.getElementById("color");
+  let bc = document.getElementById("bcolor");
+  tc.style.backgroundColor=div.tcolor;
+  tc.style.color = getOppositeHex(div.tcolor);
+  c.style.backgroundColor=div.color;
+  c.style.color = getOppositeHex(div.color);
+  bc.style.backgroundColor=div.bcolor;
+  bc.style.color = getOppositeHex(div.bcolor);
 }
 function divEdit(div){
   temp =  document.getElementById(div.id) //gets id of div that called this
-  
   for(let i = 0; i < divs.length; i++){ //getOppositeHex(bgcolor)
     if(divs[i].id==document.getElementById("id").innerText){
     if(temp.id=="text"){divs[i].text=temp.innerText=divs[i].text=prompt('text',divs[i].text)}
@@ -376,11 +419,11 @@ function divEdit(div){
         divs[i].tcolor=temp.innerText=temp.style.backgroundColor=prompt('tcolor',divs[i].tcolor);
         temp.style.color = getOppositeHex(divs[i].tcolor)
       }
-    if(temp.id=="color"){
+      if(temp.id=="color"){
         divs[i].color=temp.innerText=temp.style.backgroundColor=prompt('tcolor',divs[i].color);
         temp.style.color = getOppositeHex(divs[i].color)
       }
-    if(temp.id=="bcolor"){
+      if(temp.id=="bcolor"){
         divs[i].bcolor=temp.innerText=temp.style.backgroundColor=prompt('bcolor',divs[i].bcolor);
         temp.style.color = getOppositeHex(divs[i].bcolor)
       }
@@ -428,6 +471,7 @@ function move_divs(){
   
   for(let i = divs.length- 1; i >= 0; i--){
     if(divs[i].sel){
+      
       if(!keyboard_check(vk_b)){
         divs[i].textsize += size
       }else{
