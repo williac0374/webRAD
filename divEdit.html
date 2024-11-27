@@ -81,7 +81,7 @@ input[type="color" i] {
 
 <body>
 <input type="file" id="fileInput" accept=".json" style="display:none">
-<input type="color" id="color-picker" value='#00ff00'onchange="gotColor(this.value)"onblur="gotColor(this.value)">
+<input type="color" id="color-picker" value='#00ff00'>
 <canvas id="canvas"></canvas>
 <div id='dialog'></div>
 <div id='debug' style='color:white'>
@@ -113,7 +113,7 @@ canvas.addEventListener('wheel', (event) => {
   //document.title = size; // Update display
 });
 function setbgcolor(){
-  bgcolor=prompt('set bgcolor',bgcolor)
+  bgcolor=document.getElementById('color-picker').value;
   document.getElementById('bgset').style.backgroundColor = bgcolor;
   document.getElementById('bgset').style.color = getOppositeHex(bgcolor);
 }
@@ -219,20 +219,21 @@ delay = false;
 sel = false
 tempBthick = 1;
 tempBrad = 1;
+tempSelect = -1;
 document.getElementById('bgset').style.backgroundColor = bgcolor;
 document.getElementById('bgset').style.color = getOppositeHex(bgcolor);
 
 function start(){
   
 }
-
+mdown=false
 function loop(){
-  document.title=tempBthick
+  document.title='tempSelect : '+tempSelect
   calcGrid();
   
   if(mouse_x>=0){
     if(!mouse_check()){ // mouse button not down
-      
+      mdown=false;
       if(divW==0){ // div not currently being drawn
         divX = mouse_x;
         divY = mouse_y;
@@ -254,6 +255,7 @@ function loop(){
         
       }
     }else{
+      mdown=true;
       if(divSelected==false){
         hide_mouse();
         divW = mouse_x - divX;
@@ -416,15 +418,15 @@ function divEdit(div){
     if(divs[i].id==document.getElementById("id").innerText){
     if(temp.id=="text"){divs[i].text=temp.innerText=divs[i].text=prompt('text',divs[i].text)}
       if(temp.id=="tcolor"){
-        divs[i].tcolor=temp.innerText=temp.style.backgroundColor=prompt('tcolor',divs[i].tcolor);
+        divs[i].tcolor=temp.innerText=temp.style.backgroundColor=document.getElementById('color-picker').value;
         temp.style.color = getOppositeHex(divs[i].tcolor)
       }
       if(temp.id=="color"){
-        divs[i].color=temp.innerText=temp.style.backgroundColor=prompt('tcolor',divs[i].color);
+        divs[i].color=temp.innerText=temp.style.backgroundColor=document.getElementById('color-picker').value;
         temp.style.color = getOppositeHex(divs[i].color)
       }
       if(temp.id=="bcolor"){
-        divs[i].bcolor=temp.innerText=temp.style.backgroundColor=prompt('bcolor',divs[i].bcolor);
+        divs[i].bcolor=temp.innerText=temp.style.backgroundColor=document.getElementById('color-picker').value;
         temp.style.color = getOppositeHex(divs[i].bcolor)
       }
     if(temp.id=="bthick"){divs[i].bthick=temp.innerText=prompt('bthick',divs[i].bthick)}
@@ -445,12 +447,12 @@ function reset(){
 function loop_divs(){
   let dbug = document.getElementById("debug")
   allClear=true
-  // clears all divs
-for(let i = 0; i < divs.length; i++){divs[i].sel=false}
+
   // checks which if any divs are selected
   for(let i = 0; i < divs.length; i++){
-    if(mouse_over(divs[i])){
+    if(mouse_over(divs[i]) && mouse_check_released()){
       divs[i].sel=true;
+      tempSelect=i
       sel=true
       // trigger debug window
       divRead(divs[i]);
@@ -459,6 +461,9 @@ for(let i = 0; i < divs.length; i++){divs[i].sel=false}
     }else{
       sel=false
     }
+    //clears all divs and make sure latest selcted is the only one selected
+    for(let i = 0; i < divs.length; i++){divs[i].sel=false}
+    if(tempSelect>=0){divs[tempSelect].sel=true}
   }
   if(allClear){
     divSelected=false;
@@ -559,8 +564,9 @@ function mouse_over(obj){
     return false;
   }
 }
-function gotColor(color){
-  alert(color)
+function getColor(){
+    //color-value
+  document.getElementById('color-picker').value
   show_mouse();
   
 }
