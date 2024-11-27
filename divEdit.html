@@ -228,7 +228,7 @@ function start(){
 }
 mdown=false
 function loop(){
-  document.title='tempSelect : '+tempSelect
+
   calcGrid();
   
   if(mouse_x>=0){
@@ -493,6 +493,7 @@ function move_divs(){
     if(divs[i].y+divs[i].h>canvas.height){divs[i].y -=gridV}
       if(keyboard_check_pressed(vk_delete)){
         divs.splice(i, 1);
+        tempSelect=-1
       }
       
       
