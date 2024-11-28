@@ -220,6 +220,7 @@ if(navigator.userAgent.includes("Android")){
     }
   });
   addEventListener("touchmove", function(e){
+    e.preventDefault();
     var touch = e.touches[0];
     if(mouse_down==true){
       mouse_x = touch.clientX - canvas.offsetLeft;
