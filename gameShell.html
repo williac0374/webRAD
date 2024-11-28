@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>gameDUDE</title>
@@ -75,7 +75,7 @@ buttons.appendChild(buttons_canvas);
 what=0
 // The main game loop
 function main() {
-  document.documentElement.requestFullscreen();
+  requestFullscreen();
   document.title=what++;
   draw_dpad();
   draw_game();
@@ -107,7 +107,29 @@ function draw_buttons(){
 //////////////////////////////////////////////////////
 function draw_image(img,x,y,w,h,rot){ctx.globalAlpha =master_alpha;if(rot!=null){ctx.save();ctx.translate(x,y);ctx.rotate(rot*Math.PI/180);ctx.drawImage(img, -w/2,-h/2,w,h);ctx.restore()}else{ctx.drawImage(img, x, y, w, h);}}
 function draw_set_image(file){let temp = new Image();temp.src = file;return temp;}
+function requestFullscreen(element) {
+  if (!element) {
+    element = document.documentElement; // Default to the document element
+  }
 
+  // Check for Firefox and Pale Moon-specific fullscreen request
+  if (element.requestFullscreen) {
+    element.requestFullscreen(); // Standard version for modern browsers
+  } else if (element.webkitRequestFullscreen) { // Safari and older Chrome versions
+    element.webkitRequestFullscreen();
+  } else if (element.msRequestFullscreen) { // Older IE/Edge
+    element.msRequestFullscreen();
+  } else if (element.mozRequestFullScreen) { // Pale Moon and older Firefox versions
+    element.mozRequestFullScreen();
+  } else {
+    console.error("Fullscreen API is not supported on this browser.");
+  }
+}
+
+// Example usage
+document.getElementById("dpad").addEventListener("click", () => {
+  requestFullscreen();
+});
 
 </script>
 
