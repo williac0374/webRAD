@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>gameDUDE</title>
 <style>
 body{
@@ -75,7 +75,7 @@ buttons.appendChild(buttons_canvas);
 what=0
 // The main game loop
 function main() {
-  window.scrollTo(0, -1);
+  document.documentElement.requestFullscreen();
   document.title=what++;
   draw_dpad();
   draw_game();
