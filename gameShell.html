@@ -1,6 +1,9 @@
 <body style=margin:0>
 <canvas id=a>
 <script>
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+
+
 // initialize 2D canvas (c)
 // initialize game state (s)
 // initialize keys states (u,r,d,l for directions, k for all the keyboard)
@@ -10,14 +13,48 @@ c=a.getContext`2d`,k=[u=r=d=l=s=0]
 let startX, startY, endX, endY;
 //global variables
 let words = 'swipe'
-
+friction = 0.01
 // update u,l,d,r globals when an arrow key/wasd/zqsd is pressed or released
 // update k[keyCode] if any other key is pressed/released
 onkeydown=onkeyup=e=>k[e.which]=self['lld*rlurdu'[e.which%32%17]]=e.type[5]
-
+firstTime=true
+alien=null
+function start(){
+  firstTime=false;
+alien={x:a.width/2 , y:a.height/2, dx: 0, dy: 0, sprite:draw_set_image('LeviAlien256.png')};
+  
+}
+function moveAlien(){
+  alien.x += alien.dx;
+  alien.y += alien.dy
+if(alien.dx>friction){alien.dx-=friction}
+if(alien.dx<-friction){alien.dx+=friction}
+  
+if(alien.dy>friction){alien.dy-=friction}
+if(alien.dy<-friction){alien.dy+=friction}
+}
+function wrapScreen(obj){
+  if(obj.x > a.width){
+    obj.x = -(obj.sprite.width-2);
+  }
+  if(obj.x<-obj.sprite.width){
+    obj.x = a.width
+  }
+  if(obj.y > a.height){
+    obj.y = -(obj.sprite.height-2);
+  }
+  if(obj.y<-obj.sprite.height){
+    obj.y = a.height
+  }
+}
 // start game loop (60fps)
 setInterval(e=>{
   a.width=innerWidth,a.height=innerHeight;
+if(firstTime){start()}
+  if(firstTime==false){
+    moveAlien();
+    wrapScreen(alien);
+  }
   // Draw a custom dashed border
   c.setLineDash([10, 5]); // [dash length, gap length]
   c.lineWidth = 10;        // Border thickness
@@ -26,8 +63,8 @@ setInterval(e=>{
   // Draw the border inside the canvas
   c.strokeRect(1, 1, a.width - 2, a.height - 2); // Adjust for border width
   
-   c.font="84px sans-serif",c.fillText(words,50,150);
-  
+  // c.font="84px sans-serif",c.fillText(words,50,150);
+  draw_image(alien.sprite,alien.x,alien.y,256,256)
   switch(s){
     case 0: // ex: draw title screen
     case 1: // ex: draw menu screen
@@ -61,14 +98,15 @@ a.addEventListener('touchend', e => {
   const touch = e.changedTouches[0];
   endX = touch.pageX;
   endY = touch.pageY;
-
+  
   // detect swipe direction (left, right, up, down)
   let dx = endX - startX;
   let dy = endY - startY;
-
+  alien.dx = dx/100;
+  alien.dy = dy/100;
   // threshold to detect swipes
   const threshold = 30;
-
+  
   // horizontal swipe (left or right)
   if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > threshold) {
     if (dx > 0) {
@@ -79,7 +117,7 @@ a.addEventListener('touchend', e => {
       words = 'Swiped left';
     }
   }
-
+  
   // vertical swipe (up or down)
   if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > threshold) {
     if (dy > 0) {
@@ -101,21 +139,41 @@ a.addEventListener('mousedown', e => {
 a.addEventListener('mouseup', e => {
   endX = e.pageX;
   endY = e.pageY;
-
+  
   // detect swipe direction (same logic as above)
   let dx = endX - startX;
   let dy = endY - startY;
   const threshold = 30;
-
+  alien.dx = dx/100;
+  alien.dy = dy/100;
   if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > threshold) {
     if (dx > 0) words = 'Swiped right';
     else words = 'Swiped left';
   }
-
+  
   if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > threshold) {
     if (dy > 0) words = 'Swiped down';
     else words = 'Swiped up';
   }
 });
+function draw_set_image(file){
+  let temp = new Image();
+  temp.src = file;
+  return temp;
+}
+function draw_image(img,x,y,w,h,rot){
+  c.globalAlpha =1;
+  if(rot!=null){
+    c.save();
+    c.translate(x,y);
+    c.rotate(rot*Math.PI/180);
+    c.drawImage(img, -w/2,-h/2,w,h);
+    c.restore()
+  }else{
+    c.drawImage(img, x, y, w, h);
+  }
+  
+  
+}
 </script>
 </body>
