@@ -44,8 +44,8 @@ function loop(){
   if(mouse_check_released()){
     mxEnd = mouse_x;
     myEnd = mouse_y;
-    alien.dx=(mxEnd-mxStart)/1000;
-    alien.dy=(myEnd-myStart)/1000;
+    alien.dx=(mxEnd-mxStart)/200;
+    alien.dy=(myEnd-myStart)/200;
   }
   // moves alien
   alien.x+=alien.dx;
