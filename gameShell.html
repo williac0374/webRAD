@@ -33,8 +33,8 @@ function start(){
   friction = 0.01
   mxEnd = mouse_x;
   myEnd = mouse_y;
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = window.availWidth;
+  canvas.height = window.availHeight;
   window.scrollTo(0, 1);
 alien = {x:10, y:10 ,spr:draw_set_image('LeviAlien256.png'), dx:0, dy:0}
 }
