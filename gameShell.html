@@ -39,6 +39,7 @@ function start(){
 alien = {x:10, y:10 ,spr:draw_set_image('LeviAlien256.png'), dx:0, dy:0}
 }
 function loop(){
+  window.scrollTo(0, 1);
   if(mouse_check_pressed()){
     mxStart = mouse_x;
     myStart = mouse_y;
