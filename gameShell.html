@@ -102,8 +102,8 @@ a.addEventListener('touchend', e => {
   // detect swipe direction (left, right, up, down)
   let dx = endX - startX;
   let dy = endY - startY;
-  alien.dx = dx/100;
-  alien.dy = dy/100;
+  alien.dx = dx/2;
+  alien.dy = dy/2;
   // threshold to detect swipes
   const threshold = 30;
   
