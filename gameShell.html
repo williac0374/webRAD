@@ -3,74 +3,112 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Basic Template</title>
+<title>gameDUDE</title>
 <style>
-html, body {
+body{
   margin: 0;
-  display: flex;
-  overscroll-behavior: none;
-  justify-content: center;
-  align-items: center;
-  height: 90vh;
+  padding: 0;
+  width: 99vw;
+  height: 99vh;
   background-color: black;
-  
+  display: flex;                  /* establish flex container */
+  flex-direction: row;            /* default value; can be omitted */
+  flex-wrap: nowrap;              /* default value; can be omitted */
+  justify-content: space-between;
 }
-canvas {
-  // border: 2px solid #000;
-  background-color: white;
-  
+#dpad{
+  margin: 0;
+  padding: 0;
+  width: 25%;
+  height: 100%;
+  background-color: yellow;
+}
+
+#game_screen{
+  margin: 0;
+  padding: 0;
+  width: 50%;
+  height: 100%;
+  background-color: grey;
+}
+#buttons{
+  margin: 0;
+  padding: 0;
+  width: 25%;
+  height: 100%;
+  background-color: blue;
 }
 </style>
 </head>
 
 <body>
-<canvas id="canvas" ></canvas>
-
+<div id="dpad"></div>
+<div id="game_screen"></div>
+<div id="buttons"></div>
 <script>
-function start(){
-  mxStart = mouse_x;
-  myStart = mouse_y;
-  friction = 0.01
-  mxEnd = mouse_x;
-  myEnd = mouse_y;
-  canvas.width = screen.availWidth;
-  canvas.height = screen.availHeight*0.8;
-alien = {x:10, y:10 ,spr:draw_set_image('LeviAlien256.png'), dx:0, dy:0}
-}
-function loop(){
-  window.scrollTo(0, 1);
-  if(mouse_check_pressed()){
-    mxStart = mouse_x;
-    myStart = mouse_y;
-  }
-  if(mouse_check_released()){
-    mxEnd = mouse_x;
-    myEnd = mouse_y;
-    alien.dx=(mxEnd-mxStart)/10;
-    alien.dy=(myEnd-myStart)/10;
-  }
-  // moves alien
-  alien.x+=alien.dx;
-  alien.y+=alien.dy;
-  //screen wraps alien
-if(alien.x>canvas.width){alien.x=-128}
-if(alien.x<-128){alien.x=canvas.width}
-if(alien.y>canvas.height){alien.y=-128}
-if(alien.y<-128){alien.y=canvas.height}
-  //friction slows alien
-if(alien.dx>friction){alien.dx-friction}
-if(alien.dx<-friction){alien.dx+friction}
-if(alien.dy>friction){alien.dy-friction}
-if(alien.dy<-friction){alien.dy+friction}
-}
+  // catch any of my stupid error (mostly typo's)
+  window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+//set up canvas's and contexts
+const dpad = document.getElementById('dpad');
+const dpad_canvas = document.createElement('canvas');
+const dpad_ctx = dpad_canvas.getContext("2d");
+dpad_canvas.width = dpad.offsetWidth;
+dpad_canvas.height = dpad.offsetHeight;
+dpad.appendChild(dpad_canvas);
 
-function draw(){
-  document.title = myStart+' , '+mxEnd
-  draw_image(alien.spr,alien.x,alien.y,128,128)
+////////////////////////////////////////////////////////////////////
+const game_screen = document.getElementById('game_screen');
+const game_canvas = document.createElement('canvas');
+const game_ctx = game_canvas.getContext("2d");
+game_canvas.width = game_screen.offsetWidth;
+game_canvas.height = game_screen.offsetHeight;
+game_screen.appendChild(game_canvas);
+
+/////////////////////////////////////////////////////////////////////
+const buttons = document.getElementById('buttons');
+const buttons_canvas = document.createElement('canvas');
+const buttons_ctx = buttons_canvas.getContext("2d");
+buttons_canvas.width = buttons.offsetWidth;
+buttons_canvas.height = buttons.offsetHeight;
+buttons.appendChild(buttons_canvas);
+
+what=0
+// The main game loop
+function main() {
+  document.title=what++;
+  draw_dpad();
+  draw_game();
+  draw_buttons();
+  requestAnimationFrame(main);
+};
+var w = window;
+requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+var then = Date.now();
+main();
+//////////////////////////////////////////////////////
+//functions
+/////////////////////////////////////////////////////
+function draw_game(){
+  game_ctx.fillStyle = 'purple'
+  game_ctx.clearRect(0, 0, game_canvas.width, game_canvas.height);
+  game_ctx.fillRect( 10,10,game_canvas.width-20,game_canvas.height-20 );
 }
+function draw_dpad(){
+  dpad_ctx.fillStyle = 'white'
+  dpad_ctx.clearRect(0, 0, dpad_canvas.width, dpad_canvas.height);
+  dpad_ctx.fillRect( 10,10,dpad_canvas.width-20,dpad_canvas.height-20 );
+}
+function draw_buttons(){
+  buttons_ctx.fillStyle = 'brown'
+  buttons_ctx.clearRect(0, 0, buttons_canvas.width, buttons_canvas.height);
+  buttons_ctx.fillRect( 10,10,buttons_canvas.width-20,buttons_canvas.height-20 );
+}
+//////////////////////////////////////////////////////
+function draw_image(img,x,y,w,h,rot){ctx.globalAlpha =master_alpha;if(rot!=null){ctx.save();ctx.translate(x,y);ctx.rotate(rot*Math.PI/180);ctx.drawImage(img, -w/2,-h/2,w,h);ctx.restore()}else{ctx.drawImage(img, x, y, w, h);}}
+function draw_set_image(file){let temp = new Image();temp.src = file;return temp;}
+
 
 </script>
-<script type='text/javascript' src='engine.js'></script>
 
 </body>
 </html>
