@@ -34,8 +34,7 @@ function start(){
   mxEnd = mouse_x;
   myEnd = mouse_y;
   canvas.width = screen.availWidth;
-  canvas.height = screen.availHeight;
-  window.scrollTo(0, 1);
+  canvas.height = screen.availHeight*0.9;
 alien = {x:10, y:10 ,spr:draw_set_image('LeviAlien256.png'), dx:0, dy:0}
 }
 function loop(){
