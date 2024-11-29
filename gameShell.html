@@ -39,11 +39,14 @@ function start(){
   // Set the CSS size to ensure it looks correct
 canvas.style.width = `${document.documentElement.clientWidth}px`;
 canvas.style.height = `${document.documentElement.clientHeight}px`;
+  // Get the CSS size of the canvas
+  cssWidth = document.documentElement.clientWidth;
+  cssHeight = document.documentElement.clientHeight;
   centerX=canvas.width/2;
   centerY=canvas.height/3
   bdrop = draw_set_image('joeBackDrop.png')
   singleJoe = draw_set_image('frame1.png')
-joe = {x:800,y:420, sprite:[draw_set_image('frame1.png'),draw_set_image('frame2.png'),draw_set_image('frame3.png'),draw_set_image('frame4.png'),draw_set_image('frame5.png')], fnum:0}
+joe = {x:800,y:330, sprite:[draw_set_image('frame1.png'),draw_set_image('frame2.png'),draw_set_image('frame3.png'),draw_set_image('frame4.png'),draw_set_image('frame5.png')], fnum:0}
   words = 'hello world!!'
   running=true
   showJoe=false
@@ -58,8 +61,8 @@ function loop(){
 }
 
 function draw(){
-draw_image(bdrop,0,0,canvas.width, canvas.height)
-draw_image(joe.sprite[joe.fnum],joe.x,joe.y, 208,208)
+  draw_image(bdrop,0,0,cssWidth, cssHeight)
+  draw_image(joe.sprite[joe.fnum],joe.x,joe.y, 188,188)
   
 }
 ///////////////////////////////////////////////////////////////////////
