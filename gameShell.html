@@ -30,6 +30,8 @@ mx=my=0;
 running=false
 function start(){
   canvas.width=document.documentElement.clientWidth;canvas.height=document.documentElement.clientHeight
+  centerX=canvas.width/2;
+  centerY=canvas.height/3
   bdrop = draw_set_image('joeBackDrop.png')
   singleJoe = draw_set_image('frame1.png')
   joe = {x:800,y:340,sprite:[draw_set_image('frame1.png'),draw_set_image('frame2.png'),draw_set_image('frame3.png'),draw_set_image('frame4.png'),draw_set_image('frame5.png')], fnum:0}
@@ -49,7 +51,7 @@ function loop(){
 function draw(){
   if(showJoe){ draw_image(bdrop,0,0,canvas.width, canvas.height)}
   //draw_image(joe.sprite[joe.fnum],joe.x,joe.y, 180,180)
-  draw_image(singleJoe,800,340, 180,180)
+  draw_image(singleJoe,centerX,centerY, 180,180)
 }
 ///////////////////////////////////////////////////////////////////////
 function input(){
