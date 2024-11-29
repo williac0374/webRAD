@@ -30,8 +30,8 @@ mx=my=0;
 running=false
 function start(){
   // Get the device pixel ratio
-  const dpr = window.devicePixelRatio || 1;
-  alert(dpr)
+  dpr = window.devicePixelRatio || 1;
+  //alert(dpr)
   // Set canvas width and height using device pixel ratio
   canvas.width = document.documentElement.clientWidth * dpr;
   canvas.height = document.documentElement.clientHeight * dpr;
@@ -47,7 +47,7 @@ canvas.style.height = `${document.documentElement.clientHeight}px`;
   centerY=canvas.height/3
   bdrop = draw_set_image('joeBackDrop.png')
   singleJoe = draw_set_image('frame1.png')
-joe = {x:0,y:0, sprite:[draw_set_image('frame1.png'),draw_set_image('frame2.png'),draw_set_image('frame3.png'),draw_set_image('frame4.png'),draw_set_image('frame5.png')], fnum:0}
+joe = {x:0,y:340, sprite:[draw_set_image('frame1.png'),draw_set_image('frame2.png'),draw_set_image('frame3.png'),draw_set_image('frame4.png'),draw_set_image('frame5.png')], fnum:0}
   words = 'hello world!!'
   running=true
   showJoe=false
@@ -63,7 +63,7 @@ function loop(){
 
 function draw(){
   draw_image(bdrop,0,0,cssWidth, cssHeight)
-  draw_image(joe.sprite[joe.fnum],joe.x,joe.y, 188,188)
+  draw_image(joe.sprite[joe.fnum],joe.x,joe.y, 224/dpr,224/dpr)
   
 }
 ///////////////////////////////////////////////////////////////////////
