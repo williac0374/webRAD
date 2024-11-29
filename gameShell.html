@@ -1,136 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>gameDUDE</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basic Template</title>
 <style>
 body{
   margin: 0;
-  padding: 0;
-  width: 99vw;
-  height: 99vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
   background-color: black;
-  display: flex;                  /* establish flex container */
-  flex-direction: row;            /* default value; can be omitted */
-  flex-wrap: nowrap;              /* default value; can be omitted */
-  justify-content: space-between;
+  
 }
-#dpad{
-  margin: 0;
-  padding: 0;
-  width: 25%;
-  height: 100%;
-  background-color: yellow;
-}
-
-#game_screen{
-  margin: 0;
-  padding: 0;
-  width: 50%;
-  height: 100%;
-  background-color: grey;
-}
-#buttons{
-  margin: 0;
-  padding: 0;
-  width: 25%;
-  height: 100%;
-  background-color: blue;
+canvas {
+  // border: 2px solid #000;
+  background-color: white;
 }
 </style>
 </head>
 
 <body>
-<div id="dpad"></div>
-<div id="game_screen"></div>
-<div id="buttons"></div>
+<canvas id="canvas"></canvas>
+
 <script>
-// catch any of my stupid error (mostly typo's)
-window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
-//set up canvas's and contexts
-const dpad = document.getElementById('dpad');
-const dpad_canvas = document.createElement('canvas');
-const dpad_ctx = dpad_canvas.getContext("2d");
-dpad_canvas.width = dpad.offsetWidth;
-dpad_canvas.height = dpad.offsetHeight;
-dpad.appendChild(dpad_canvas);
-
-////////////////////////////////////////////////////////////////////
-const game_screen = document.getElementById('game_screen');
-const game_canvas = document.createElement('canvas');
-const game_ctx = game_canvas.getContext("2d");
-game_canvas.width = game_screen.offsetWidth;
-game_canvas.height = game_screen.offsetHeight;
-game_screen.appendChild(game_canvas);
-
-/////////////////////////////////////////////////////////////////////
-const buttons = document.getElementById('buttons');
-const buttons_canvas = document.createElement('canvas');
-const buttons_ctx = buttons_canvas.getContext("2d");
-buttons_canvas.width = buttons.offsetWidth;
-buttons_canvas.height = buttons.offsetHeight;
-buttons.appendChild(buttons_canvas);
-
-what=0
-// The main game loop
-function main() {
-  document.title=what++;
-  draw_dpad();
-  draw_game();
-  draw_buttons();
-  requestAnimationFrame(main);
-};
-var w = window;
-requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
-var then = Date.now();
-main();
-//////////////////////////////////////////////////////
-//functions
-/////////////////////////////////////////////////////
-function draw_game(){
-  game_ctx.fillStyle = 'purple'
-  game_ctx.clearRect(0, 0, game_canvas.width, game_canvas.height);
-  game_ctx.fillRect( 10,10,game_canvas.width-20,game_canvas.height-20 );
+// global variables
+mx=my=0;
+function start(){
+  canvas.width=document.documentElement.clientWidth;canvas.height=document.documentElement.clientHeight
+  words = 'hello world!!'
+} 
+function loop(){
+  input()
+  //check_screen()
 }
-function draw_dpad(){
-  dpad_ctx.fillStyle = 'white'
-  dpad_ctx.clearRect(0, 0, dpad_canvas.width, dpad_canvas.height);
-  dpad_ctx.fillRect( 10,10,dpad_canvas.width-20,dpad_canvas.height-20 );
-}
-function draw_buttons(){
-  buttons_ctx.fillStyle = 'brown'
-  buttons_ctx.clearRect(0, 0, buttons_canvas.width, buttons_canvas.height);
-  buttons_ctx.fillRect( 10,10,buttons_canvas.width-20,buttons_canvas.height-20 );
-}
-//////////////////////////////////////////////////////
-function adjustSize(){
-  dpad_canvas.width = dpad.offsetWidth;
-  dpad_canvas.height = dpad.offsetHeight;
-  game_canvas.width = game_screen.offsetWidth;
-  game_canvas.height = game_screen.offsetHeight;
-  buttons_canvas.width = buttons.offsetWidth;
-  buttons_canvas.height = buttons.offsetHeight;
-}
-function draw_image(img,x,y,w,h,rot){ctx.globalAlpha =master_alpha;if(rot!=null){ctx.save();ctx.translate(x,y);ctx.rotate(rot*Math.PI/180);ctx.drawImage(img, -w/2,-h/2,w,h);ctx.restore()}else{ctx.drawImage(img, x, y, w, h);}}
-function draw_set_image(file){let temp = new Image();temp.src = file;return temp;}
 
-function requestFullscreen(element) {if (!element) {element = document.documentElement;}if (element.requestFullscreen) {element.requestFullscreen();} else if (element.webkitRequestFullscreen) {element.webkitRequestFullscreen();} else if (element.msRequestFullscreen) {element.msRequestFullscreen();} else if (element.mozRequestFullScreen) {element.mozRequestFullScreen();} else {console.error("Fullscreen API is not supported on this browser.");}}
-
-document.getElementById("dpad").addEventListener("click", () => {
-  requestFullscreen();
-});
-
-document.addEventListener('fullscreenchange', function() {
-  if (document.fullscreenElement) {
-    adjustSize();
-  } else {
-    adjustSize();
+function draw(){
+  draw_set_color(0,0,0)
+  draw_text(25, 25, 'mouse_x : '+mx+'  ,  mouse_y : '+my, 24)
+  draw_set_color(255,0,0);draw_set_linewidth(12);draw_rectangle(0, 0, canvas.width, canvas.height, true)
+}
+///////////////////////////////////////////////////////////////////////
+function input(){
+  mx=mouse_x;my=mouse_y;
+  if(mouse_check_pressed()){
+    requestFullscreen(null);
   }
-});
-
-
+}
+//changes canvas to match screen state
+function check_screen(){if (fullscreen) {canvas.width = screen.width;canvas.height = screen.height;} else {canvas.width = document.documentElement.clientWidth;canvas.height = document.documentElement.clientHeight;}}
+// checks fullscreen state
+document.addEventListener('fullscreenchange', () => {fullscreen = document.fullscreenElement !== null;check_screen();});document.addEventListener('webkitfullscreenchange', () => {fullscreen = document.webkitFullscreenElement !== null;check_screen();});document.addEventListener('mozfullscreenchange', () => {fullscreen = document.mozFullScreen !== null;check_screen();});
 </script>
+<script type='text/javascript' src='engine.js'></script>
 
 </body>
 </html>
