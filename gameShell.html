@@ -35,6 +35,7 @@ function start(){
   joe = {x:800,y:340,sprite:[draw_set_image('frame1.png'),draw_set_image('frame2.png'),draw_set_image('frame3.png'),draw_set_image('frame4.png'),draw_set_image('frame5.png')], fnum:0}
   words = 'hello world!!'
   running=true
+  showJoe=false
 } 
 setInterval(function(){
 	joe.fnum++;
@@ -46,8 +47,8 @@ function loop(){
 }
 
 function draw(){
-   draw_image(bdrop,0,0,canvas.width, canvas.height)
-  draw_image(joe.sprite[joe.fnum],joe.x,joe.y, 180,180)
+  if(showJoe){ draw_image(bdrop,0,0,canvas.width, canvas.height)}
+  //draw_image(joe.sprite[joe.fnum],joe.x,joe.y, 180,180)
   draw_image(singleJoe,800,340, 180,180)
 }
 ///////////////////////////////////////////////////////////////////////
@@ -61,7 +62,7 @@ function input(){
     }
     
   }
-  
+  showJoe=mouse_check()
   document.title = mx+' , '+my
   if(mouse_check_pressed()){
     //requestFullscreen(null);
