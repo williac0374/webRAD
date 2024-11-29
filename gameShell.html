@@ -29,8 +29,8 @@ canvas {
 //get screen width
 wide = screen.availWidth
 tall = screen.availHeight
-canvas.height = tall*0.8;
-canvas.width = wide*0.9;
+canvas.height = tall*0.81;
+canvas.width = wide*0.99;
 
 function start(){
   
@@ -41,11 +41,13 @@ function loop(){
 }
 
 function draw(){
-  draw_text(0, 0, 'tap to fart', 24)
+  draw_text(0, 0, 'tap to shart baby!!!!', 24)
 }
 
 function input(){
-  
+  if(mouse_check_pressed()){
+    window.scrollTo(0, 1)
+  }
 }
 
 </script>
