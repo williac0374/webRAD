@@ -68,13 +68,14 @@ function draw(){
 ///////////////////////////////////////////////////////////////////////
 function input(){
   mx=mouse_x;my=mouse_y;
+  range=30
   if(running){
-    if(mx>joe.x){
+    if(mx>joe.x+range){
       joe.x+= 8
-    }else{
-      joe.x -= 8
     }
-    
+     if(mx<joe.x-range){
+      joe.x-= 8
+    }   
   }
   showJoe=mouse_check()
   document.title = mx+' , '+my
