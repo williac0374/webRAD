@@ -46,10 +46,7 @@ function loop(){
 }
 
 function draw(){
-  draw_set_color(0,0,0)
-  draw_text(25, 25, 'mouse_x : '+mx+'  ,  mouse_y : '+my, 24)
-  draw_set_color(255,0,0);draw_set_linewidth(12);draw_rectangle(0, 0, canvas.width, canvas.height, true)
-  draw_image(bdrop,0,0,canvas.width, canvas.height)
+   draw_image(bdrop,0,0,canvas.width, canvas.height)
   draw_image(joe.sprite[joe.fnum],joe.x,joe.y, 180,180)
   draw_image(singleJoe,800,340, 180,180)
 }
