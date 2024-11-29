@@ -31,6 +31,7 @@ running=false
 function start(){
   // Get the device pixel ratio
   const dpr = window.devicePixelRatio || 1;
+  alert(dpr)
   // Set canvas width and height using device pixel ratio
   canvas.width = document.documentElement.clientWidth * dpr;
   canvas.height = document.documentElement.clientHeight * dpr;
