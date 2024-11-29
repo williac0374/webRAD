@@ -14,7 +14,10 @@ body{
   background-color: black;
   
 }
-
+canvas {
+  // border: 2px solid #000;
+  background-color: white;
+}
 </style>
 </head>
 
@@ -26,19 +29,28 @@ body{
 mx=my=0;
 running=false
 function start(){
-  canvas.width=document.documentElement.clientWidth;canvas.height=document.documentElement.clientHeight
+  // Get the device pixel ratio
+  const dpr = window.devicePixelRatio || 1;
+  // Set canvas width and height using device pixel ratio
+  canvas.width = document.documentElement.clientWidth * dpr;
+  canvas.height = document.documentElement.clientHeight * dpr;
+  // Scale the canvas context to match the device pixel ratio
+  ctx.scale(dpr, dpr);
+  // Set the CSS size to ensure it looks correct
+canvas.style.width = `${document.documentElement.clientWidth}px`;
+canvas.style.height = `${document.documentElement.clientHeight}px`;
   centerX=canvas.width/2;
   centerY=canvas.height/3
   bdrop = draw_set_image('joeBackDrop.png')
   singleJoe = draw_set_image('frame1.png')
-  joe = {x:800,y:340,sprite:[draw_set_image('frame1.png'),draw_set_image('frame2.png'),draw_set_image('frame3.png'),draw_set_image('frame4.png'),draw_set_image('frame5.png')], fnum:0}
+joe = {x:800,y:420, sprite:[draw_set_image('frame1.png'),draw_set_image('frame2.png'),draw_set_image('frame3.png'),draw_set_image('frame4.png'),draw_set_image('frame5.png')], fnum:0}
   words = 'hello world!!'
   running=true
   showJoe=false
-} 
+}
 setInterval(function(){
-	joe.fnum++;
-  if(joe.fnum>= joe.sprite.length){joe.fnum=0}
+  joe.fnum++;
+if(joe.fnum>= joe.sprite.length){joe.fnum=0}
 },100)
 function loop(){
   input()
@@ -46,9 +58,9 @@ function loop(){
 }
 
 function draw(){
-  if(showJoe){ draw_image(bdrop,0,0,canvas.width, canvas.height)}
-  //draw_image(joe.sprite[joe.fnum],joe.x,joe.y, 180,180)
-  draw_image(singleJoe,centerX,centerY, 180,180)
+draw_image(bdrop,0,0,canvas.width, canvas.height)
+draw_image(joe.sprite[joe.fnum],joe.x,joe.y, 208,208)
+  
 }
 ///////////////////////////////////////////////////////////////////////
 function input(){
