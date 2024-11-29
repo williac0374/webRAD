@@ -36,8 +36,10 @@ function start(){
   running=true
 } 
 setInterval(function(){
+	if(running){
 	joe.fnum++;
   if(joe.fnum>= joe.sprite.length){joe.fnum=0}
+	}
 },100)
 function loop(){
   input()
