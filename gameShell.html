@@ -31,15 +31,14 @@ running=false
 function start(){
   canvas.width=document.documentElement.clientWidth;canvas.height=document.documentElement.clientHeight
   bdrop = draw_set_image('joeBackDrop.png')
+  singleJoe = draw_set_image('frame1.png')
   joe = {x:800,y:340,sprite:[draw_set_image('frame1.png'),draw_set_image('frame2.png'),draw_set_image('frame3.png'),draw_set_image('frame4.png'),draw_set_image('frame5.png')], fnum:0}
   words = 'hello world!!'
   running=true
 } 
 setInterval(function(){
-	if(running){
 	joe.fnum++;
   if(joe.fnum>= joe.sprite.length){joe.fnum=0}
-	}
 },100)
 function loop(){
   input()
@@ -52,6 +51,7 @@ function draw(){
   draw_set_color(255,0,0);draw_set_linewidth(12);draw_rectangle(0, 0, canvas.width, canvas.height, true)
   draw_image(bdrop,0,0,canvas.width, canvas.height)
   draw_image(joe.sprite[joe.fnum],joe.x,joe.y, 180,180)
+  draw_image(singleJoe,800,340, 180,180)
 }
 ///////////////////////////////////////////////////////////////////////
 function input(){
@@ -67,7 +67,7 @@ function input(){
   
   document.title = mx+' , '+my
   if(mouse_check_pressed()){
-    requestFullscreen(null);
+    //requestFullscreen(null);
   }
 }
 //changes canvas to match screen state
