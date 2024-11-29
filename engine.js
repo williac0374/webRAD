@@ -1,5 +1,5 @@
 //misc
-master_alpha = 1;timeShift=0,FPS=[],fps=0,run=true;
+master_alpha = 1;timeShift=0,FPS=[],fps=0,run=true,fullscreen=false;
 // math:
 max = Math.max, min = Math.min, round = Math.round, floor = Math.floor, ceil = Math.ceil,
 sin = Math.sin, cos = Math.cos, sqrt = Math.sqrt, tan = Math.tan, rand = Math.random,
@@ -43,6 +43,18 @@ function play(sound){
     }
   }
 }
+//request full screen
+function requestFullscreen(element) {if (!element) {element = document.documentElement;}if (element.requestFullscreen) {element.requestFullscreen();} else if (element.webkitRequestFullscreen) {element.webkitRequestFullscreen();} else if (element.msRequestFullscreen) {element.msRequestFullscreen();} else if (element.mozRequestFullScreen) {element.mozRequestFullScreen();} else {console.error("Fullscreen API is not supported on this browser.");}}
+// detects fullscreen change
+document.addEventListener('fullscreenchange', function() {
+if (document.fullscreenElement) {
+  fullscreen=true;
+} else {
+  fullscreen=false;
+}
+ 
+});
+
 // draw text:
 function draw_text(x, y, text, size) {
   ctx.globalAlpha =master_alpha;
@@ -220,7 +232,6 @@ if(navigator.userAgent.includes("Android")){
     }
   });
   addEventListener("touchmove", function(e){
-    e.preventDefault();
     var touch = e.touches[0];
     if(mouse_down==true){
       mouse_x = touch.clientX - canvas.offsetLeft;
