@@ -45,44 +45,23 @@ canvas.style.height = `${document.documentElement.clientHeight}px`;
   cssHeight = document.documentElement.clientHeight;
   centerX=canvas.width/2;
   centerY=canvas.height/3
-  bdrop = draw_set_image('joeBackDrop.png')
-  singleJoe = draw_set_image('frame1.png')
-joe = {x:0,y:420/dpr, sprite:[draw_set_image('frame1.png'),draw_set_image('frame2.png'),draw_set_image('frame3.png'),draw_set_image('frame4.png'),draw_set_image('frame5.png')], fnum:0}
-  words = 'hello world!!'
+  bG = draw_set_image('bdrop.png')
+  joe = draw_set_image('joe.png')
   running=true
-  showJoe=false
 }
-setInterval(function(){
-  joe.fnum++;
-if(joe.fnum>= joe.sprite.length){joe.fnum=0}
-},100)
+
 function loop(){
   input()
-  //check_screen()
 }
 
 function draw(){
-  draw_image(bdrop,0,0,cssWidth, cssHeight)
-  draw_image(joe.sprite[joe.fnum],joe.x,joe.y, 224/dpr,224/dpr)
-  
+  draw_image(bG,0,0,cssWidth,cssHeight)
+  draw_image(joe,0,0,cssWidth,cssHeight) //390,200
+  draw_image(joe,390,200,200,200)
 }
 ///////////////////////////////////////////////////////////////////////
 function input(){
-  mx=mouse_x;my=mouse_y;
-  range=30
-  if(running){
-    if(mx>joe.x+range){
-      joe.x+= 8
-    }
-     if(mx<joe.x-range){
-      joe.x-= 8
-    }   
-  }
-  showJoe=mouse_check()
-  document.title = mx+' , '+my
-  if(mouse_check_pressed()){
-    //requestFullscreen(null);
-  }
+  document.title=mouse_x+' , '+mouse_y
 }
 //changes canvas to match screen state
 function check_screen(){if (fullscreen) {canvas.width = screen.width;canvas.height = screen.height;} else {canvas.width = document.documentElement.clientWidth;canvas.height = document.documentElement.clientHeight;}}
