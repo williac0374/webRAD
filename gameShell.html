@@ -25,30 +25,15 @@ canvas {
 <canvas id="canvas"></canvas>
 
 <script>
-// global variables
-mx=my=0;
-running=false
+//1.78
+//get screen width
+wide = screen.availWidth
+tall = screen.availHeight
+canvas.height = tall*0.81;
+canvas.width = wide*0.99;
+
 function start(){
-  // Get the device pixel ratio
-  dpr = window.devicePixelRatio || 1;
-  //alert(dpr)
-  // Set canvas width and height using device pixel ratio
-  canvas.width = document.documentElement.clientWidth * dpr;
-  canvas.height = document.documentElement.clientHeight * dpr;
-  // Scale the canvas context to match the device pixel ratio
-  ctx.scale(dpr, dpr);
-  // Set the CSS size to ensure it looks correct
-canvas.style.width = `${document.documentElement.clientWidth}px`;
-canvas.style.height = `${document.documentElement.clientHeight}px`;
-  // Get the CSS size of the canvas
-  cssWidth = document.documentElement.clientWidth;
-  cssHeight = document.documentElement.clientHeight;
-  centerX=canvas.width/2;
-  centerY=canvas.height/3
-  bG = draw_set_image('bdrop.png')
-  joe_sprite = draw_set_image('joe.png')
-  joe = {x:0.25, y:0.25, w:0.25, h:0.25, spr:joe_sprite}
-  running=true
+  
 }
 
 function loop(){
@@ -56,18 +41,13 @@ function loop(){
 }
 
 function draw(){
-  draw_image(bG,0,0,cssWidth,cssHeight)
-  draw_image(joe_sprite,0,0,cssWidth,cssHeight)
-  draw_image(joe.spr, joe.x*cssWidth, joe.y*cssWidth, joe.w*cssWidth, joe.h*cssWidth)
+  draw_text(0, 0, 'tap to start', 24)
 }
-///////////////////////////////////////////////////////////////////////
+
 function input(){
-  document.title=mouse_x+' , '+cssWidth
+  
 }
-//changes canvas to match screen state
-function check_screen(){if (fullscreen) {canvas.width = screen.width;canvas.height = screen.height;} else {canvas.width = document.documentElement.clientWidth;canvas.height = document.documentElement.clientHeight;}}
-// checks fullscreen state
-document.addEventListener('fullscreenchange', () => {fullscreen = document.fullscreenElement !== null;check_screen();});document.addEventListener('webkitfullscreenchange', () => {fullscreen = document.webkitFullscreenElement !== null;check_screen();});document.addEventListener('mozfullscreenchange', () => {fullscreen = document.mozFullScreen !== null;check_screen();});
+
 </script>
 <script type='text/javascript' src='engine.js'></script>
 
