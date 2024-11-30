@@ -1398,14 +1398,35 @@ this.on_creation = function() {
 with(this) {
 image_speed = 0.5
 targetX = this.x
+scaleX = 1; 
+scaleY = 1;
+big = false ;
 }
 };
 this.on_destroy = on_destroy_i;
 this.on_step = function() {
 with(this) {
+//adjusts for fullscreen mouse 
+mx = mouse_x / scaleX;
+my = mouse_y / scaleY
 if(mouse_check_pressed()){
-	targetX=mouse_x;
-}
+	targetX=mx;
+	//let scaleX = window.innerWidth / originalCanvasWidth;
+//let scaleY = window.innerHeight / originalCanvasHeight;
+   if(!big){
+   big=true
+   og_width = room_width;
+	og_height = room_height
+	scaleX = window.innerWidth / og_width; 
+	scaleY = window.innerHeight / og_height;
+	room_width = window.innerWidth;
+	room_viewport_width = window.innerWidth;
+	tu_canvas.width = window.innerWidth;
+	room_height = window.innerHeight;
+	room_viewport_height = window.innerHeight;
+	tu_canvas.height = window.innerHeight;
+	}
+	}
 if(this.x>targetX+20){
 	this.x-=5;
 }
@@ -1420,7 +1441,14 @@ this.on_collision = on_collision_i;
 this.on_roomstart = on_roomstart_i;
 this.on_roomend = on_roomend_i;
 this.on_animationend = on_animationend_i;
-this.on_draw = on_draw_i;
+this.on_draw = function() {
+if (this.visible == 1) {
+__handle_sprite__(this);
+with(this) {
+draw_sprite_ext(this.sprite_index,image_index,this.x*scaleX,this.y*scaleY,scaleX,scaleY)
+}
+}
+};
 }; var jMama = new __jMama();
 
 
