@@ -31,8 +31,10 @@ canvas.height = tall;
 canvas.width = wide;
 
 function start(){
+  bd = draw_set_image('joeBackDrop.png')
+  f1 = draw_set_image('frame1.png')
   bx = 45;
-  by = 45;
+  by = 290;
 }
 
 function loop(){
@@ -40,25 +42,15 @@ function loop(){
 }
 
 function draw(){
-  draw_set_color(0,0,0)
-  draw_set_linewidth(16)
-  draw_set_linedash([10,3])
-  draw_rectangle(0, 0, canvas.width, canvas.height, true)
-  draw_text(20, 20, 'tap to shart baby!!!!', 24)
-  draw_set_color(255,0,0)
-  draw_set_linewidth(8)
-  draw_set_linedash([])
-  draw_rectangle(bx, by, 100, 100,true)
+  draw_image(bd,0,0,canvas.width,canvas.height)
+  draw_image(f1,bx,by,154,154)
+  draw_set_color(255,255,255)
+  draw_text(12, 12, 'mx: '+mouse_x+' , my: '+mouse_y, 24)
 }
 
 function input(){
   if(mouse_check_pressed()){
-    let mx = mouse_x;
-    let my = mouse_y;
-    if(mx>bx && mx<bx+100 && my>by && my<by+100 ){
-      bx=irandom(canvas.width-100)
-      by=irandom(canvas.height-100)
-    }
+      bx=mouse_x
   }
   
   /*
