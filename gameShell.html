@@ -10,12 +10,12 @@ body{
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  //height: 100vh;
   background-color: black;
   
 }
 canvas {
-  // border: 2px solid #000;
+  //border: 2px solid #000;
   background-color: white;
 }
 </style>
@@ -25,15 +25,14 @@ canvas {
 <canvas id="canvas"></canvas>
 
 <script>
-//1.78
-//get screen width
-wide = screen.availWidth
-tall = screen.availHeight
-canvas.height = tall*0.81;
-canvas.width = wide*0.99;
+wide = window.innerWidth;//screen.availWidth
+tall = window.innerHeight;//screen.availHeight
+canvas.height = tall;
+canvas.width = wide;
 
 function start(){
-  
+  bx = 45;
+  by = 45;
 }
 
 function loop(){
@@ -41,16 +40,53 @@ function loop(){
 }
 
 function draw(){
-  draw_text(0, 0, 'tap to shart baby!!!!', 24)
+  draw_set_color(0,0,0)
+  draw_set_linewidth(16)
+  draw_set_linedash([10,3])
+  draw_rectangle(0, 0, canvas.width, canvas.height, true)
+  draw_text(20, 20, 'tap to shart baby!!!!', 24)
+  draw_set_color(255,0,0)
+  draw_set_linewidth(8)
+  draw_set_linedash([])
+  draw_rectangle(bx, by, 100, 100,true)
 }
 
 function input(){
-      window.scrollTo(0, 1)
- 
-}
-
-</script>
-<script type='text/javascript' src='engine.js'></script>
-
-</body>
-</html>
+  if(mouse_check_pressed()){
+    let mx = mouse_x;
+    let my = mouse_y;
+    if(mx>bx && mx<bx+100 && my>by && my<by+100 ){
+      bx=irandom(canvas.width-100)
+      by=irandom(canvas.height-100)
+    }
+  }
+  
+  /*
+  //adjusts for fullscreen mouse
+  mx = mouse_x / scaleX;
+  my = mouse_y / scaleY
+  if(mouse_check_pressed()){
+    targetX=mx;
+    //let scaleX = window.innerWidth / originalCanvasWidth;
+    //let scaleY = window.innerHeight / originalCanvasHeight;
+    if(!big){
+      big=true
+      
+      scaleX = window.innerWidth / og_width;
+      scaleY = window.innerHeight / og_height;
+      room_width = window.innerWidth;
+      room_viewport_width = window.innerWidth;
+      tu_canvas.width = window.innerWidth;
+      room_height = window.innerHeight;
+      room_viewport_height = window.innerHeight;
+      tu_canvas.height = window.innerHeight;
+      */
+      
+    }
+    
+    </script>
+    <script type='text/javascript' src='engine.js'></script>
+    
+    </body>
+    </html>
+    
