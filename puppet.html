@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basic Template</title>
+<style>
+body{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: black;
+  
+}
+canvas {
+  // border: 2px solid #000;
+  background-color: white;
+}
+</style>
+</head>
+
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+
+canvas.width=600;
+canvas.height=600
+function start(){
+  face = draw_set_image('face.png')
+  torso = draw_set_image('torso.png')
+  leg = draw_set_image('leg.png')
+  boot = draw_set_image('boot.png')
+  
+  
+  joe = {
+    head:{
+      spr:face,
+      px:90,
+      py:30,
+      w:100,
+      h:100,
+      x:200,
+      y:200,
+      rot:0,
+      sel:false
+    }
+  }
+  
+  
+  
+}
+
+function loop(){
+  input()
+  joe.head.sel=inside(mouse_x, mouse_y, joe.head.x, joe.head.y, joe.head.w, joe.head.h, joe.head.rot, joe.head.px, joe.head.py)
+}
+
+function draw(){
+  draw_part(joe.head)
+  draw_text(24, 24, mouse_x+' , '+mouse_y, 24)
+}
+function draw_part(obj){
+  draw_image(obj.spr,obj.x,obj.y,obj.w,obj.h,obj.rot,obj.px,obj.py)
+  draw_set_color(255,0,0)
+  draw_circle(obj.x+obj.px, obj.y+obj.py, 6, false)
+  draw_set_color(0,0,0)
+if(obj.sel){draw_set_color(255,0,0)}
+  draw_set_linedash([10,3])
+  draw_set_linewidth(4)
+  draw_rectangle(obj.x,obj.y, obj.w, obj.h,true,obj.rot,obj.px,obj.py)
+  draw_set_linedash([])
+}
+
+
+///////////////////////////////////////////////////////////////////////
+function input(){
+if(keyboard_check_pressed(vk_escape)){window.close()}
+  if(keyboard_check(vk_space)){
+    joe.head.rot++
+  }
+  if(keyboard_check_pressed(vk_delete)){
+  if(joe.head.sel){joe.head.rot=0}
+  }
+  if(joe.head.sel && mouse_check() && keyboard_check(vk_p)){
+    //joe.head.rot=0
+    joe.head.px = mouse_x-joe.head.x;
+    joe.head.py = mouse_y-joe.head.y;
+  }
+  if(joe.head.sel && mouse_check_pressed() && keyboard_check(vk_m)){
+    //joe.head.rot=0
+    offX = mouse_x -joe.head.x;
+    offY = mouse_y -joe.head.y;
+  }
+  if(joe.head.sel && mouse_check() && keyboard_check(vk_m)){
+    joe.head.x = mouse_x - offX;
+    joe.head.y = mouse_y - offY;
+  }
+}
+
+function inside(px, py, rx, ry, width, height, angle, originX, originY) {
+  // Convert angle to radians
+  const radians = (angle * Math.PI) / 180;
+  
+  // Helper function to rotate a point around a pivot
+  function rotatePoint(cx, cy, x, y, radians) {
+    const cos = Math.cos(radians);
+    const sin = Math.sin(radians);
+    
+    const dx = x - cx;
+    const dy = y - cy;
+    
+    return {
+      x: cx + dx * cos - dy * sin,
+      y: cy + dx * sin + dy * cos,
+    };
+  }
+  
+  // Calculate the rotation center (custom origin in global coordinates)
+  const centerX = rx + originX;
+  const centerY = ry + originY;
+  
+  // Calculate the four corners of the rotated rectangle
+  const corners = [
+  rotatePoint(centerX, centerY, rx, ry, radians), // Top-left
+  rotatePoint(centerX, centerY, rx + width, ry, radians), // Top-right
+  rotatePoint(centerX, centerY, rx + width, ry + height, radians), // Bottom-right
+  rotatePoint(centerX, centerY, rx, ry + height, radians), // Bottom-left
+  ];
+  
+  // Use the same cross-product method to check if the point is inside
+  function crossProduct(A, B, P) {
+    return (B.x - A.x) * (P.y - A.y) - (B.y - A.y) * (P.x - A.x);
+  }
+  
+  for (let i = 0; i < corners.length; i++) {
+    const A = corners[i];
+    const B = corners[(i + 1) % corners.length];
+  const cross = crossProduct(A, B, { x: px, y: py });
+    
+    if (cross < 0) {
+      return false; // Point is outside
+    }
+  }
+  
+  return true; // Point is inside
+}
+
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
