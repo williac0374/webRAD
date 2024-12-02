@@ -82,7 +82,9 @@ sButton = {spr:save,x:320,y:20,w:150,h:75}
       y:300,
       rot:0,
       sel:false,
-      child:null
+      child:null,
+      childX:null,
+      childY:null
     },
     rFoot:{
       spr:'boot.png',
@@ -147,18 +149,34 @@ function draw_part(obj){
   }
 }
 
-
+setup=false
+dir=null
+dis=null
+child_dir=null
 ///////////////////////////////////////////////////////////////////////
 function input(){
-  if(keyboard_check_pressed(vk_q)){
-   x = joe.rLeg.x
-    y = joe.rLeg.y
-    rot = joe.rLeg.rot
-    dis = point_distance(x, y, joe.rFoot.px, joe.rFoot.px)
-    alert(dis)
+  document.title=setup
+  if(keyboard_check_released(vk_q)){setup=false;dir=null;dis=null;child_dir=null};
+  if(keyboard_check(vk_q)){
+    if(!setup){
+      // sets up initial direction and distance of child object once
+      dir = point_direction(joe.rLeg.x+joe.rLeg.px, joe.rLeg.y+joe.rLeg.py, joe.rFoot.x+joe.rFoot.px, joe.rFoot.y+joe.rFoot.py);
+      dis = point_distance(joe.rLeg.x+joe.rLeg.px, joe.rLeg.y+joe.rLeg.py, joe.rFoot.x+joe.rFoot.px, joe.rFoot.y+joe.rFoot.py);
+      child_dir = joe.rFoot.rot
+      setup=true
+    }
+    
+    let x = joe.rLeg.x+joe.rLeg.px + lengthdir_x(dis, dir-joe.rLeg.rot)
+    let y = joe.rLeg.y+joe.rLeg.py + lengthdir_y(dis, dir-joe.rLeg.rot)
+    draw_set_color(0,255,0)
+    
+    joe.rFoot.x = x - joe.rFoot.px
+    joe.rFoot.y = y - joe.rFoot.py
+    joe.rFoot.rot =  child_dir + joe.rLeg.rot
+    draw_circle(x, y, 6, false)
     
   }
-   hide=keyboard_check(vk_space)
+  hide=keyboard_check(vk_space)
 if(keyboard_check_pressed(vk_escape)){window.close()}
   adjust_part(joe.head)
   adjust_part(joe.body)
@@ -170,7 +188,7 @@ if(keyboard_check_pressed(vk_escape)){window.close()}
     let temp = prompt('enter data','')
     if(temp!=null && temp!=''){
       joe = JSON.parse(temp)
-        }
+    }
   }
   if(inside(mouse_x, mouse_y, sButton.x,sButton.y,sButton.w,sButton.h, 0, 0, 0) && mouse_check_released()){
     let temp = JSON.stringify(joe);
