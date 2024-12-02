@@ -77,32 +77,30 @@ function draw_set_image(file){
   temp.src = file;
   return temp;
 }
-function draw_image(img,x,y,w,h,rot){
+function draw_image(img,x,y,w,h,rot,ox,oy){
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
   ctx.globalAlpha =master_alpha;
   if(rot!=null){
     ctx.save();
-    ctx.translate(x,y);
-    ctx.rotate(rot*Math.PI/180);
-    ctx.drawImage(img, -w/2,-h/2,w,h);
+    ctx.translate(x+ox,y+oy);
+    ctx.rotate(rot*Math.PI/180);//tu_r2d = -180 / Math.PI, tu_d2r = Math.PI / -180
+    ctx.drawImage(img,-ox,-oy,w,h);
     ctx.restore()
   }else{
     ctx.drawImage(img, x, y, w, h);
   }
-  
-  
 }
 // draw shapes:
-function draw_rectangle(x, y, w, h,outline,rot) {
+function draw_rectangle(x, y, w, h,outline,rot,ox,oy) {
   ctx.globalAlpha =master_alpha;
   if(rot!=null){
     ctx.save();
-    ctx.translate(x,y);
+    ctx.translate(x+ox,y+oy);
     ctx.rotate(rot*Math.PI/180);
     ctx.beginPath();
-    if (outline) ctx.strokeRect( -w/2,-h/2,w,h);
-    else ctx.fillRect( -w/2,-h/2,w,h );
+    if (outline) ctx.strokeRect( -ox,-oy,w,h);
+    else ctx.fillRect( -ox,-oy,w,h );
     ctx.closePath();
     ctx.restore()
   }else{
@@ -111,9 +109,6 @@ function draw_rectangle(x, y, w, h,outline,rot) {
     else ctx.fillRect( x,y,w,h );
     ctx.closePath()
   }
-  
-  
-  
 }
 function draw_circle(x, y, r, outline) {
   ctx.globalAlpha =master_alpha;
@@ -254,8 +249,14 @@ addEventListener("keyup", kUp, false);
 addEventListener("mousedown",mDown,false);
 addEventListener("mouseup",mUp,false);
 addEventListener("mousemove",mMove,false);
-addEventListener("wheel", function(e){wheelDir = e.deltaY}, false);
-
+addEventListener('wheel', wheel,false);
+function wheel(e) {
+  if (e.deltaY < 0) {
+    wheelDir++;
+  } else {
+    wheelDir--;
+  }
+};
 // The main game loop
 function main() {
   var now = Date.now();
