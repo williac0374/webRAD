@@ -147,6 +147,7 @@ function choose() { return arguments[~~(Math.random() * arguments.length)]; }
 function random(_value) { return Math.random() * _value; }
 function floor(_value) { return Math.floor(_value); }
 function irandom(_value) { return ~~(Math.random() * _value + 1); }
+function inside(px, py, rx, ry, width, height, angle, originX, originY) {const radians = (angle * Math.PI) / 180;function rotatePoint(cx, cy, x, y, radians) {const cos = Math.cos(radians);const sin = Math.sin(radians);const dx = x - cx;const dy = y - cy;return {x: cx + dx * cos - dy * sin,y: cy + dx * sin + dy * cos,};}const centerX = rx + originX;const centerY = ry + originY;const corners = [rotatePoint(centerX, centerY, rx, ry, radians),rotatePoint(centerX, centerY, rx + width, ry, radians),rotatePoint(centerX, centerY, rx + width, ry + height, radians),rotatePoint(centerX, centerY, rx, ry + height, radians),];function crossProduct(A, B, P) {return (B.x - A.x) * (P.y - A.y) - (B.y - A.y) * (P.x - A.x);}for (let i = 0; i < corners.length; i++) {const A = corners[i];const B = corners[(i + 1) % corners.length];const cross = crossProduct(A, B, { x: px, y: py });if (cross < 0) {return false;}}return true;}
 // trig functions:
 function lengthdir_x(_length, _direction) { return _length * Math.cos(_direction * tu_d2r); }
 function lengthdir_y(_length, _direction) { return _length * Math.sin(_direction * tu_d2r); }
