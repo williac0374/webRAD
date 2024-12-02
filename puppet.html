@@ -26,19 +26,18 @@ canvas {
 
 <script>
 window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
-
+hide=false
 canvas.width=500;
 canvas.height=500
 function start(){
-  face = draw_set_image('face.png')
-  torso = draw_set_image('torso.png')
-  leg = draw_set_image('leg.png')
-  boot = draw_set_image('boot.png')
-  
+  load = draw_set_image('load.png')
+  save = draw_set_image('save.png')
+lButton = {spr:load,x:20,y:20,w:150,h:75}
+sButton = {spr:save,x:320,y:20,w:150,h:75}
   
   joe = {
     head:{
-      spr:face,
+      spr:'face.png',
       px:50,
       py:50,
       w:100,
@@ -46,10 +45,11 @@ function start(){
       x:200,
       y:100,
       rot:0,
-      sel:false
+      sel:false,
+      child:null
     },
     body:{
-      spr:torso,
+      spr:'torso.png',
       px:50,
       py:50,
       w:100,
@@ -57,7 +57,56 @@ function start(){
       x:200,
       y:200,
       rot:0,
-      sel:false
+      sel:false,
+      child:null
+    },
+    lLeg:{
+      spr:'leg.png',
+      px:50,
+      py:50,
+      w:100,
+      h:100,
+      x:100,
+      y:300,
+      rot:0,
+      sel:false,
+      child:null
+    },
+    rLeg:{
+      spr:'leg.png',
+      px:50,
+      py:50,
+      w:100,
+      h:100,
+      x:300,
+      y:300,
+      rot:0,
+      sel:false,
+      child:null
+    },
+    rFoot:{
+      spr:'boot.png',
+      px:50,
+      py:50,
+      w:100,
+      h:100,
+      x:300,
+      y:350,
+      rot:0,
+      sel:false,
+      child:null
+    },
+    lFoot:{
+      spr:'boot.png',
+      px:50,
+      py:50,
+      w:100,
+      h:100,
+      x:100,
+      y:350,
+      rot:0,
+      sel:false,
+      child:null
     }
   }
   
@@ -73,27 +122,61 @@ function loop(){
 function draw(){
   draw_part(joe.head)
   draw_part(joe.body)
-  draw_set_color(0,0,0)
-  draw_text(24, 24, mouse_x+' , '+mouse_y+' , '+wheelDir, 24)
+  draw_part(joe.lLeg)
+  draw_part(joe.rLeg)
+  draw_part(joe.rFoot)
+  draw_part(joe.lFoot)
+  if(!hide){
+    draw_image(lButton.spr,lButton.x,lButton.y,lButton.w,lButton.h)
+    draw_image(sButton.spr,sButton.x,sButton.y,sButton.w,sButton.h)
+    draw_set_color(0,0,0)
+    // draw_text(24, 24, mouse_x+' , '+mouse_y+' , '+wheelDir, 24)
+  }
 }
 function draw_part(obj){
-  draw_image(obj.spr,obj.x,obj.y,obj.w,obj.h,obj.rot,obj.px,obj.py)
-  draw_set_color(255,0,0)
-  draw_circle(obj.x+obj.px, obj.y+obj.py, 6, false)
-  draw_set_color(0,0,0)
-if(obj.sel){draw_set_color(255,0,0)}
-  draw_set_linedash([10,3])
-  draw_set_linewidth(4)
-  draw_rectangle(obj.x,obj.y, obj.w, obj.h,true,obj.rot,obj.px,obj.py)
-  draw_set_linedash([])
+  draw_image(draw_set_image(obj.spr),obj.x,obj.y,obj.w,obj.h,obj.rot,obj.px,obj.py)
+  if(!hide){
+    draw_set_color(255,0,0)
+    draw_circle(obj.x+obj.px, obj.y+obj.py, 6, false)
+    draw_set_color(0,0,0)
+  if(obj.sel){draw_set_color(255,0,0)}
+    draw_set_linedash([10,3])
+    draw_set_linewidth(4)
+    draw_rectangle(obj.x,obj.y, obj.w, obj.h,true,obj.rot,obj.px,obj.py)
+    draw_set_linedash([])
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////
 function input(){
+  if(keyboard_check_pressed(vk_q)){
+   x = joe.rLeg.x
+    y = joe.rLeg.y
+    rot = joe.rLeg.rot
+    dis = point_distance(x, y, joe.rFoot.px, joe.rFoot.px)
+    alert(dis)
+    
+  }
+   hide=keyboard_check(vk_space)
 if(keyboard_check_pressed(vk_escape)){window.close()}
   adjust_part(joe.head)
   adjust_part(joe.body)
+  adjust_part(joe.lLeg)
+  adjust_part(joe.rLeg)
+  adjust_part(joe.rFoot)
+  adjust_part(joe.lFoot)
+  if(inside(mouse_x, mouse_y, lButton.x,lButton.y,lButton.w,lButton.h, 0, 0, 0) && mouse_check_released()){
+    let temp = prompt('enter data','')
+    if(temp!=null && temp!=''){
+      joe = JSON.parse(temp)
+        }
+  }
+  if(inside(mouse_x, mouse_y, sButton.x,sButton.y,sButton.w,sButton.h, 0, 0, 0) && mouse_check_released()){
+    let temp = JSON.stringify(joe);
+    var myWindow = window.open();
+    myWindow.document.write(temp);
+  }
 }
 function adjust_part(obj){
   let mod=1
@@ -131,10 +214,10 @@ function adjust_part(obj){
     obj.x = mouse_x - offX;
     obj.y = mouse_y - offY;
   }
-  if(mouse_check_pressed()){
+  if(mouse_check_pressed() && !keyboard_check(vk_m) && !keyboard_check(vk_p)){
     obj.sel=inside(mouse_x, mouse_y, obj.x, obj.y, obj.w, obj.h, obj.rot, obj.px, obj.py)
   }
-  if(obj.sel){wheelDir=0}
+if(obj.sel){wheelDir=0}
 }
 
 </script>
