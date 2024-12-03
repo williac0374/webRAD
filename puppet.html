@@ -25,134 +25,59 @@ canvas {
 <canvas id="canvas"></canvas>
 
 <script>
-//window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
 hide=false
 canvas.width=500;
 canvas.height=500
 function start(){
+  isLocked=true
   load = draw_set_image('load.png')
   save = draw_set_image('save.png')
+  locked = draw_set_image('locked.png')
+  free = draw_set_image('free.png')
 lButton = {spr:load,x:20,y:20,w:150,h:75}
 sButton = {spr:save,x:320,y:20,w:150,h:75}
-  
-  joe = {
-    head:{
-      spr:'face.png',
-      px:50,
-      py:50,
-      w:100,
-      h:100,
-      x:200,
-      y:100,
-      rot:0,
-      sel:false,
-      child:null
-    },
-    body:{
-      spr:'torso.png',
-      px:50,
-      py:50,
-      w:100,
-      h:100,
-      x:200,
-      y:200,
-      rot:0,
-      sel:false,
-      child:null
-    },
-    lLeg:{
-      spr:'leg.png',
-      px:50,
-      py:50,
-      w:100,
-      h:100,
-      x:100,
-      y:300,
-      rot:0,
-      sel:false,
-      child:null
-    },
-    rLeg:{
-      spr:'leg.png',
-      px:50,
-      py:50,
-      w:100,
-      h:100,
-      x:300,
-      y:300,
-      rot:0,
-      sel:false,
-      child:null,
-      dis:null,
-      dir:null
-    },
-    rFoot:{
-      spr:'boot.png',
-      px:50,
-      py:50,
-      w:100,
-      h:100,
-      x:300,
-      y:350,
-      rot:0,
-      sel:false,
-      child:null
-    },
-    lFoot:{
-      spr:'boot.png',
-      px:50,
-      py:50,
-      w:100,
-      h:100,
-      x:100,
-      y:350,
-      rot:0,
-      sel:false,
-      child:null
-    }
-  }
-  
-  
+lockButton = {spr:locked,x:320,y:80,w:150,h:75}
+  face=draw_set_image('face.png');
+  body=draw_set_image('torso.png');
+  leg=draw_set_image('leg.png');
+  foot=draw_set_image('boot.png');
+head={spr:face,x:100,y:100,w:50,h:50,px:25,py:25,rot:0};
+body={spr:body,x:75,y:150,w:50,h:50,px:25,py:25,rot:0};
+lLeg={spr:leg,x:0,y:0,w:50,h:50,px:25,py:25,rot:0};
+rLeg={spr:leg,x:125,y:200,w:50,h:50,px:25,py:25,rot:0};
+lFoot={spr:foot,x:0,y:0,w:50,h:50,px:25,py:25,rot:0};
+rFoot={spr:foot,x:125,y:250,w:50,h:50,px:25,py:25,rot:0};
+  set();
+}
+
+function set(){
+  // attaches right leg to body
+  body.dis = point_distance(body.x+body.px,body.y+body.py,rLeg.x+rLeg.px,rLeg.y+rLeg.py)
+  body.dir = point_direction(body.x+body.px,body.y+body.py,rLeg.x+rLeg.px,rLeg.y+rLeg.py)+body.rot
+  rLeg.dadDir = body.rot
+  // attaches right foot to right leg
+  rLeg.dis = point_distance(rLeg.x+rLeg.px,rLeg.y+rLeg.py,rFoot.x+rFoot.px,rFoot.y+rFoot.py)
+  rLeg.dir = point_direction(rLeg.x+rLeg.px,rLeg.y+rLeg.py,rFoot.x+rFoot.px,rFoot.y+rFoot.py)+rLeg.rot
+  rFoot.dadDir = rLeg.rot
+}
+
+function link(){
+
+  // keeps right foot attached to right leg
+  rFoot.x = rLeg.x+rLeg.px+lengthdir_x(rLeg.dis, rLeg.dir-rLeg.rot) - rFoot.px
+  rFoot.y = rLeg.y+rLeg.py+lengthdir_y(rLeg.dis, rLeg.dir-rLeg.rot) - rFoot.py
+  rFoot.dadDir = rLeg.rot;
+    // keeps right leg attached to body
+    rLeg.x = body.x+body.px+lengthdir_x(body.dis, body.dir-body.rot) - rLeg.px
+  rLeg.y = body.y+body.py+lengthdir_y(body.dis, body.dir-body.rot) - rLeg.py
+  rLeg.dadDir = body.rot;
   
 }
 
-function loop(){
-  input()
-  daycare()
-}
-stork=false
-function daycare(){
-  // todo adjust relative location?
-  // set stork to false to reset when trying to move joe.rFoot?
-  let dad = joe.rLeg;
-  let kid = joe.rFoot;
-  if(!stork){
-    stork=true;
-    dad.dis = point_distance(dad.x+dad.px,dad.y+dad.py,kid.x+kid.px,kid.y+kid.py)
-    dad.dir = point_direction(dad.x+dad.px,dad.y+dad.py,kid.x+kid.px,kid.y+kid.py)
-  }else{
-    kid.x = dad.x+dad.px+lengthdir_x(dad.dis, dad.dir-dad.rot)
-    kid.y = dad.y+dad.py+lengthdir_y(dad.dis, dad.dir-dad.rot)
-  }
-  
-}
 
-function draw(){
-  draw_part(joe.head)
-  draw_part(joe.body)
-  draw_part(joe.lLeg)
-  draw_part(joe.rLeg)
-  draw_part(joe.rFoot)
-  draw_part(joe.lFoot)
-  if(!hide){
-    draw_image(lButton.spr,lButton.x,lButton.y,lButton.w,lButton.h)
-    draw_image(sButton.spr,sButton.x,sButton.y,sButton.w,sButton.h)
-    draw_set_color(0,0,0)
-    // draw_text(24, 24, mouse_x+' , '+mouse_y+' , '+wheelDir, 24)
-  }
-}
-function draw_part(obj){
-  draw_image(draw_set_image(obj.spr),obj.x,obj.y,obj.w,obj.h,obj.rot,obj.px,obj.py)
+function draw_all(obj){
+  draw_image(obj.spr,obj.x,obj.y,obj.w,obj.h,obj.rot+obj.dadDir,obj.px,obj.py)
   if(!hide){
     draw_set_color(255,0,0)
     draw_circle(obj.x+obj.px, obj.y+obj.py, 6, false)
@@ -164,42 +89,62 @@ function draw_part(obj){
     draw_set_linedash([])
   }
 }
+function loop(){
+  input()
+if(isLocked){link()}
+  
+}
 
-setup=false
-dir=null
-dis=null
-child_dir=null
+
+function draw(){
+  draw_all(head);
+  draw_all(body);
+  draw_all(lLeg);
+  draw_all(rLeg);
+  draw_all(lFoot);
+  draw_all(rFoot);
+  if(!hide){
+  if(isLocked){lockButton.spr=locked}else{lockButton.spr=free}
+    draw_image(lockButton.spr,lockButton.x,lockButton.y,lockButton.w,lockButton.h)
+    draw_image(lButton.spr,lButton.x,lButton.y,lButton.w,lButton.h)
+    draw_image(sButton.spr,sButton.x,sButton.y,sButton.w,sButton.h)
+    draw_set_color(0,0,0)
+    // draw_text(24, 24, mouse_x+' , '+mouse_y+' , '+wheelDir, 24)
+  }
+}
+function draw_part(obj){
+  draw_image(draw_set_image(obj.spr),obj.x,obj.y,obj.w,obj.h,obj.rot+obj.dadRot,obj.px,obj.py)
+  if(!hide){
+    draw_set_color(255,0,0)
+    draw_circle(obj.x+obj.px, obj.y+obj.py, 6, false)
+    draw_set_color(0,0,0)
+  if(obj.sel){draw_set_color(255,0,0)}
+    draw_set_linedash([10,3])
+    draw_set_linewidth(4)
+    draw_rectangle(obj.x,obj.y, obj.w, obj.h,true,obj.rot,obj.px,obj.py)
+    draw_set_linedash([])
+  }
+}
 ///////////////////////////////////////////////////////////////////////
 function input(){
-  document.title=setup
-  if(keyboard_check_released(vk_q)){setup=false;dir=null;dis=null;child_dir=null};
-  if(keyboard_check(vk_q)){
-    if(!setup){
-      // sets up initial direction and distance of child object once
-      dir = point_direction(joe.rLeg.x+joe.rLeg.px, joe.rLeg.y+joe.rLeg.py, joe.rFoot.x+joe.rFoot.px, joe.rFoot.y+joe.rFoot.py);
-      dis = point_distance(joe.rLeg.x+joe.rLeg.px, joe.rLeg.y+joe.rLeg.py, joe.rFoot.x+joe.rFoot.px, joe.rFoot.y+joe.rFoot.py);
-      child_dir = joe.rFoot.rot
-      setup=true
-    }
-    
-    let x = joe.rLeg.x+joe.rLeg.px + lengthdir_x(dis, dir-joe.rLeg.rot)
-    let y = joe.rLeg.y+joe.rLeg.py + lengthdir_y(dis, dir-joe.rLeg.rot)
-    draw_set_color(0,255,0)
-    
-    joe.rFoot.x = x - joe.rFoot.px
-    joe.rFoot.y = y - joe.rFoot.py
-    joe.rFoot.rot =  child_dir + joe.rLeg.rot
-    draw_circle(x, y, 6, false)
-    
-  }
+  document.title=isLocked
   hide=keyboard_check(vk_space)
 if(keyboard_check_pressed(vk_escape)){window.close()}
-  adjust_part(joe.head)
-  adjust_part(joe.body)
-  adjust_part(joe.lLeg)
-  adjust_part(joe.rLeg)
-  adjust_part(joe.rFoot)
-  adjust_part(joe.lFoot)
+  adjust_part(head)
+  adjust_part(body)
+  adjust_part(lLeg)
+  adjust_part(rLeg)
+  adjust_part(rFoot)
+  adjust_part(lFoot)
+  
+  if(inside(mouse_x, mouse_y, lockButton.x,lockButton.y,lockButton.w,lockButton.h, 0, 0, 0) && mouse_check_released()){
+    if(isLocked){
+      isLocked=false
+    }else{
+      isLocked=true;
+      set();
+    }
+  }
   if(inside(mouse_x, mouse_y, lButton.x,lButton.y,lButton.w,lButton.h, 0, 0, 0) && mouse_check_released()){
     let temp = prompt('enter data','')
     if(temp!=null && temp!=''){
@@ -237,6 +182,7 @@ function adjust_part(obj){
   if(obj.sel){obj.rot+=wheelDir*mod}
   }
   if(obj.sel && mouse_check() && keyboard_check(vk_p)){
+    isLocked=false;
     obj.px = mouse_x-obj.x;
     obj.py = mouse_y-obj.y;
   }
