@@ -83,8 +83,8 @@ sButton = {spr:save,x:320,y:20,w:150,h:75}
       rot:0,
       sel:false,
       child:null,
-      childX:null,
-      childY:null
+      dis:null,
+      dir:null
     },
     rFoot:{
       spr:'boot.png',
@@ -118,6 +118,22 @@ sButton = {spr:save,x:320,y:20,w:150,h:75}
 
 function loop(){
   input()
+  daycare()
+}
+stork=false
+function daycare(){
+  // todo adjust relative location?
+  // set stork to false to reset when trying to move joe.rFoot?
+  let dad = joe.rLeg;
+  let kid = joe.rFoot;
+  if(!stork){
+    stork=true;
+    dad.dis = point_distance(dad.x+dad.px,dad.y+dad.py,kid.x+kid.px,kid.y+kid.py)
+    dad.dir = point_direction(dad.x+dad.px,dad.y+dad.py,kid.x+kid.px,kid.y+kid.py)
+  }else{
+    kid.x = dad.x+dad.px+lengthdir_x(dad.dis, dad.dir-dad.rot)
+    kid.y = dad.y+dad.py+lengthdir_y(dad.dis, dad.dir-dad.rot)
+  }
   
 }
 
