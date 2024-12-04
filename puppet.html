@@ -29,26 +29,19 @@ canvas {
 hide=false
 canvas.width=500;
 canvas.height=500
+load=null;save=null;locked=null;free=null;face=null;body=null;leg=null;foot=null;
 function start(){
   isLocked=true
-  load = draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAMBJREFUWEdjZBhgwDjA9jOMOmA0BEZDgDGy9tz/gcyKYAfoSFymmxtWzz/DEJpoArbvygtdBhQHIEuS4iKQPhiAGY5LP9kOwGcJzFCYGnyOIMsByJrQLcHGp6kDQEGL7iBkC7GFAnLogfSTnAbQ0wa2EEGPc5gl+PQSnQgJOQA9yAmFEFkhgOxD9CAn5ADkYCeYCHFZREy2gqnBFmLYsilGFJCS96mhdvA4gBq+IdeM0ep4NARGQ2A0BEZDYMBDAADmCsdovSFPYAAAAABJRU5ErkJgggAA')
-  save = draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAANBJREFUWEdjZBhgwDjA9jOMOmA0BEZDgDGy9tz/gcyKYAfIfJk8IG54wpPLgOKA3Yd5UBziavuFKIeB9CGrRefjMgTFATDLibEUXS0hB+DyGIYDiLUcpA7ZUnwOwiYHChGQGWSFAMxifL5Gdxx69GB1ACye0IMLphibPK54R3YktviH6cNIhNgU4wpCmFpsjsAXAsh2kOwAYhIbofRBkgMoSe244h2vA8gtB4gpLJDNJikNEGM4uWrgaYBcA6ihb7Q6Hg2B0RAYDYHREBjwEAAAUQbKaCTTSgoAAAAASUVORK5CYIIA')
-  locked = draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAALRJREFUWEftlsEJgDAMRdubgziCFwdwFKd0AFfypkT4EEITKA3NJT2JleTlNQ3WErxqcP6SAGkgDdTtXN/Iq/gD7McSwnBfT1EBaNMTjMejZ6zpAEhOxakGvKunahFTmmgaGAXgVUK19q4bgJ8fBZd9osG7AiCpDGqZcwVA5ZZqaae7B1p65Xla38jBIpvPvAXoWh5kdCZ0A3iPxnCAVkHmKPY2YALMSKblyB+SNJAG0kC4gQ+OSaolTmpzUQAAAABJRU5ErkJgggAA')
-  free = draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAKNJREFUWEdjZBhgwDjA9jOMOmA0BEZDgNEkVeX/QGZFsAMsXTkGxA3Hd/9gGHUARgiAggUd0CqKsEYBSJBWFqJ7jC4OgIUoNk/hdAC+KECOIkIhhRya2EKWrBDAZRCyo2EOo4sD8CVadDn0EKNqCOCKY3zRRFUHgKIAmw+xFbHIUURySYgrm5KSOGGOGjxF8YDURFBLRxskoyEwGgKjITDgIQAAdCySJViD0qgAAAAASUVORK5CYIIA')
+  setUP()
 lButton = {spr:load,x:20,y:20,w:150,h:75}
 sButton = {spr:save,x:320,y:20,w:150,h:75}
 lockButton = {spr:locked,x:320,y:80,w:150,h:75}
-  face=draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA3ElEQVRYR+2XQQ6DIBBF5VTewSZuPGc3JPYOPVUbFiRTYJg/SDOY4Mpo8D8f6AxuMT6ccf5yP4B92z+cNf/y6heCB9SCUyANCASQhq+PI5PwPp8/11AIEYCGl4JTEgqCQFQBYjgSzIFIECzAlfAIE23UIIoAWu3cV4FMRxWgRb12KsYD6DH3GguZgQkwDUwD5gbCN9wTQqoH4/0JqYFwfqUeNBejXtMg6Q854zYksaBoewNEOy1WYk+YrgluXfytKS2ZkHZTUh+oNkAHmG1MpLduvQ+tgdaHI+PMAb7m6aoh6QU/swAAAABJRU5ErkJggg==');
-  body=draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA5klEQVRYR+2XwQ3DMAhF6xk6RHbpIcPmkF0yRGdoiyUiTAyYynYu5Iz0nz/E5qdH47e+1k9jaS7b9i211F+KvEItIrSGgyWv4LI8Vc3jeLuYRABLyKXyK5bAToDeghYgAgVAdmC2/dgeaEMAhAPxG4YDxWM060KiD9P9AHAt0p1gtAv09LCc5I3odoBZEPz0oHvuhDNcUAGoC6PmAAHoYlpsxehCAEA7ertQ638xhLgmjWpDrf8qQE8XpNObAD0geCC5RLNagOBx7d95sMSrDvBZoIAAYmU/qUZKy2qE9gZXKY5pUf0Licm4cWNe26oAAAAASUVORK5CYII=');
-  leg=draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA7ElEQVRYR+2XMQ7CMAxF6c5hOrAychxOw3EYWRk4DDtVkFxFpsn/tiMlSO3W1u1/+f6u0ulAHPPp+iHKfkpez9uEnoMFXnERRhAmgMv5jRb0vX9/HNe6EEC+elZclFmIogPa+ghAgio5QQFYxS0uQACvuIZwO9AFIBI+PSYojJstGAYgaj+Tg7EdSCuIuuDKQBKWHLQC+K8xHMqBSA5Q/9O74ad4B+g+Bd1a0GISJIS1bVl1Txj9GDUD8LSBGcHqGOYt6AYQyQFjP3RgB/DmgA2gqQWWIDYF0C4ISC5Suob+CykHtgD01rt0zgAsxbHaIT1poQsAAAAASUVORK5CYII=');
-  foot=draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAp0lEQVRYR+2XOw6AIBAFobek9DBeyZN4JQ9jaWmvoSAhhs+sFibmWRrDjrP7IHj38eM/ru8EIAMmA2EYTzK0+7HhdfGHsXAEmKfQZFjW3QlABv5pIEWQpCDGhFrAMSQRTPm0RFEAyADtf94COgcYoDd89/2ZzkEXwPr3VgtNgKfFLRBFgPzYtaovtSK9K+0NVYC3helMCEAGZEAGqlsxvYSQi0rrZLwAQDCwIQsnmwEAAAAASUVORK5CYII=');
-  
-head={spr:face,x:150,y:110,w:50,h:50,px:25,py:50,rot:0,ogRot:0};
-body={spr:body,x:143,y:150,w:60,h:60,px:30,py:30,rot:0,ogRot:0};
-lLeg={spr:leg,x:135,y:190,w:50,h:90,px:25,py:10,rot:0,ogRot:20};
-rLeg={spr:leg,x:160,y:190,w:50,h:90,px:25,py:10,rot:0,ogRot:-20};
-lFoot={spr:foot,x:140,y:245,w:50,h:50,px:22,py:16,rot:0,ogRot:0};
-rFoot={spr:foot,x:162,y:247,w:50,h:50,px:22,py:16,rot:0,ogRot:0};
+head={name:'head',spr:face,x:150,y:110,w:50,h:50,px:25,py:50,rot:0,ogRot:0};
+body={name:'body',spr:body,x:143,y:150,w:60,h:60,px:30,py:30,rot:0,ogRot:0};
+lLeg={name:'lLeg',spr:leg,x:135,y:190,w:50,h:90,px:25,py:10,rot:0,ogRot:20};
+rLeg={name:'rLeg',spr:leg,x:160,y:190,w:50,h:90,px:25,py:10,rot:0,ogRot:-20};
+lFoot={name:'lFoot',spr:foot,x:140,y:245,w:50,h:50,px:22,py:16,rot:0,ogRot:0};
+rFoot={name:'rFoot',spr:foot,x:162,y:247,w:50,h:50,px:22,py:16,rot:0,ogRot:0};
   
   adopt_all()
 }
@@ -133,7 +126,14 @@ if(keyboard_check_pressed(vk_escape)){window.close()}
     if(isLocked){
       isLocked=false
     }else{
-     diag_window(rFoot,'//////ADOPTED//////')
+      //diag_window(rFoot,'//////ADOPTED//////')
+      setUP();
+      transfer(head)
+      transfer(body)
+      transfer(lLeg)
+      transfer(rLeg)
+      transfer(lFoot)
+      transfer(rFoot)
       adopt_all()
       isLocked=true;
     }
@@ -144,6 +144,19 @@ if(keyboard_check_pressed(vk_escape)){window.close()}
   if(inside(mouse_x, mouse_y, sButton.x,sButton.y,sButton.w,sButton.h, 0, 0, 0) && mouse_check_released()){
     //save pose
   }
+}
+function transfer(obj){
+  var sprite = null
+if(obj.name=='head'){sprite=head}
+if(obj.name=='head'){sprite=head}
+if(obj.name=='body'){sprite=body}
+if(obj.name=='lLeg'){sprite=lLeg}
+if(obj.name=='rLeg'){sprite=rLeg}
+if(obj.name=='rFoot'){sprite=rFoot}
+if(obj.name=='lFoot'){sprite=lFoot}
+temp={name:obj.name,spr:sprite,x:obj.x,y:obj.y,w:obj.w,h:obj.h,px:obj.px,py:obj.py,rot:0,ogRot:obj.rot+obj.ogRot};
+  obj=temp
+  
 }
 function adjust_part(obj){
   let mod=1
@@ -202,7 +215,18 @@ function diag_window(obj,label){
   let data = label+dNum+JSON.stringify(obj)
   dNum++
   var myWindow = window.open();
-    myWindow.document.write(data);
+  myWindow.document.write(data);
+}
+function setUP(){
+  load = draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAMBJREFUWEdjZBhgwDjA9jOMOmA0BEZDgDGy9tz/gcyKYAfoSFymmxtWzz/DEJpoArbvygtdBhQHIEuS4iKQPhiAGY5LP9kOwGcJzFCYGnyOIMsByJrQLcHGp6kDQEGL7iBkC7GFAnLogfSTnAbQ0wa2EEGPc5gl+PQSnQgJOQA9yAmFEFkhgOxD9CAn5ADkYCeYCHFZREy2gqnBFmLYsilGFJCS96mhdvA4gBq+IdeM0ep4NARGQ2A0BEZDYMBDAADmCsdovSFPYAAAAABJRU5ErkJgggAA')
+  save = draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAANBJREFUWEdjZBhgwDjA9jOMOmA0BEZDgDGy9tz/gcyKYAfIfJk8IG54wpPLgOKA3Yd5UBziavuFKIeB9CGrRefjMgTFATDLibEUXS0hB+DyGIYDiLUcpA7ZUnwOwiYHChGQGWSFAMxifL5Gdxx69GB1ACye0IMLphibPK54R3YktviH6cNIhNgU4wpCmFpsjsAXAsh2kOwAYhIbofRBkgMoSe244h2vA8gtB4gpLJDNJikNEGM4uWrgaYBcA6ihb7Q6Hg2B0RAYDYHREBjwEAAAUQbKaCTTSgoAAAAASUVORK5CYIIA')
+  locked = draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAALRJREFUWEftlsEJgDAMRdubgziCFwdwFKd0AFfypkT4EEITKA3NJT2JleTlNQ3WErxqcP6SAGkgDdTtXN/Iq/gD7McSwnBfT1EBaNMTjMejZ6zpAEhOxakGvKunahFTmmgaGAXgVUK19q4bgJ8fBZd9osG7AiCpDGqZcwVA5ZZqaae7B1p65Xla38jBIpvPvAXoWh5kdCZ0A3iPxnCAVkHmKPY2YALMSKblyB+SNJAG0kC4gQ+OSaolTmpzUQAAAABJRU5ErkJgggAA')
+  free = draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAKNJREFUWEdjZBhgwDjA9jOMOmA0BEZDgNEkVeX/QGZFsAMsXTkGxA3Hd/9gGHUARgiAggUd0CqKsEYBSJBWFqJ7jC4OgIUoNk/hdAC+KECOIkIhhRya2EKWrBDAZRCyo2EOo4sD8CVadDn0EKNqCOCKY3zRRFUHgKIAmw+xFbHIUURySYgrm5KSOGGOGjxF8YDURFBLRxskoyEwGgKjITDgIQAAdCySJViD0qgAAAAASUVORK5CYIIA')
+  
+  face=draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA3ElEQVRYR+2XQQ6DIBBF5VTewSZuPGc3JPYOPVUbFiRTYJg/SDOY4Mpo8D8f6AxuMT6ccf5yP4B92z+cNf/y6heCB9SCUyANCASQhq+PI5PwPp8/11AIEYCGl4JTEgqCQFQBYjgSzIFIECzAlfAIE23UIIoAWu3cV4FMRxWgRb12KsYD6DH3GguZgQkwDUwD5gbCN9wTQqoH4/0JqYFwfqUeNBejXtMg6Q854zYksaBoewNEOy1WYk+YrgluXfytKS2ZkHZTUh+oNkAHmG1MpLduvQ+tgdaHI+PMAb7m6aoh6QU/swAAAABJRU5ErkJggg==');
+  body=draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA5klEQVRYR+2XwQ3DMAhF6xk6RHbpIcPmkF0yRGdoiyUiTAyYynYu5Iz0nz/E5qdH47e+1k9jaS7b9i211F+KvEItIrSGgyWv4LI8Vc3jeLuYRABLyKXyK5bAToDeghYgAgVAdmC2/dgeaEMAhAPxG4YDxWM060KiD9P9AHAt0p1gtAv09LCc5I3odoBZEPz0oHvuhDNcUAGoC6PmAAHoYlpsxehCAEA7ertQ638xhLgmjWpDrf8qQE8XpNObAD0geCC5RLNagOBx7d95sMSrDvBZoIAAYmU/qUZKy2qE9gZXKY5pUf0Licm4cWNe26oAAAAASUVORK5CYII=');
+  leg=draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA7ElEQVRYR+2XMQ7CMAxF6c5hOrAychxOw3EYWRk4DDtVkFxFpsn/tiMlSO3W1u1/+f6u0ulAHPPp+iHKfkpez9uEnoMFXnERRhAmgMv5jRb0vX9/HNe6EEC+elZclFmIogPa+ghAgio5QQFYxS0uQACvuIZwO9AFIBI+PSYojJstGAYgaj+Tg7EdSCuIuuDKQBKWHLQC+K8xHMqBSA5Q/9O74ad4B+g+Bd1a0GISJIS1bVl1Txj9GDUD8LSBGcHqGOYt6AYQyQFjP3RgB/DmgA2gqQWWIDYF0C4ISC5Suob+CykHtgD01rt0zgAsxbHaIT1poQsAAAAASUVORK5CYII=');
+  foot=draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAp0lEQVRYR+2XOw6AIBAFobek9DBeyZN4JQ9jaWmvoSAhhs+sFibmWRrDjrP7IHj38eM/ru8EIAMmA2EYTzK0+7HhdfGHsXAEmKfQZFjW3QlABv5pIEWQpCDGhFrAMSQRTPm0RFEAyADtf94COgcYoDd89/2ZzkEXwPr3VgtNgKfFLRBFgPzYtaovtSK9K+0NVYC3helMCEAGZEAGqlsxvYSQi0rrZLwAQDCwIQsnmwEAAAAASUVORK5CYII=');
 }
 </script>
 <script type='text/javascript' src='engine.js'></script>
