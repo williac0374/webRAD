@@ -81,7 +81,7 @@ rotate={x:600,y:125,w:150,h:75,text:'',tColor:[255,255,255],color:[111,111,111],
 }
 
 function draw_button(obj){
-  if(hide){return}
+if(hide){return}
   draw_set_color(obj.color[0],obj.color[1],obj.color[2]);
   draw_rectangle(obj.x, obj.y, obj.w, obj.h,false,0,0,0);
   draw_set_color(obj.bColor[0],obj.bColor[1],obj.bColor[2]);
@@ -115,6 +115,40 @@ function parent(obj){
   }
   
 }
+function load_pose(){
+  var data = JSON.parse(prompt('enter data: ',''))
+  BODY = data[0]
+  HEAD = data[1]
+  LEFTTHIGH = data[2]
+  RIGHTTHIGH = data[3]
+  LEFTCALF = data[4]
+  RIGHTCALF = data[5]
+  LEFTBOOT = data[6]
+  RIGHTBOOT = data[7]
+  RIGHTBICEP = data[8]
+  LEFTBICEP = data[9]
+  RIGHTFOREARM = data[10]
+  LEFTFOREARM = data[11]
+  RIGHTHAND = data[12]
+  LEFTHAND = data[13]
+  set_relative_coords(HEAD);
+  set_relative_coords(LEFTTHIGH);
+  set_relative_coords(RIGHTTHIGH);
+  set_relative_coords(LEFTCALF);
+  set_relative_coords(RIGHTCALF);
+  set_relative_coords(LEFTBOOT);
+  set_relative_coords(RIGHTBOOT);
+  set_relative_coords(RIGHTBICEP);
+  set_relative_coords(LEFTBICEP);
+  set_relative_coords(RIGHTFOREARM);
+  set_relative_coords(LEFTFOREARM);
+  set_relative_coords(RIGHTHAND);
+  set_relative_coords(LEFTHAND);
+}
+function save_pose(){
+  var data = [BODY,HEAD,LEFTTHIGH,RIGHTTHIGH,LEFTCALF,RIGHTCALF,LEFTBOOT,RIGHTBOOT,RIGHTBICEP,LEFTBICEP,RIGHTFOREARM,LEFTFOREARM,RIGHTHAND,LEFTHAND];
+  console.log(JSON.stringify(data))
+}
 function set_relative_coords(obj){
   obj.pDis = Math.round(point_distance(obj.parent.x,obj.parent.y,obj.x,obj.y))
   obj.pDir = Math.round(point_direction(obj.parent.x,obj.parent.y,obj.x,obj.y)+obj.parent.rot)
@@ -139,7 +173,7 @@ function draw(){
   draw_button(part)
 if(part.text!='NONE'){draw_button(rotate)}
   draw_set_color(0,0,0)
-  if(!hide){draw_text(0,canvas.height-60, mouse_x+' , '+mouse_y, 60)}
+if(!hide){draw_text(0,canvas.height-60, mouse_x+' , '+mouse_y, 60)}
 }
 function part_select(obj){
   let mouse_inside=false
@@ -149,27 +183,30 @@ function part_select(obj){
   return mouse_inside;
 }
 function input(){
+  
+if(keyboard_check_pressed(vk_s)){save_pose()}
+  if(keyboard_check_pressed(vk_l)){load_pose()}
   hide = keyboard_check(vk_space)
   if(inside(mouse_x, mouse_y, rotate.x,rotate.y, rotate.w, rotate.h, 0, 0, 0)){
-   var mod=3
-    if(selected==HEAD.id){HEAD.rRot+=wheelDir*mod}
-    if(selected==BODY.id){BODY.rot+=wheelDir*mod}
-    if(selected==LEFTTHIGH.id){LEFTTHIGH.rRot+=wheelDir*mod}
-    if(selected==RIGHTTHIGH.id){RIGHTTHIGH.rRot+=wheelDir*mod}
-    if(selected==LEFTCALF.id){LEFTCALF.rRot+=wheelDir*mod}
-    if(selected==RIGHTCALF.id){RIGHTCALF.rRot+=wheelDir*mod}
-    if(selected==LEFTBOOT.id){LEFTBOOT.rRot+=wheelDir*mod}
-    if(selected==RIGHTBOOT.id){RIGHTBOOT.rRot+=wheelDir*mod}
-    if(selected==RIGHTBICEP.id){RIGHTBICEP.rRot+=wheelDir*mod}
-    if(selected==LEFTBICEP.id){LEFTBICEP.rRot+=wheelDir*mod;parent(LEFTFOREARM)}
-    if(selected==RIGHTFOREARM.id){RIGHTFOREARM.rRot+=wheelDir*mod}
-    if(selected==LEFTFOREARM.id){LEFTFOREARM.rRot+=wheelDir*mod}
-    if(selected==RIGHTHAND.id){RIGHTHAND.rRot+=wheelDir*mod}
-    if(selected==LEFTHAND.id){LEFTHAND.rRot+=wheelDir*mod}
-    if(keyboard_check(vk_left)){BODY.x--}
-    if(keyboard_check(vk_right)){BODY.x++}
-    if(keyboard_check(vk_up)){BODY.y--}
-    if(keyboard_check(vk_down)){BODY.y++}
+    var mod=3
+  if(selected==HEAD.id){HEAD.rRot+=wheelDir*mod}
+  if(selected==BODY.id){BODY.rot+=wheelDir*mod}
+  if(selected==LEFTTHIGH.id){LEFTTHIGH.rRot+=wheelDir*mod}
+  if(selected==RIGHTTHIGH.id){RIGHTTHIGH.rRot+=wheelDir*mod}
+  if(selected==LEFTCALF.id){LEFTCALF.rRot+=wheelDir*mod}
+  if(selected==RIGHTCALF.id){RIGHTCALF.rRot+=wheelDir*mod}
+  if(selected==LEFTBOOT.id){LEFTBOOT.rRot+=wheelDir*mod}
+  if(selected==RIGHTBOOT.id){RIGHTBOOT.rRot+=wheelDir*mod}
+  if(selected==RIGHTBICEP.id){RIGHTBICEP.rRot+=wheelDir*mod}
+  if(selected==LEFTBICEP.id){LEFTBICEP.rRot+=wheelDir*mod;parent(LEFTFOREARM)}
+  if(selected==RIGHTFOREARM.id){RIGHTFOREARM.rRot+=wheelDir*mod}
+  if(selected==LEFTFOREARM.id){LEFTFOREARM.rRot+=wheelDir*mod}
+  if(selected==RIGHTHAND.id){RIGHTHAND.rRot+=wheelDir*mod}
+  if(selected==LEFTHAND.id){LEFTHAND.rRot+=wheelDir*mod}
+  if(keyboard_check(vk_left)){BODY.x--}
+  if(keyboard_check(vk_right)){BODY.x++}
+  if(keyboard_check(vk_up)){BODY.y--}
+  if(keyboard_check(vk_down)){BODY.y++}
   }
   
   wheelDir=0
@@ -198,7 +235,7 @@ function input(){
 function draw_shape(obj,img){
   draw_image(img,obj.x-obj.ox,obj.y-obj.oy,obj.w,obj.h,obj.rot,obj.ox,obj.oy)
   draw_set_color(255,0,0)
- if(!hide){ draw_circle(obj.x, obj.y, 8, false)}
+if(!hide){ draw_circle(obj.x, obj.y, 8, false)}
 }
 
 </script>
