@@ -34,6 +34,8 @@ canvas.width=900;
 canvas.height=500;
 
 function start(){
+  selected = null
+  
   sprite_body= draw_set_image('torso.png');
   sprite_head = draw_set_image('face.png');
   sprite_leg = draw_set_image('leg.png');
@@ -71,7 +73,7 @@ LEFTHAND = {x:175,y:190,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:BODY}
   
   ////////////////////////////////////////////////////////////////////////
   ////GUI BUTTONS
-  part={x:600,y:50,w:150,h:75,text:'NONE',tColor:[255,255,255],color:[255,0,255],bColor:[44,44,44]}
+part={x:600,y:50,w:150,h:75,text:'NONE',tColor:[255,255,255],color:[255,0,255],bColor:[44,44,44]}
   
   
   
@@ -118,7 +120,7 @@ function set_relative_coords(obj){
 }
 function draw(){
   
-  draw_shape(HEAD,sprite_head)
+  draw_shape(HEAD,sprite_head) 
   draw_shape(BODY,sprite_body)
   draw_shape(LEFTTHIGH,sprite_leg)
   draw_shape(RIGHTTHIGH,sprite_leg)
@@ -136,8 +138,15 @@ function draw(){
   draw_set_color(0,0,0)
   draw_text(0,canvas.height-60, mouse_x+' , '+mouse_y, 60)
 }
-
+function part_select(obj){
+  let mouse_inside=false
+  if(inside(mouse_x, mouse_y, obj.x,obj.y, obj.w, obj.h, obj.rot, obj.ox, obj.oy)){
+    mouse_inside = true
+  }
+  return mouse_inside;
+}
 function input(){
+  
   if(keyboard_check(vk_a)){
     HEAD.rot += wheelDir*6;
     set_relative_coords(HEAD);
@@ -149,6 +158,21 @@ function input(){
   }
   
   wheelDir=0
+  if(part_select(HEAD)){selected=HEAD};
+  if(part_select(BODY)){selected=BODY};
+  if(part_select(LEFTTHIGH)){selected=LEFTTHIGH};
+  if(part_select(RIGHTTHIGH)){selected=RIGHTTHIGH};
+  if(part_select(LEFTCALF)){selected=LEFTCALF};
+  if(part_select(RIGHTCALF)){selected=RIGHTCALF};
+  if(part_select(LEFTBOOT)){selected=LEFTBOOT};
+  if(part_select(RIGHTBOOT)){selected=RIGHTBOOT};
+  if(part_select(RIGHTBICEP)){selected=RIGHTBICEP};
+  if(part_select(LEFTBICEP)){selected=LEFTBICEP};
+  if(part_select(RIGHTFOREARM)){selected=RIGHTFOREARM};
+  if(part_select(LEFTFOREARM)){selected=LEFTFOREARM};
+  if(part_select(RIGHTHAND)){selected=RIGHTHAND};
+  if(part_select(LEFTHAND)){selected=LEFTHAND};
+  if(selected){part.text=selected}
 }
 
 
