@@ -28,35 +28,34 @@ canvas {
 window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
 
 canvas.width=600;
-canvas.height=600;
-     
+canvas.height=500;
+
 function start(){
-edit=false
-A={x:140,y:140,ox:10,oy:37.5,w:200,h:75,rot:0,Trot:0,parent:null}
-B={x:340,y:240,ox:10,oy:37.5,w:150,h:75,rot:0,Trot:0,parent:A,pDis:null,pDir:null}
-C={x:440,y:440,ox:10,oy:37.5,w:200,h:75,rot:0,Trot:0,parent:B,pDis:null,pDir:null}
+  edit=false
+A={x:140,y:140,ox:10,oy:37.5,w:200,h:75,rot:20,rRot:0,parent:null}
+B={x:308,y:197,ox:10,oy:37.5,w:150,h:75,rot:0,rRot:0,parent:A,pDis:null,pDir:null}
+C={x:437,y:193,ox:10,oy:37.5,w:200,h:75,rot:90,rRot:0,parent:B,pDis:null,pDir:null}
   set_relative_coords(B);
   set_relative_coords(C);
 }
 
 function loop(){
-  A.Trot+=0.5
-  if(!edit){
-  parent(B);
-  parent(C);
-  }
+  document.title=floor(B.x)+' , '+floor(B.y)
+  input()
 }
 function parent(obj){
   if(obj.pDis && obj.pDir){
-    obj.x = obj.parent.x+lengthdir_x(obj.pDis, obj.pDir-obj.parent.Trot);
-    obj.y = obj.parent.y+lengthdir_y(obj.pDis, obj.pDir-obj.parent.Trot);
-    obj.Trot = B.rot+obj.parent.Trot
+    obj.x = obj.parent.x+lengthdir_x(obj.pDis, obj.pDir-obj.parent.rot);
+    obj.y = obj.parent.y+lengthdir_y(obj.pDis, obj.pDir-obj.parent.rot);
+    obj.rot = obj.parent.rot-obj.rRot
+    
   }
   
 }
 function set_relative_coords(obj){
-  obj.pDis = point_distance(obj.parent.x,obj.parent.y,obj.x,obj.y)
-  obj.pDir = point_direction(obj.parent.x,obj.parent.y,obj.x,obj.y)
+  obj.pDis = Math.round(point_distance(obj.parent.x,obj.parent.y,obj.x,obj.y))
+  obj.pDir = Math.round(point_direction(obj.parent.x,obj.parent.y,obj.x,obj.y)+obj.parent.rot)
+  obj.rRot =  obj.parent.rot - obj.rot
 }
 function draw(){
   //draw_shape(x,y,ox,oy,w,h,rot,lCr,lCg,lCb,bCr,bCg,bCb)
@@ -68,31 +67,48 @@ function draw(){
 }
 
 function input(){
-  
+  if(keyboard_check_released(vk_f)){
+    set_relative_coords(B);
+    set_relative_coords(C);
+  }
+  if(keyboard_check(vk_a)){
+    A.rot += wheelDir*6;
+    parent(B);
+    parent(C);
+    
+  }
+  if(keyboard_check(vk_b)){
+    B.rot += wheelDir*6;
+    parent(C);
+    set_relative_coords(B);
+    set_relative_coords(C);
+  }
+  if(keyboard_check(vk_c)){
+    C.rot += wheelDir*6;
+    set_relative_coords(C);
+  }
+  if(keyboard_check_pressed(vk_e)){
+    edit=true;
+  }
+  if(keyboard_check_released(vk_e)){
+    edit=false;
+    set_relative_coords(B);
+    set_relative_coords(C);
+    
+  }
+  wheelDir=0
 }
-
 
 
 function draw_shape(obj,lCr,lCg,lCb,bCr,bCg,bCb){
   draw_set_color(lCr,lCg,lCb)
-  draw_rectangle(obj.x-obj.ox, obj.y-obj.oy, obj.w, obj.h,false,obj.Trot,obj.ox,obj.oy)
+  draw_rectangle(obj.x-obj.ox, obj.y-obj.oy, obj.w, obj.h,false,obj.rot,obj.ox,obj.oy)
   draw_set_color(bCr,bCg,bCb)
   draw_set_linewidth(8)
-  draw_rectangle(obj.x-obj.ox, obj.y-obj.oy, obj.w, obj.h,true,obj.Trot,obj.ox,obj.oy)
+  draw_rectangle(obj.x-obj.ox, obj.y-obj.oy, obj.w, obj.h,true,obj.rot,obj.ox,obj.oy)
   draw_set_color(255,0,0)
   draw_circle(obj.x, obj.y, 8, false)
 }
-
-
-
-
-
-
-
-
-
-
-
 
 </script>
 <script type='text/javascript' src='engine.js'></script>
