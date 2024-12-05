@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Basic Template</title>
+<title>joints</title>
 <style>
 body{
   margin: 0;
@@ -25,209 +25,75 @@ canvas {
 <canvas id="canvas"></canvas>
 
 <script>
-//window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
-hide=false
-canvas.width=500;
-canvas.height=500
-load=null;save=null;locked=null;free=null;face=null;body=null;leg=null;foot=null;
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+
+canvas.width=600;
+canvas.height=600;
+     
 function start(){
-  isLocked=true
-  setUP()
-lButton = {spr:load,x:20,y:20,w:150,h:75}
-sButton = {spr:save,x:320,y:20,w:150,h:75}
-lockButton = {spr:locked,x:320,y:80,w:150,h:75}
-head={name:'head',spr:face,x:150,y:110,w:50,h:50,px:25,py:50,rot:0,ogRot:0};
-body={name:'body',spr:body,x:143,y:150,w:60,h:60,px:30,py:30,rot:0,ogRot:0};
-lLeg={name:'lLeg',spr:leg,x:135,y:190,w:50,h:90,px:25,py:10,rot:0,ogRot:20};
-rLeg={name:'rLeg',spr:leg,x:160,y:190,w:50,h:90,px:25,py:10,rot:0,ogRot:-20};
-lFoot={name:'lFoot',spr:foot,x:140,y:245,w:50,h:50,px:22,py:16,rot:0,ogRot:0};
-rFoot={name:'rFoot',spr:foot,x:162,y:247,w:50,h:50,px:22,py:16,rot:0,ogRot:0};
-  
-  adopt_all()
+edit=false
+A={x:140,y:140,ox:10,oy:37.5,w:200,h:75,rot:0,Trot:0,parent:null}
+B={x:340,y:240,ox:10,oy:37.5,w:150,h:75,rot:0,Trot:0,parent:A,pDis:null,pDir:null}
+C={x:440,y:440,ox:10,oy:37.5,w:200,h:75,rot:0,Trot:0,parent:B,pDis:null,pDir:null}
+  set_relative_coords(B);
+  set_relative_coords(C);
 }
 
-function adopt_all(){
-  adopt(head, body)
-  adopt(lLeg, body)
-  adopt(rLeg, body)
-  adopt(rFoot, rLeg)
-  adopt(lFoot, lLeg)
-}
-
-function adopt(obj, parent=null){
-  if(parent){
-    obj.parent = parent
-    obj.pDis = point_distance(parent.x+parent.px,parent.y+parent.py,obj.x+obj.px,obj.y+obj.py)
-    obj.pDir = point_direction(parent.x+parent.px,parent.y+parent.py,obj.x+obj.px,obj.y+obj.py)
-  }
-}
-function babysit(obj){
-  obj.x = obj.parent.x+obj.parent.px+lengthdir_x(obj.pDis, obj.pDir-obj.parent.rot)-obj.px
-  obj.y = obj.parent.y+obj.parent.py+lengthdir_y(obj.pDis, obj.pDir-obj.parent.rot)-obj.py
-  obj.rot = obj.parent.rot + obj.ogRot;
-}
-
-function draw_all(obj){
-  draw_image(obj.spr,obj.x,obj.y,obj.w,obj.h,obj.rot,obj.px,obj.py)
-  if(!hide){
-    draw_set_color(255,0,0)
-    draw_circle(obj.x+obj.px, obj.y+obj.py, 6, false)
-    draw_set_color(0,0,0)
-  if(obj.sel){draw_set_color(255,0,0)}
-    draw_set_linedash([10,3])
-    draw_set_linewidth(4)
-    draw_rectangle(obj.x,obj.y, obj.w, obj.h,true,obj.rot,obj.px,obj.py)
-    draw_set_linedash([])
-  }
-}
 function loop(){
-  if(isLocked){
-    babysit(head)
-    babysit(lLeg)
-    babysit(rLeg)
-    babysit(lFoot)
-    babysit(rFoot)
+  A.Trot+=0.5
+  if(!edit){
+  parent(B);
+  parent(C);
   }
-  input()
-  
+}
+function parent(obj){
+  if(obj.pDis && obj.pDir){
+    obj.x = obj.parent.x+lengthdir_x(obj.pDis, obj.pDir-obj.parent.Trot);
+    obj.y = obj.parent.y+lengthdir_y(obj.pDis, obj.pDir-obj.parent.Trot);
+    obj.Trot = B.rot+obj.parent.Trot
+  }
   
 }
-
-
+function set_relative_coords(obj){
+  obj.pDis = point_distance(obj.parent.x,obj.parent.y,obj.x,obj.y)
+  obj.pDir = point_direction(obj.parent.x,obj.parent.y,obj.x,obj.y)
+}
 function draw(){
-  draw_all(head);
-  draw_all(body);
-  draw_all(lLeg);
-  draw_all(rLeg);
-  draw_all(lFoot);
-  draw_all(rFoot);
-  if(!hide){
-  if(isLocked){lockButton.spr=locked}else{lockButton.spr=free}
-    draw_image(lockButton.spr,lockButton.x,lockButton.y,lockButton.w,lockButton.h)
-    draw_image(lButton.spr,lButton.x,lButton.y,lButton.w,lButton.h)
-    draw_image(sButton.spr,sButton.x,sButton.y,sButton.w,sButton.h)
-    draw_set_color(0,0,0)
-    draw_text(24, 340, '  figure out why lock and freeing moves boots', 12)
-  }
+  //draw_shape(x,y,ox,oy,w,h,rot,lCr,lCg,lCb,bCr,bCg,bCb)
+  draw_shape(A,255,128,0,33,33,33)
+  draw_shape(B,0,255,0,33,33,33)
+  draw_shape(C,0,0,128,33,33,33)
+  draw_set_color(0,0,0)
+  draw_text(0,canvas.height-60, mouse_x+' , '+mouse_y, 60)
 }
 
 function input(){
-  document.title=isLocked
-  hide=keyboard_check(vk_space)
-if(keyboard_check_pressed(vk_escape)){window.close()}
-  adjust_part(head)
-  adjust_part(body)
-  adjust_part(lLeg)
-  adjust_part(rLeg)
-  adjust_part(rFoot)
-  adjust_part(lFoot)
-  
-  if(inside(mouse_x, mouse_y, lockButton.x,lockButton.y,lockButton.w,lockButton.h, 0, 0, 0) && mouse_check_released()){
-    if(isLocked){
-      isLocked=false
-    }else{
-      //diag_window(rFoot,'//////ADOPTED//////')
-      setUP();
-      transfer(head)
-      transfer(body)
-      transfer(lLeg)
-      transfer(rLeg)
-      transfer(lFoot)
-      transfer(rFoot)
-      adopt_all()
-      isLocked=true;
-    }
-  }
-  if(inside(mouse_x, mouse_y, lButton.x,lButton.y,lButton.w,lButton.h, 0, 0, 0) && mouse_check_released()){
-    //load pose
-  }
-  if(inside(mouse_x, mouse_y, sButton.x,sButton.y,sButton.w,sButton.h, 0, 0, 0) && mouse_check_released()){
-    //save pose
-  }
-}
-function transfer(obj){
-  var sprite = null
-if(obj.name=='head'){sprite=head}
-if(obj.name=='head'){sprite=head}
-if(obj.name=='body'){sprite=body}
-if(obj.name=='lLeg'){sprite=lLeg}
-if(obj.name=='rLeg'){sprite=rLeg}
-if(obj.name=='rFoot'){sprite=rFoot}
-if(obj.name=='lFoot'){sprite=lFoot}
-temp={name:obj.name,spr:sprite,x:obj.x,y:obj.y,w:obj.w,h:obj.h,px:obj.px,py:obj.py,rot:0,ogRot:obj.rot+obj.ogRot};
-  obj=temp
   
 }
-function adjust_part(obj){
-  let mod=1
-  if(keyboard_check(vk_shift)){
-    mod=3
-  }
-  
-  if(keyboard_check(vk_left)){
-  if(obj.sel){obj.rot--}
-  }
-  if(keyboard_check(vk_right)){
-  if(obj.sel){obj.rot++}
-  }
-  if(keyboard_check_pressed(vk_delete)){
-  if(obj.sel){obj.rot=0}
-  }
-  if(keyboard_check(vk_w)){
-  if(obj.sel){obj.w+=wheelDir*mod}
-  }
-  if(keyboard_check(vk_h)){
-  if(obj.sel){obj.h+=wheelDir*mod}
-  }
-  if(keyboard_check(vk_r)){
-    if(obj.sel){
-      if(!obj.parent){
-        obj.rot+=wheelDir*mod
-      }else{
-        if(isLocked){
-          obj.ogRot+=wheelDir*mod
-        }else{
-          obj.rot+=wheelDir*mod  //ogRot ??
-        }
-      }
-    }
-  }
-  if(obj.sel && mouse_check() && keyboard_check(vk_p)){
-    isLocked=false;
-    obj.px = mouse_x-obj.x;
-    obj.py = mouse_y-obj.y;
-  }
-  if(obj.sel && mouse_check_pressed() && keyboard_check(vk_m)){
-    offX = mouse_x -obj.x;
-    offY = mouse_y -obj.y;
-  }
-  if(obj.sel && mouse_check() && keyboard_check(vk_m)){
-    obj.x = mouse_x - offX;
-    obj.y = mouse_y - offY;
-  }
-  if(mouse_check_pressed() && !keyboard_check(vk_m) && !keyboard_check(vk_p)){
-    obj.sel=inside(mouse_x, mouse_y, obj.x, obj.y, obj.w, obj.h, obj.rot, obj.px, obj.py)
-  }
-if(obj.sel){wheelDir=0}
+
+
+
+function draw_shape(obj,lCr,lCg,lCb,bCr,bCg,bCb){
+  draw_set_color(lCr,lCg,lCb)
+  draw_rectangle(obj.x-obj.ox, obj.y-obj.oy, obj.w, obj.h,false,obj.Trot,obj.ox,obj.oy)
+  draw_set_color(bCr,bCg,bCb)
+  draw_set_linewidth(8)
+  draw_rectangle(obj.x-obj.ox, obj.y-obj.oy, obj.w, obj.h,true,obj.Trot,obj.ox,obj.oy)
+  draw_set_color(255,0,0)
+  draw_circle(obj.x, obj.y, 8, false)
 }
-dNum=0
-function diag_window(obj,label){
-  let data = label+dNum+JSON.stringify(obj)
-  dNum++
-  var myWindow = window.open();
-  myWindow.document.write(data);
-}
-function setUP(){
-  load = draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAMBJREFUWEdjZBhgwDjA9jOMOmA0BEZDgDGy9tz/gcyKYAfoSFymmxtWzz/DEJpoArbvygtdBhQHIEuS4iKQPhiAGY5LP9kOwGcJzFCYGnyOIMsByJrQLcHGp6kDQEGL7iBkC7GFAnLogfSTnAbQ0wa2EEGPc5gl+PQSnQgJOQA9yAmFEFkhgOxD9CAn5ADkYCeYCHFZREy2gqnBFmLYsilGFJCS96mhdvA4gBq+IdeM0ep4NARGQ2A0BEZDYMBDAADmCsdovSFPYAAAAABJRU5ErkJgggAA')
-  save = draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAANBJREFUWEdjZBhgwDjA9jOMOmA0BEZDgDGy9tz/gcyKYAfIfJk8IG54wpPLgOKA3Yd5UBziavuFKIeB9CGrRefjMgTFATDLibEUXS0hB+DyGIYDiLUcpA7ZUnwOwiYHChGQGWSFAMxifL5Gdxx69GB1ACye0IMLphibPK54R3YktviH6cNIhNgU4wpCmFpsjsAXAsh2kOwAYhIbofRBkgMoSe244h2vA8gtB4gpLJDNJikNEGM4uWrgaYBcA6ihb7Q6Hg2B0RAYDYHREBjwEAAAUQbKaCTTSgoAAAAASUVORK5CYIIA')
-  locked = draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAALRJREFUWEftlsEJgDAMRdubgziCFwdwFKd0AFfypkT4EEITKA3NJT2JleTlNQ3WErxqcP6SAGkgDdTtXN/Iq/gD7McSwnBfT1EBaNMTjMejZ6zpAEhOxakGvKunahFTmmgaGAXgVUK19q4bgJ8fBZd9osG7AiCpDGqZcwVA5ZZqaae7B1p65Xla38jBIpvPvAXoWh5kdCZ0A3iPxnCAVkHmKPY2YALMSKblyB+SNJAG0kC4gQ+OSaolTmpzUQAAAABJRU5ErkJgggAA')
-  free = draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAKNJREFUWEdjZBhgwDjA9jOMOmA0BEZDgNEkVeX/QGZFsAMsXTkGxA3Hd/9gGHUARgiAggUd0CqKsEYBSJBWFqJ7jC4OgIUoNk/hdAC+KECOIkIhhRya2EKWrBDAZRCyo2EOo4sD8CVadDn0EKNqCOCKY3zRRFUHgKIAmw+xFbHIUURySYgrm5KSOGGOGjxF8YDURFBLRxskoyEwGgKjITDgIQAAdCySJViD0qgAAAAASUVORK5CYIIA')
-  
-  face=draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA3ElEQVRYR+2XQQ6DIBBF5VTewSZuPGc3JPYOPVUbFiRTYJg/SDOY4Mpo8D8f6AxuMT6ccf5yP4B92z+cNf/y6heCB9SCUyANCASQhq+PI5PwPp8/11AIEYCGl4JTEgqCQFQBYjgSzIFIECzAlfAIE23UIIoAWu3cV4FMRxWgRb12KsYD6DH3GguZgQkwDUwD5gbCN9wTQqoH4/0JqYFwfqUeNBejXtMg6Q854zYksaBoewNEOy1WYk+YrgluXfytKS2ZkHZTUh+oNkAHmG1MpLduvQ+tgdaHI+PMAb7m6aoh6QU/swAAAABJRU5ErkJggg==');
-  body=draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA5klEQVRYR+2XwQ3DMAhF6xk6RHbpIcPmkF0yRGdoiyUiTAyYynYu5Iz0nz/E5qdH47e+1k9jaS7b9i211F+KvEItIrSGgyWv4LI8Vc3jeLuYRABLyKXyK5bAToDeghYgAgVAdmC2/dgeaEMAhAPxG4YDxWM060KiD9P9AHAt0p1gtAv09LCc5I3odoBZEPz0oHvuhDNcUAGoC6PmAAHoYlpsxehCAEA7ertQ638xhLgmjWpDrf8qQE8XpNObAD0geCC5RLNagOBx7d95sMSrDvBZoIAAYmU/qUZKy2qE9gZXKY5pUf0Licm4cWNe26oAAAAASUVORK5CYII=');
-  leg=draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA7ElEQVRYR+2XMQ7CMAxF6c5hOrAychxOw3EYWRk4DDtVkFxFpsn/tiMlSO3W1u1/+f6u0ulAHPPp+iHKfkpez9uEnoMFXnERRhAmgMv5jRb0vX9/HNe6EEC+elZclFmIogPa+ghAgio5QQFYxS0uQACvuIZwO9AFIBI+PSYojJstGAYgaj+Tg7EdSCuIuuDKQBKWHLQC+K8xHMqBSA5Q/9O74ad4B+g+Bd1a0GISJIS1bVl1Txj9GDUD8LSBGcHqGOYt6AYQyQFjP3RgB/DmgA2gqQWWIDYF0C4ISC5Suob+CykHtgD01rt0zgAsxbHaIT1poQsAAAAASUVORK5CYII=');
-  foot=draw_set_image('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAp0lEQVRYR+2XOw6AIBAFobek9DBeyZN4JQ9jaWmvoSAhhs+sFibmWRrDjrP7IHj38eM/ru8EIAMmA2EYTzK0+7HhdfGHsXAEmKfQZFjW3QlABv5pIEWQpCDGhFrAMSQRTPm0RFEAyADtf94COgcYoDd89/2ZzkEXwPr3VgtNgKfFLRBFgPzYtaovtSK9K+0NVYC3helMCEAGZEAGqlsxvYSQi0rrZLwAQDCwIQsnmwEAAAAASUVORK5CYII=');
-}
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
 <script type='text/javascript' src='engine.js'></script>
 
