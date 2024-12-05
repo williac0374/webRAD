@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>joints</title>
+<title>puppet</title>
 <style>
 body{
   margin: 0;
@@ -166,6 +166,10 @@ function input(){
     if(selected==LEFTFOREARM.id){LEFTFOREARM.rRot+=wheelDir*mod}
     if(selected==RIGHTHAND.id){RIGHTHAND.rRot+=wheelDir*mod}
     if(selected==LEFTHAND.id){LEFTHAND.rRot+=wheelDir*mod}
+    if(keyboard_check(vk_left)){BODY.x--}
+    if(keyboard_check(vk_right)){BODY.x++}
+    if(keyboard_check(vk_up)){BODY.y--}
+    if(keyboard_check(vk_down)){BODY.y++}
   }
   
   wheelDir=0
