@@ -27,6 +27,7 @@ helpText=[
 'play(sound)',
 'DRAWING',
 'draw_text(x, y, text, size)',
+'draw_centered_text(x, y, text, size) ',
 'draw_set_image(file)',
 'draw_image(img,x,y,w,h,rot,ox,oy)',
 'draw_circle(x, y, r, outline)',
