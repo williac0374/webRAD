@@ -29,7 +29,7 @@ canvas {
 
 <script>
 window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
-
+hide = false
 canvas.width=900;
 canvas.height=500;
 
@@ -42,20 +42,20 @@ function start(){
   sprite_boot = draw_set_image('boot.png');
   sprite_left_hand = draw_set_image('lhand.png');
   sprite_right_hand = draw_set_image('rhand.png');
-BODY = {x:140,y:140,ox:48,oy:48,w:96,h:96,rot:0,rRot:0,parent:null}
-HEAD = {x:140,y:92,ox:32,oy:64,w:64,h:64,rot:0,rRot:0,parent:BODY}
-LEFTTHIGH = {x:160,y:180,ox:32,oy:0,w:64,h:64,rot:0,rRot:0,parent:BODY}
-RIGHTTHIGH = {x:120,y:180,ox:32,oy:0,w:64,h:64,rot:0,rRot:0,parent:BODY}
-LEFTCALF = {x:160,y:236,ox:32,oy:0,w:64,h:64,rot:0,rRot:0,parent:LEFTTHIGH}
-RIGHTCALF = {x:120,y:236,ox:32,oy:0,w:64,h:64,rot:0,rRot:0,parent:RIGHTTHIGH}
-LEFTBOOT = {x:160,y:295,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:LEFTCALF}
-RIGHTBOOT = {x:120,y:295,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:RIGHTCALF}
-RIGHTBICEP = {x:95,y:120,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:BODY}
-LEFTBICEP = {x:175,y:120,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:BODY}
-RIGHTFOREARM = {x:95,y:155,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:BODY}
-LEFTFOREARM = {x:175,y:155,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:BODY}
-RIGHTHAND = {x:95,y:190,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:BODY}
-LEFTHAND = {x:175,y:190,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:BODY}
+BODY = {id:'BODY',x:140,y:140,ox:48,oy:48,w:96,h:96,rot:0,rRot:0,parent:null}
+HEAD = {id:'HEAD',x:140,y:92,ox:32,oy:64,w:64,h:64,rot:0,rRot:0,parent:BODY}
+LEFTTHIGH = {id:'LEFTTHIGH',x:160,y:180,ox:32,oy:0,w:64,h:64,rot:0,rRot:0,parent:BODY}
+RIGHTTHIGH = {id:'RIGHTTHIGH',x:120,y:180,ox:32,oy:0,w:64,h:64,rot:0,rRot:0,parent:BODY}
+LEFTCALF = {id:'LEFTCALF',x:160,y:236,ox:32,oy:0,w:64,h:64,rot:0,rRot:0,parent:LEFTTHIGH}
+RIGHTCALF = {id:'RIGHTCALF',x:120,y:236,ox:32,oy:0,w:64,h:64,rot:0,rRot:0,parent:RIGHTTHIGH}
+LEFTBOOT = {id:'LEFTBOOT',x:165,y:295,ox:48,oy:30,w:96,h:96,rot:0,rRot:0,parent:LEFTCALF}
+RIGHTBOOT = {id:'RIGHTBOOT',x:125,y:295,ox:48,oy:30,w:96,h:96,rot:0,rRot:0,parent:RIGHTCALF}
+RIGHTBICEP = {id:'RIGHTBICEP',x:95,y:120,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:BODY}
+LEFTBICEP = {id:'LEFTBICEP',x:175,y:120,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:BODY}
+RIGHTFOREARM = {id:'RIGHTFOREARM',x:95,y:155,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:RIGHTBICEP}
+LEFTFOREARM = {id:'LEFTFOREARM',x:175,y:155,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:LEFTBICEP}
+RIGHTHAND = {id:'RIGHTHAND',x:95,y:190,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:RIGHTFOREARM}
+LEFTHAND = {id:'LEFTHAND',x:175,y:190,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:LEFTFOREARM}
   set_relative_coords(HEAD);
   set_relative_coords(LEFTTHIGH);
   set_relative_coords(RIGHTTHIGH);
@@ -73,20 +73,22 @@ LEFTHAND = {x:175,y:190,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:BODY}
   
   ////////////////////////////////////////////////////////////////////////
   ////GUI BUTTONS
-part={x:600,y:50,w:150,h:75,text:'NONE',tColor:[255,255,255],color:[255,0,255],bColor:[44,44,44]}
+part={x:600,y:50,w:150,h:75,text:'NONE',tColor:[255,255,255],color:[111,111,111],bColor:[44,44,44]}
+rotate={x:600,y:125,w:150,h:75,text:'',tColor:[255,255,255],color:[111,111,111],bColor:[44,44,44]}
   
   
   
 }
 
 function draw_button(obj){
+  if(hide){return}
   draw_set_color(obj.color[0],obj.color[1],obj.color[2]);
   draw_rectangle(obj.x, obj.y, obj.w, obj.h,false,0,0,0);
   draw_set_color(obj.bColor[0],obj.bColor[1],obj.bColor[2]);
   draw_set_linewidth(8);
   draw_rectangle(obj.x, obj.y, obj.w, obj.h,true,0,0,0);
   draw_set_color(obj.tColor[0],obj.tColor[1],obj.tColor[2]);
-  draw_centered_text(obj.x+obj.w/2, obj.y+obj.h/2, obj.text, Math.min(obj.h,obj.w)/2);
+  draw_centered_text(obj.x+obj.w/2, obj.y+obj.h/2, obj.text, Math.min(obj.h,obj.w)/5);
 }
 function loop(){
   parent(HEAD)
@@ -120,7 +122,7 @@ function set_relative_coords(obj){
 }
 function draw(){
   
-  draw_shape(HEAD,sprite_head) 
+  draw_shape(HEAD,sprite_head)
   draw_shape(BODY,sprite_body)
   draw_shape(LEFTTHIGH,sprite_leg)
   draw_shape(RIGHTTHIGH,sprite_leg)
@@ -135,51 +137,64 @@ function draw(){
   draw_shape(RIGHTHAND,sprite_left_hand)
   draw_shape(LEFTHAND,sprite_right_hand)
   draw_button(part)
+if(part.text!='NONE'){draw_button(rotate)}
   draw_set_color(0,0,0)
-  draw_text(0,canvas.height-60, mouse_x+' , '+mouse_y, 60)
+  if(!hide){draw_text(0,canvas.height-60, mouse_x+' , '+mouse_y, 60)}
 }
 function part_select(obj){
   let mouse_inside=false
-  if(inside(mouse_x, mouse_y, obj.x,obj.y, obj.w, obj.h, obj.rot, obj.ox, obj.oy)){
+  if(inside(mouse_x, mouse_y, obj.x-obj.ox,obj.y-obj.oy, obj.w, obj.h, obj.rot, obj.ox, obj.oy)){
     mouse_inside = true
   }
   return mouse_inside;
 }
 function input(){
-  
-  if(keyboard_check(vk_a)){
-    HEAD.rot += wheelDir*6;
-    set_relative_coords(HEAD);
-  }
-  if(keyboard_check(vk_b)){
-    BODY.rot += wheelDir*6;
-    // set_relative_coords(BODY);
-    parent(HEAD);
+  hide = keyboard_check(vk_space)
+  if(inside(mouse_x, mouse_y, rotate.x,rotate.y, rotate.w, rotate.h, 0, 0, 0)){
+   var mod=3
+    if(selected==HEAD.id){HEAD.rRot+=wheelDir*mod}
+    if(selected==BODY.id){BODY.rot+=wheelDir*mod}
+    if(selected==LEFTTHIGH.id){LEFTTHIGH.rRot+=wheelDir*mod}
+    if(selected==RIGHTTHIGH.id){RIGHTTHIGH.rRot+=wheelDir*mod}
+    if(selected==LEFTCALF.id){LEFTCALF.rRot+=wheelDir*mod}
+    if(selected==RIGHTCALF.id){RIGHTCALF.rRot+=wheelDir*mod}
+    if(selected==LEFTBOOT.id){LEFTBOOT.rRot+=wheelDir*mod}
+    if(selected==RIGHTBOOT.id){RIGHTBOOT.rRot+=wheelDir*mod}
+    if(selected==RIGHTBICEP.id){RIGHTBICEP.rRot+=wheelDir*mod}
+    if(selected==LEFTBICEP.id){LEFTBICEP.rRot+=wheelDir*mod;parent(LEFTFOREARM)}
+    if(selected==RIGHTFOREARM.id){RIGHTFOREARM.rRot+=wheelDir*mod}
+    if(selected==LEFTFOREARM.id){LEFTFOREARM.rRot+=wheelDir*mod}
+    if(selected==RIGHTHAND.id){RIGHTHAND.rRot+=wheelDir*mod}
+    if(selected==LEFTHAND.id){LEFTHAND.rRot+=wheelDir*mod}
   }
   
   wheelDir=0
-  if(part_select(HEAD)){selected=HEAD};
-  if(part_select(BODY)){selected=BODY};
-  if(part_select(LEFTTHIGH)){selected=LEFTTHIGH};
-  if(part_select(RIGHTTHIGH)){selected=RIGHTTHIGH};
-  if(part_select(LEFTCALF)){selected=LEFTCALF};
-  if(part_select(RIGHTCALF)){selected=RIGHTCALF};
-  if(part_select(LEFTBOOT)){selected=LEFTBOOT};
-  if(part_select(RIGHTBOOT)){selected=RIGHTBOOT};
-  if(part_select(RIGHTBICEP)){selected=RIGHTBICEP};
-  if(part_select(LEFTBICEP)){selected=LEFTBICEP};
-  if(part_select(RIGHTFOREARM)){selected=RIGHTFOREARM};
-  if(part_select(LEFTFOREARM)){selected=LEFTFOREARM};
-  if(part_select(RIGHTHAND)){selected=RIGHTHAND};
-  if(part_select(LEFTHAND)){selected=LEFTHAND};
+  if(mouse_check_pressed()){
+    selected='NONE'
+  if(part_select(HEAD)){selected=HEAD.id};
+  if(part_select(BODY)){selected=BODY.id};
+  if(part_select(LEFTTHIGH)){selected=LEFTTHIGH.id};
+  if(part_select(RIGHTTHIGH)){selected=RIGHTTHIGH.id};
+  if(part_select(LEFTCALF)){selected=LEFTCALF.id};
+  if(part_select(RIGHTCALF)){selected=RIGHTCALF.id};
+  if(part_select(LEFTBOOT)){selected=LEFTBOOT.id};
+  if(part_select(RIGHTBOOT)){selected=RIGHTBOOT.id};
+  if(part_select(RIGHTBICEP)){selected=RIGHTBICEP.id};
+  if(part_select(LEFTBICEP)){selected=LEFTBICEP.id};
+  if(part_select(RIGHTFOREARM)){selected=RIGHTFOREARM.id};
+  if(part_select(LEFTFOREARM)){selected=LEFTFOREARM.id};
+  if(part_select(RIGHTHAND)){selected=RIGHTHAND.id};
+  if(part_select(LEFTHAND)){selected=LEFTHAND.id};
+    
   if(selected){part.text=selected}
+  }
 }
 
 
 function draw_shape(obj,img){
   draw_image(img,obj.x-obj.ox,obj.y-obj.oy,obj.w,obj.h,obj.rot,obj.ox,obj.oy)
   draw_set_color(255,0,0)
-  draw_circle(obj.x, obj.y, 8, false)
+ if(!hide){ draw_circle(obj.x, obj.y, 8, false)}
 }
 
 </script>
