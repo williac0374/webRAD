@@ -39,10 +39,22 @@ function start(){
   
   sprite_body= draw_set_image('torso.png');
   sprite_head = draw_set_image('face.png');
-  sprite_leg = draw_set_image('leg.png');
-  sprite_boot = draw_set_image('boot.png');
+  sprite_lThigh = draw_set_image('leg.png');
+  sprite_rThigh = draw_set_image('leg.png');
+  
+  sprite_rBicep = draw_set_image('leg.png');
+  sprite_lBicep = draw_set_image('leg.png');
+  sprite_lForearm = draw_set_image('leg.png');
+  sprite_rForearm = draw_set_image('leg.png');
+  
+  sprite_rCalf = draw_set_image('leg.png');
+  sprite_lCalf = draw_set_image('leg.png');
+  sprite_lBoot = draw_set_image('boot.png');
+  sprite_rBoot = draw_set_image('boot.png');
+  
   sprite_left_hand = draw_set_image('lhand.png');
   sprite_right_hand = draw_set_image('rhand.png');
+  
 BODY = {id:'BODY',depth:0,x:140,y:140,ox:48,oy:48,w:96,h:96,rot:0,rRot:0,parent:null}
 HEAD = {id:'HEAD',depth:0,x:140,y:92,ox:32,oy:64,w:64,h:64,rot:0,rRot:0,parent:BODY}
 LEFTTHIGH = {id:'LEFTTHIGH',depth:0,x:160,y:180,ox:32,oy:0,w:64,h:64,rot:0,rRot:0,parent:BODY}
@@ -95,33 +107,37 @@ if(hide){return}
   draw_set_linewidth(8);
   draw_rectangle(obj.x, obj.y, obj.w, obj.h,true,0,0,0);
   
-  
+     
 }
 function load_image() {
-    // Create file input
-    var fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.addEventListener('change', function(event) {
-      var file = event.target.files[0];
-      if (file) {
-        console.log(file.name)
-        image.sprite=draw_set_image(file.name);
-        /*
-        // Read the file as base64
-        var reader = new FileReader();
-        reader.onload = function(readerEvent) {
-          // Set the base64 value to the text box
-          textBox.value = readerEvent.target.result;
-        };
-        reader.readAsDataURL(file);
-       */ 
-      }
-    });
-    
-    // Trigger the file input click
-    fileInput.click();
-  };
+  // Create file input
+  var fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    if (file) {
+ 
+    if(selected=='HEAD'){sprite_head=draw_set_image(file.name)}
+    if(selected=='BODY'){sprite_body=draw_set_image(file.name)}
+    if(selected=='LEFTTHIGH'){sprite_lThigh=draw_set_image(file.name)}
+    if(selected=='RIGHTTHIGH'){sprite_rThigh=draw_set_image(file.name)}
+    if(selected=='LEFTCALF'){sprite_lCalf=draw_set_image(file.name)}
+    if(selected=='RIGHTCALF'){sprite_rCalf=draw_set_image(file.name)}
+    if(selected=='LEFTBOOT'){sprite_lBoot=draw_set_image(file.name)}
+    if(selected=='RIGHTBOOT'){sprite_rBoot=draw_set_image(file.name)}
+    if(selected=='RIGHTBICEP'){sprite_rBicep=draw_set_image(file.name)}
+    if(selected=='LEFTBICEP'){sprite_lBicep=draw_set_image(file.name)}
+    if(selected=='RIGHTFOREARM'){sprite_rForearm=draw_set_image(file.name)}
+    if(selected=='LEFTFOREARM'){sprite_lForearm=draw_set_image(file.name)}
+    if(selected=='RIGHTHAND'){sprite_right_hand=draw_set_image(file.name)}
+    if(selected=='LEFTHAND'){sprite_left_hand=draw_set_image(file.name)}
+    }
+  });
+  
+  // Trigger the file input click
+  fileInput.click();
+};
 function loop(){
   parent(HEAD)
   parent(LEFTTHIGH)
@@ -201,18 +217,18 @@ function draw(){
   for(let i = 0; i < shapes.length; i ++){
   if(shapes[i].id=='HEAD'){draw_shape(HEAD,sprite_head)}
   if(shapes[i].id=='BODY'){draw_shape(BODY,sprite_body)}
-  if(shapes[i].id=='LEFTTHIGH'){draw_shape(LEFTTHIGH,sprite_leg)}
-  if(shapes[i].id=='RIGHTTHIGH'){draw_shape(RIGHTTHIGH,sprite_leg)}
-  if(shapes[i].id=='LEFTCALF'){draw_shape(LEFTCALF,sprite_leg)}
-  if(shapes[i].id=='RIGHTCALF'){draw_shape(RIGHTCALF,sprite_leg)}
-  if(shapes[i].id=='LEFTBOOT'){draw_shape(LEFTBOOT,sprite_boot)}
-  if(shapes[i].id=='RIGHTBOOT'){draw_shape(RIGHTBOOT,sprite_boot)}
-  if(shapes[i].id=='RIGHTBICEP'){draw_shape(RIGHTBICEP,sprite_leg)}
-  if(shapes[i].id=='LEFTBICEP'){draw_shape(LEFTBICEP,sprite_leg)}
-  if(shapes[i].id=='RIGHTFOREARM'){draw_shape(RIGHTFOREARM,sprite_leg)}
-  if(shapes[i].id=='LEFTFOREARM'){draw_shape(LEFTFOREARM,sprite_leg)}
-  if(shapes[i].id=='RIGHTHAND'){draw_shape(RIGHTHAND,sprite_left_hand)}
-  if(shapes[i].id=='LEFTHAND'){draw_shape(LEFTHAND,sprite_right_hand)}
+  if(shapes[i].id=='LEFTTHIGH'){draw_shape(LEFTTHIGH,sprite_lThigh)}
+  if(shapes[i].id=='RIGHTTHIGH'){draw_shape(RIGHTTHIGH,sprite_rThigh)}
+  if(shapes[i].id=='LEFTCALF'){draw_shape(LEFTCALF,sprite_lCalf)}
+  if(shapes[i].id=='RIGHTCALF'){draw_shape(RIGHTCALF,sprite_rCalf)}
+  if(shapes[i].id=='LEFTBOOT'){draw_shape(LEFTBOOT,sprite_lBoot)}
+  if(shapes[i].id=='RIGHTBOOT'){draw_shape(RIGHTBOOT,sprite_rBoot)}
+  if(shapes[i].id=='RIGHTBICEP'){draw_shape(RIGHTBICEP,sprite_rBicep)}
+  if(shapes[i].id=='LEFTBICEP'){draw_shape(LEFTBICEP,sprite_lBicep)}
+  if(shapes[i].id=='RIGHTFOREARM'){draw_shape(RIGHTFOREARM,sprite_rForearm)}
+  if(shapes[i].id=='LEFTFOREARM'){draw_shape(LEFTFOREARM,sprite_lForearm)}
+  if(shapes[i].id=='RIGHTHAND'){draw_shape(RIGHTHAND,sprite_right_hand)}
+  if(shapes[i].id=='LEFTHAND'){draw_shape(LEFTHAND,sprite_left_hand)}
   }
   draw_button(part)
 if(part.text!='NONE'){draw_button(rotate);draw_button(image)}
@@ -229,7 +245,7 @@ function part_select(obj){
 function input(){
 if(keyboard_check_pressed(vk_s)){save_pose()}
 if(keyboard_check_pressed(vk_l)){load_pose()}
-  if(keyboard_check_pressed(vk_i)){load_image()}
+if(keyboard_check_pressed(vk_i)){load_image()}
   hide = keyboard_check(vk_space)
   if(inside(mouse_x, mouse_y, rotate.x,rotate.y, rotate.w, rotate.h, 0, 0, 0)){
     var mod=3
@@ -242,7 +258,7 @@ if(keyboard_check_pressed(vk_l)){load_pose()}
   if(selected==LEFTBOOT.id){LEFTBOOT.rRot+=wheelDir*mod}
   if(selected==RIGHTBOOT.id){RIGHTBOOT.rRot+=wheelDir*mod}
   if(selected==RIGHTBICEP.id){RIGHTBICEP.rRot+=wheelDir*mod}
-  if(selected==LEFTBICEP.id){LEFTBICEP.rRot+=wheelDir*mod;parent(LEFTFOREARM)}
+  if(selected==LEFTBICEP.id){LEFTBICEP.rRot+=wheelDir*mod}
   if(selected==RIGHTFOREARM.id){RIGHTFOREARM.rRot+=wheelDir*mod}
   if(selected==LEFTFOREARM.id){LEFTFOREARM.rRot+=wheelDir*mod}
   if(selected==RIGHTHAND.id){RIGHTHAND.rRot+=wheelDir*mod}
@@ -260,19 +276,34 @@ if(keyboard_check_pressed(vk_l)){load_pose()}
   
   if(mouse_check_pressed()){
     selected='NONE'
-    
+              /*
+        sprite_body= draw_set_image('torso.png');
+  sprite_head = draw_set_image('face.png');
+  sprite_lThigh = draw_set_image('leg.png');
+  sprite_rThigh = draw_set_image('leg.png');
+  sprite_rBicep = draw_set_image('leg.png');
+  sprite_lBicep = draw_set_image('leg.png');
+  sprite_lForearm = draw_set_image('leg.png');
+  sprite_rForearm = draw_set_image('leg.png');
+  sprite_rCalf = draw_set_image('leg.png');
+  sprite_lCalf = draw_set_image('leg.png');
+  sprite_lBoot = draw_set_image('boot.png');
+  sprite_rBoot = draw_set_image('boot.png');
+  sprite_left_hand = draw_set_image('lhand.png');
+  sprite_right_hand = draw_set_image('rhand.png');
+      */ 
   if(part_select(HEAD)){selected=HEAD.id;image.sprite=sprite_head};
   if(part_select(BODY)){selected=BODY.id;image.sprite=sprite_body};
-  if(part_select(LEFTTHIGH)){selected=LEFTTHIGH.id;image.sprite=sprite_leg};
-  if(part_select(RIGHTTHIGH)){selected=RIGHTTHIGH.id;image.sprite=sprite_leg};
-  if(part_select(LEFTCALF)){selected=LEFTCALF.id;image.sprite=sprite_leg};
-  if(part_select(RIGHTCALF)){selected=RIGHTCALF.id;image.sprite=sprite_leg};
-  if(part_select(LEFTBOOT)){selected=LEFTBOOT.id;image.sprite=sprite_boot};
-  if(part_select(RIGHTBOOT)){selected=RIGHTBOOT.id;image.sprite=sprite_boot};
-  if(part_select(RIGHTBICEP)){selected=RIGHTBICEP.id;image.sprite=sprite_body};
-  if(part_select(LEFTBICEP)){selected=LEFTBICEP.id;image.sprite=sprite_leg};
-  if(part_select(RIGHTFOREARM)){selected=RIGHTFOREARM.id;image.sprite=sprite_leg};
-  if(part_select(LEFTFOREARM)){selected=LEFTFOREARM.id;image.sprite=sprite_leg};
+  if(part_select(LEFTTHIGH)){selected=LEFTTHIGH.id;image.sprite=sprite_lThigh};
+  if(part_select(RIGHTTHIGH)){selected=RIGHTTHIGH.id;image.sprite=sprite_rThigh};
+  if(part_select(LEFTCALF)){selected=LEFTCALF.id;image.sprite=sprite_lCalf};
+  if(part_select(RIGHTCALF)){selected=RIGHTCALF.id;image.sprite=sprite_rCalf};
+  if(part_select(LEFTBOOT)){selected=LEFTBOOT.id;image.sprite=sprite_lBoot};
+  if(part_select(RIGHTBOOT)){selected=RIGHTBOOT.id;image.sprite=sprite_rBoot};
+  if(part_select(RIGHTBICEP)){selected=RIGHTBICEP.id;image.sprite=sprite_rBicep};
+  if(part_select(LEFTBICEP)){selected=LEFTBICEP.id;image.sprite=sprite_lBicep};
+  if(part_select(RIGHTFOREARM)){selected=RIGHTFOREARM.id;image.sprite=sprite_rForearm};
+  if(part_select(LEFTFOREARM)){selected=LEFTFOREARM.id;image.sprite=sprite_lForearm};
   if(part_select(RIGHTHAND)){selected=RIGHTHAND.id;image.sprite=sprite_right_hand};
   if(part_select(LEFTHAND)){selected=LEFTHAND.id;image.sprite=sprite_left_hand};
     // set image sprite sprite_body
@@ -280,7 +311,7 @@ if(keyboard_check_pressed(vk_l)){load_pose()}
   }
   if(selected){
     if(selected!='NONE'){
-      
+
     if(selected==HEAD.id){HEAD.depth+=wheelDir;part.depth = HEAD.depth };
     if(selected==BODY.id){BODY.depth+=wheelDir;part.depth = BODY.depth};
     if(selected==LEFTTHIGH.id){LEFTTHIGH.depth+=wheelDir;part.depth = LEFTTHIGH.depth};
