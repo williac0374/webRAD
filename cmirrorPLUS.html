@@ -93,6 +93,7 @@ body {
 <button id="expand">Expand</buhelpBoxtton>
 <button id="base64">Base64</button>
 <button id="test">TEST!</button>
+<button id="CAPS"></button>
 </div>
 <div id="editor"></div>
 <div id="functs"></div>
@@ -107,10 +108,11 @@ window.addEventListener("focus", () => {
   }
 });
 var shiftMod = false;
-addEventListener("keydown", function(e){if (e.keyCode==16){shiftMod=true}}, false);
+var caps = false;
+//if(e.getModifierState('CapsLock')){cText.innerText='CAPS LOCK IS ON!!'}else{cText.innerText='caps off'}
+var cText = document.getElementById("CAPS")
+addEventListener("keydown", function(e){if (e.keyCode==20){if(!e.getModifierState('CapsLock')){cText.innerText='CAPS LOCK IS ON!!'}else{cText.innerText='caps off'}};if (e.keyCode==16){shiftMod=true}}, false);
 //addEventListener("keyup", function(e){if (e.keyCode==16){shiftMod=false}}, false);
-
-
 window.addEventListener('beforeunload', function(e){
   var message = 'are you sure you want to leave?';
   (e || window.event).returnValue = message;
