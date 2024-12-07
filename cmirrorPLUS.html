@@ -108,11 +108,12 @@ window.addEventListener("focus", () => {
   }
 });
 var shiftMod = false;
+var controlMod = false;
 var caps = false;
 //if(e.getModifierState('CapsLock')){cText.innerText='CAPS LOCK IS ON!!'}else{cText.innerText='caps off'}
 var cText = document.getElementById("CAPS")
-addEventListener("keydown", function(e){if (e.keyCode==20){if(!e.getModifierState('CapsLock')){cText.innerText='CAPS LOCK IS ON!!'}else{cText.innerText='caps off'}};if (e.keyCode==16){shiftMod=true}}, false);
-//addEventListener("keyup", function(e){if (e.keyCode==16){shiftMod=false}}, false);
+addEventListener("keydown", function(e){if (e.keyCode==20){if(!e.getModifierState('CapsLock')){cText.innerText='CAPS LOCK IS ON!!'}else{cText.innerText='caps off'}};if (e.keyCode==16){shiftMod=true};if (e.keyCode==17){controlMod=true}}, false);
+addEventListener("keyup", function(e){if (e.keyCode==16){controlMod=false}}, false);
 window.addEventListener('beforeunload', function(e){
   var message = 'are you sure you want to leave?';
   (e || window.event).returnValue = message;
@@ -142,7 +143,24 @@ editor.on("change",function(cm,change){
   localStorage.setItem('codeIDE', code);
   localStorage.setItem('cursorIDE', JSON.stringify(editor.getCursor()))
 });
+selectedRange = null;
 
+
+editor.on('blur', () => {
+  const selection = editor.getSelection();
+  if (selection) {
+    selectedRange = editor.listSelections()[0];
+    localStorage.setItem('cm_clipboard', selection);
+    console.log('Copied to cm_clipboard:', selection);
+  }
+});
+function pasteReplace(){
+  const clipboardText = localStorage.getItem('cm_clipboard');
+ if (clipboardText && selectedRange) {
+          editor.replaceRange(clipboardText, selectedRange.anchor, selectedRange.head);
+          alert('Pasted from cm_clipboard!');
+        } 
+}
 editor.getWrapperElement().addEventListener('click', function(event) {dis=null;fnum = 0});
 document.getElementsByClassName("CodeMirror")[0].style.fontSize = codeSize +"px";
 // Load button click function
