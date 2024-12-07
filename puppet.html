@@ -305,7 +305,7 @@ if(keyboard_check_pressed(vk_i)){load_image()}
    var mod=3
   if(inside(mouse_x, mouse_y, width.x,width.y, width.w, width.h, 0, 0, 0)){
   if(selected==HEAD.id){HEAD.w+=wheelDir*mod;HEAD.ox+=wheelDir*mod/2}
-  if(selected==BODY.id){BODY.w+=wheelDir*mod;HEAD.ox+=wheelDir*mod/2}
+  if(selected==BODY.id){BODY.w+=wheelDir*mod;BODY.ox-=wheelDir*mod/2}
   if(selected==LEFTTHIGH.id){LEFTTHIGH.w+=wheelDir*mod;LEFTTHIGH.ox+=wheelDir*mod/2}
   if(selected==RIGHTTHIGH.id){RIGHTTHIGH.w+=wheelDir*mod;RIGHTTHIGH.ox+=wheelDir*mod/2}
   if(selected==LEFTCALF.id){LEFTCALF.w+=wheelDir*mod;LEFTCALF.ox+=wheelDir*mod/2}
@@ -321,19 +321,19 @@ if(keyboard_check_pressed(vk_i)){load_image()}
   }
   if(inside(mouse_x, mouse_y, height.x,height.y, height.w, height.h, 0, 0, 0)){
   if(selected==HEAD.id){HEAD.h+=wheelDir*mod;HEAD.oy+=wheelDir*mod}
-  if(selected==BODY.id){BODY.h+=wheelDir*mod;BODY.oy+=wheelDir*mod}
+  if(selected==BODY.id){BODY.h+=wheelDir*mod;}
   if(selected==LEFTTHIGH.id){LEFTTHIGH.g+=wheelDir*mod;LEFTTHIGH.oy+=wheelDir*mod}
   if(selected==RIGHTTHIGH.id){RIGHTTHIGH.h+=wheelDir*mod;RIGHTTHIGH.oy+=wheelDir*mod}
   if(selected==LEFTCALF.id){LEFTCALF.h+=wheelDir*mod;LEFTCALF.oy+=wheelDir*mod}
   if(selected==RIGHTCALF.id){RIGHTCALF.h+=wheelDir*mod;RIGHTCALF.oy+=wheelDir*mod}
   if(selected==LEFTBOOT.id){LEFTBOOT.h+=wheelDir*mod;LEFTBOOT.oy+=wheelDir*mod}
   if(selected==RIGHTBOOT.id){RIGHTBOOT.h+=wheelDir*mod;RIGHTBOOT.oy+=wheelDir*mod}
-  if(selected==RIGHTBICEP.id){RIGHTBICEP.h+=wheelDir*mod;RIGHTBICEP.oy+=wheelDir*mod}
-  if(selected==LEFTBICEP.id){LEFTBICEP.h+=wheelDir*mod;LEFTBICEP.oy+=wheelDir*mod}
-  if(selected==RIGHTFOREARM.id){RIGHTFOREARM.h+=wheelDir*mod;RIGHTFOREARM.oy+=wheelDir*mod}
-  if(selected==LEFTFOREARM.id){LEFTFOREARM.h+=wheelDir*mod;LEFTFOREARM.oy+=wheelDir*mod}
-  if(selected==RIGHTHAND.id){RIGHTHAND.h+=wheelDir*mod;RIGHTHAND.oy+=wheelDir*mod}
-  if(selected==LEFTHAND.id){LEFTHAND.h+=wheelDir*mod;LEFTHAND.oy+=wheelDir*mod}
+  if(selected==RIGHTBICEP.id){RIGHTBICEP.h+=wheelDir*mod;RIGHTFOREARM.pDis+=wheelDir*mod}
+  if(selected==LEFTBICEP.id){LEFTBICEP.h+=wheelDir*mod;LEFTFOREARM.pDis+=wheelDir*mod}
+  if(selected==RIGHTFOREARM.id){RIGHTFOREARM.h+=wheelDir*mod;RIGHTHAND.pDis+=wheelDir*mod}
+  if(selected==LEFTFOREARM.id){LEFTFOREARM.h+=wheelDir*mod;LEFTHAND.pDis+=wheelDir*mod}
+  if(selected==RIGHTHAND.id){RIGHTHAND.h+=wheelDir*mod}
+  if(selected==LEFTHAND.id){LEFTHAND.h+=wheelDir*mod}
   }
   if(inside(mouse_x, mouse_y, rotate.x,rotate.y, rotate.w, rotate.h, 0, 0, 0)){
    
