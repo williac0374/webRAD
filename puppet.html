@@ -1,3 +1,4 @@
+
 <!--         TO DO            -->
 <!-- ADD CAPS LOCK INDICATOR TO CMIRRORPLUS.HTML -->
 <!-- FINISH GUI FOR PUPPET EDITOR  -->
@@ -186,25 +187,25 @@ function load_data(data){
   let i = 0
   
 // {id:'BODY',x:140,y:140,ox:48,oy:48,w:96,h:96,rot:0,rRot:0,parent:null}
-  BODY.depth=data[i].depth;BODY.x=data[i].x;BODY.y=data[i].y;BODY.h=data[i].h;BODY.w=data[i].w;BODY.ox=data[i].ox;BODY.oy=data[i].oy;BODY.rot=data[i++].rot
-  HEAD.depth=data[i].depth;HEAD.x=data[i].x;HEAD.y=data[i].y;HEAD.h=data[i].h;HEAD.w=data[i].w;HEAD.ox=data[i].ox;HEAD.oy=data[i].oy;HEAD.rot=data[i++].rot
-  LEFTTHIGH.depth=data[i].depth;LEFTTHIGH.x=data[i].x;LEFTTHIGH.y=data[i].y;LEFTTHIGH.w=data[i].w;LEFTTHIGH.h=data[i].h;LEFTTHIGH.ox=data[i].ox;LEFTTHIGH.oy=data[i].oy;LEFTTHIGH.rot=data[i++].rot
-  RIGHTTHIGH.depth=data[i].depth;RIGHTTHIGH.x=data[i].x;RIGHTTHIGH.y=data[i].y;RIGHTTHIGH.h=data[i].h;RIGHTTHIGH.w=data[i].w;RIGHTTHIGH.ox=data[i].ox;RIGHTTHIGH.oy=data[i].oy;RIGHTTHIGH.rot=data[i++].rot
-  LEFTCALF.depth=data[i].depth;LEFTCALF.x=data[i].x;LEFTCALF.y=data[i].y;LEFTCALF.h=data[i].h;LEFTCALF.w=data[i].w;LEFTCALF.ox=data[i].ox;LEFTCALF.oy=data[i].oy;LEFTCALF.rot=data[i++].rot
-  RIGHTCALF.depth=data[i].depth;RIGHTCALF.x=data[i].x;RIGHTCALF.y=data[i].y;RIGHTCALF.h=data[i].h;RIGHTCALF.w=data[i].w;RIGHTCALF.ox=data[i].ox;RIGHTCALF.oy=data[i].oy;RIGHTCALF.rot=data[i++].rot
-  LEFTBOOT.depth=data[i].depth;LEFTBOOT.x=data[i].x;LEFTBOOT.y=data[i].y;LEFTBOOT.h=data[i].h;LEFTBOOT.w=data[i].w;LEFTBOOT.ox=data[i].ox;LEFTBOOT.oy=data[i].oy;LEFTBOOT.rot=data[i++].rot
+  BODY.depth=data[i].depth;BODY.x=data[i].x;BODY.y=data[i].y;BODY.h=data[i].h;BODY.w=data[i].w;BODY.ox=data[i].ox;BODY.oy=data[i].oy;BODY.rot=data[i].rot;BODY.rRot=data[i++].rRot
+  HEAD.depth=data[i].depth;HEAD.x=data[i].x;HEAD.y=data[i].y;HEAD.h=data[i].h;HEAD.w=data[i].w;HEAD.ox=data[i].ox;HEAD.oy=data[i].oy;HEAD.rot=data[i].rot;HEAD.rRot=data[i++].rRot
+  LEFTTHIGH.depth=data[i].depth;LEFTTHIGH.x=data[i].x;LEFTTHIGH.y=data[i].y;LEFTTHIGH.w=data[i].w;LEFTTHIGH.h=data[i].h;LEFTTHIGH.ox=data[i].ox;LEFTTHIGH.oy=data[i].oy;LEFTTHIGH.rot=data[i].rot;LEFTTHIGH.rRot=data[i++].rRot
+  RIGHTTHIGH.depth=data[i].depth;RIGHTTHIGH.x=data[i].x;RIGHTTHIGH.y=data[i].y;RIGHTTHIGH.h=data[i].h;RIGHTTHIGH.w=data[i].w;RIGHTTHIGH.ox=data[i].ox;RIGHTTHIGH.oy=data[i].oy;RIGHTTHIGH.rot=data[i].rot;RIGHTTHIGH.rRot=data[i++].rRot
+  LEFTCALF.depth=data[i].depth;LEFTCALF.x=data[i].x;LEFTCALF.y=data[i].y;LEFTCALF.h=data[i].h;LEFTCALF.w=data[i].w;LEFTCALF.ox=data[i].ox;LEFTCALF.oy=data[i].oy;LEFTCALF.rot=data[i].rot;LEFTCALF.rRot=data[i++].rRot
+  RIGHTCALF.depth=data[i].depth;RIGHTCALF.x=data[i].x;RIGHTCALF.y=data[i].y;RIGHTCALF.h=data[i].h;RIGHTCALF.w=data[i].w;RIGHTCALF.ox=data[i].ox;RIGHTCALF.oy=data[i].oy;RIGHTCALF.rot=data[i].rot;RIGHTCALF.rRot=data[i++].rRot
+  LEFTBOOT.depth=data[i].depth;LEFTBOOT.x=data[i].x;LEFTBOOT.y=data[i].y;LEFTBOOT.h=data[i].h;LEFTBOOT.w=data[i].w;LEFTBOOT.ox=data[i].ox;LEFTBOOT.oy=data[i].oy;LEFTBOOT.rot=data[i].rot;LEFTBOOT.rRot=data[i++].rRot
   
-  RIGHTBOOT.depth=data[i].depth;RIGHTBOOT.x=data[i].x;RIGHTBOOT.y=data[i].y;RIGHTBOOT.h=data[i].h;RIGHTBOOT.w=data[i].w;RIGHTBOOT.ox=data[i].ox;RIGHTBOOT.oy=data[i].oy;RIGHTBOOT.rot=data[i++].rot
+  RIGHTBOOT.depth=data[i].depth;RIGHTBOOT.x=data[i].x;RIGHTBOOT.y=data[i].y;RIGHTBOOT.h=data[i].h;RIGHTBOOT.w=data[i].w;RIGHTBOOT.ox=data[i].ox;RIGHTBOOT.oy=data[i].oy;RIGHTBOOT.rot=data[i].rot;RIGHTBOOT.rRot=data[i++].rRot
   
-  RIGHTBICEP.depth=data[i].depth;RIGHTBICEP.x=data[i].x;RIGHTBICEP.y=data[i].y;RIGHTBICEP.h=data[i].h;RIGHTBICEP.w=data[i].w;RIGHTBICEP.ox=data[i].ox;RIGHTBICEP.oy=data[i].oy;RIGHTBICEP.rot=data[i++].rot
+  RIGHTBICEP.depth=data[i].depth;RIGHTBICEP.x=data[i].x;RIGHTBICEP.y=data[i].y;RIGHTBICEP.h=data[i].h;RIGHTBICEP.w=data[i].w;RIGHTBICEP.ox=data[i].ox;RIGHTBICEP.oy=data[i].oy;RIGHTBICEP.rot=data[i].rot;RIGHTBICEP.rRot=data[i++].rRot
   
-  LEFTBICEP.depth=data[i].depth;LEFTBICEP.x=data[i].x;LEFTBICEP.y=data[i].y;LEFTBICEP.h=data[i].h;LEFTBICEP.w=data[i].w;LEFTBICEP.ox=data[i].ox;LEFTBICEP.oy=data[i].oy;LEFTBICEP.rot=data[i++].rot
-  RIGHTFOREARM.depth=data[i].depth;RIGHTFOREARM.x=data[i].x;RIGHTFOREARM.y=data[i].y;RIGHTFOREARM.h=data[i].h;RIGHTFOREARM.w=data[i].w;RIGHTFOREARM.ox=data[i].ox;RIGHTFOREARM.oy=data[i].oy;RIGHTFOREARM.rot=data[i++].rot
-  LEFTFOREARM.depth=data[i].depth;LEFTFOREARM.x=data[i].x;LEFTFOREARM.y=data[i].y;LEFTFOREARM.h=data[i].h;LEFTFOREARM.w=data[i].w;LEFTFOREARM.ox=data[i].ox;LEFTFOREARM.oy=data[i].oy;LEFTFOREARM.rot=data[i++].rot
+  LEFTBICEP.depth=data[i].depth;LEFTBICEP.x=data[i].x;LEFTBICEP.y=data[i].y;LEFTBICEP.h=data[i].h;LEFTBICEP.w=data[i].w;LEFTBICEP.ox=data[i].ox;LEFTBICEP.oy=data[i].oy;LEFTBICEP.rot=data[i].rot;LEFTBICEP.rRot=data[i++].rRot
+  RIGHTFOREARM.depth=data[i].depth;RIGHTFOREARM.x=data[i].x;RIGHTFOREARM.y=data[i].y;RIGHTFOREARM.h=data[i].h;RIGHTFOREARM.w=data[i].w;RIGHTFOREARM.ox=data[i].ox;RIGHTFOREARM.oy=data[i].oy;RIGHTFOREARM.rot=data[i].rot;RIGHTFOREARM.rRot=data[i++].rRot
+  LEFTFOREARM.depth=data[i].depth;LEFTFOREARM.x=data[i].x;LEFTFOREARM.y=data[i].y;LEFTFOREARM.h=data[i].h;LEFTFOREARM.w=data[i].w;LEFTFOREARM.ox=data[i].ox;LEFTFOREARM.oy=data[i].oy;LEFTFOREARM.rot=data[i].rot;LEFTFOREARM.rRot=data[i++].rRot
   
-  RIGHTHAND.depth=data[i].depth;RIGHTHAND.x=data[i].x;RIGHTHAND.y=data[i].y;RIGHTHAND.h=data[i].h;RIGHTHAND.w=data[i].w;RIGHTHAND.ox=data[i].ox;RIGHTHAND.oy=data[i].oy;RIGHTHAND.rot=data[i++].rot
+  RIGHTHAND.depth=data[i].depth;RIGHTHAND.x=data[i].x;RIGHTHAND.y=data[i].y;RIGHTHAND.h=data[i].h;RIGHTHAND.w=data[i].w;RIGHTHAND.ox=data[i].ox;RIGHTHAND.oy=data[i].oy;RIGHTHAND.rot=data[i].rot;RIGHTHAND.rRot=data[i++].rRot
   
-  LEFTHAND.depth=data[i].depth;LEFTHAND.x=data[i].x;LEFTHAND.y=data[i].y;LEFTHAND.x=data[i].x;LEFTHAND.y=data[i].y;LEFTHAND.x=data[i].x;LEFTHAND.y=data[i].y;LEFTHAND.rot=data[i++].rot
+  LEFTHAND.depth=data[i].depth;LEFTHAND.x=data[i].x;LEFTHAND.y=data[i].y;LEFTHAND.x=data[i].x;LEFTHAND.y=data[i].y;LEFTHAND.x=data[i].x;LEFTHAND.y=data[i].y;LEFTHAND.rot=data[i].rot;LEFTHAND.rRot=data[i++].rRot
   
   sprite_head = draw_set_image(data[i++]);
   sprite_body = draw_set_image(data[i++]);
@@ -291,16 +292,17 @@ function part_select(obj){
   }
   return mouse_inside;
 }
-function input(){
-  if(keyboard_check_pressed(vk_t)){
-    RIGHTFOREARM.h+=10
-    RIGHTHAND.pDis+=10
-    
-    
+function varAdj(v){
+  let mod = 1
+  if(keyboard_check(vk_shift)){mod=10}
+  let n = v+wheelDir*mod
+  document.title = n
+  return n
   }
-if(keyboard_check_pressed(vk_s)){save_pose()}
-if(keyboard_check_pressed(vk_l)){load_pose()}
-if(keyboard_check_pressed(vk_i)){load_image()}
+function input(){
+  if(keyboard_check_pressed(vk_s)){save_pose()}
+  if(keyboard_check_pressed(vk_l)){load_pose()}
+  
   hide = keyboard_check(vk_space)
   var mod=3
   if(inside(mouse_x, mouse_y, width.x,width.y, width.w, width.h, 0, 0, 0)){
