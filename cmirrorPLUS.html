@@ -156,8 +156,6 @@ editor.on('blur', () => {
 function pasteReplace() {
   const clipboardText = localStorage.getItem('cm_clipboard');
   if (clipboardText) {
-    document.title = clipboardText;
-    
     // Check if there is a selected range
     const selection = editor.getSelection();
     if (selection) {
