@@ -113,7 +113,7 @@ var caps = false;
 //if(e.getModifierState('CapsLock')){cText.innerText='CAPS LOCK IS ON!!'}else{cText.innerText='caps off'}
 var cText = document.getElementById("CAPS")
 addEventListener("keydown", function(e){if (e.keyCode==20){if(!e.getModifierState('CapsLock')){cText.innerText='CAPS LOCK IS ON!!'}else{cText.innerText='caps off'}};if (e.keyCode==16){shiftMod=true};if (e.keyCode==17){controlMod=true}}, false);
-addEventListener("keyup", function(e){if (e.keyCode==16){controlMod=false}}, false);
+addEventListener("keyup", function(e){if (e.keyCode==17){controlMod=false}}, false);
 window.addEventListener('beforeunload', function(e){
   var message = 'are you sure you want to leave?';
   (e || window.event).returnValue = message;
@@ -144,24 +144,95 @@ editor.on("change",function(cm,change){
   localStorage.setItem('cursorIDE', JSON.stringify(editor.getCursor()))
 });
 selectedRange = null;
-
+selection = null
 
 editor.on('blur', () => {
-  const selection = editor.getSelection();
+  selection = editor.getSelection();
   if (selection) {
     selectedRange = editor.listSelections()[0];
-    localStorage.setItem('cm_clipboard', selection);
-    console.log('Copied to cm_clipboard:', selection);
+    console.log(selectedRange)
   }
 });
-function pasteReplace(){
+function pasteReplace() {
   const clipboardText = localStorage.getItem('cm_clipboard');
- if (clipboardText && selectedRange) {
-          editor.replaceRange(clipboardText, selectedRange.anchor, selectedRange.head);
-          alert('Pasted from cm_clipboard!');
-        } 
+  if (clipboardText) {
+    document.title = clipboardText;
+    
+    // Check if there is a selected range
+    const selection = editor.getSelection();
+    if (selection) {
+      // Replace the selected range
+      editor.replaceRange(clipboardText, editor.listSelections()[0].anchor, editor.listSelections()[0].head);
+    } else {
+      // Insert at the current cursor position
+      const cursor = editor.getCursor();
+      editor.replaceRange(clipboardText, cursor);
+    }
+    
+    // Refocus the editor
+    editor.getInputField().focus();
+  }
 }
+
 editor.getWrapperElement().addEventListener('click', function(event) {dis=null;fnum = 0});
+document.addEventListener('contextmenu', (e) => {
+  if(controlMod){
+    e.preventDefault();
+    // Remove any existing popup
+    const existingPopup = document.getElementById('popup');
+    if (existingPopup) existingPopup.remove();
+    const popup = document.createElement('div');
+    popup.id = 'popup';
+    popup.style.position = 'absolute';
+    popup.style.width = '200px';
+    popup.style.height = '92px';
+    popup.style.borderRadius = '0px';
+    popup.style.border = '2px solid #151515';
+    popup.style.background = '#1EFF00';
+  popup.style.left = `${e.pageX}px`;
+  popup.style.top = `${(e.pageY-25)}px`;
+    const copyButton = document.createElement('button');
+    copyButton.textContent = 'Copy';
+    copyButton.style.width = '97.5%';
+    copyButton.style.height = '45%';
+    copyButton.style.margin = '2px';
+    copyButton.style.padding = '2px';
+    copyButton.style.fontSize = '10px';
+    copyButton.style.border = '2px solid #151515';
+    copyButton.style.color = '#1EFF00';
+    copyButton.style.background = '#151515';
+    copyButton.style.cursor = 'pointer';
+    copyButton.addEventListener('click', () => {
+      localStorage.setItem('cm_clipboard', selection);
+      //console.log('Copied to cm_clipboard:', selection);
+      popup.remove();
+    });
+    popup.appendChild(copyButton);
+    const pasteButton = document.createElement('button');
+    pasteButton.textContent = 'Paste';
+    pasteButton.style.width = '97.5%';
+    pasteButton.style.height = '45%';
+    pasteButton.style.margin = '2px';
+    pasteButton.style.padding = '2px';
+    pasteButton.style.fontSize = '10px';
+    pasteButton.style.border = '2px solid #151515';
+    pasteButton.style.color = '#1EFF00';
+    pasteButton.style.background = '#151515';
+    pasteButton.style.cursor = 'pointer';
+    pasteButton.addEventListener('click', () => {
+      pasteReplace();
+      popup.remove();
+    });
+    popup.appendChild(pasteButton);
+    document.body.appendChild(popup);
+  }
+});
+document.addEventListener('click', (e) => {
+  const popup = document.getElementById('popup');
+  if (popup && !popup.contains(e.target)) {
+    popup.remove();
+  }
+});
 document.getElementsByClassName("CodeMirror")[0].style.fontSize = codeSize +"px";
 // Load button click function
 document.getElementById("load").addEventListener("click", function () {
