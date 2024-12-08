@@ -61,8 +61,8 @@ LEFTTHIGH = {id:'LEFTTHIGH',depth:0,x:160,y:180,ox:32,oy:0,w:64,h:64,rot:0,rRot:
 RIGHTTHIGH = {id:'RIGHTTHIGH',depth:0,x:120,y:180,ox:32,oy:0,w:64,h:64,rot:0,rRot:0,parent:BODY}
 LEFTCALF = {id:'LEFTCALF',depth:0,x:160,y:236,ox:32,oy:0,w:64,h:64,rot:0,rRot:0,parent:LEFTTHIGH}
 RIGHTCALF = {id:'RIGHTCALF',depth:0,x:120,y:236,ox:32,oy:0,w:64,h:64,rot:0,rRot:0,parent:RIGHTTHIGH}
-LEFTBOOT = {id:'LEFTBOOT',depth:0,x:165,y:295,ox:48,oy:30,w:96,h:96,rot:0,rRot:0,parent:LEFTCALF}
-RIGHTBOOT = {id:'RIGHTBOOT',depth:0,x:125,y:295,ox:48,oy:30,w:96,h:96,rot:0,rRot:0,parent:RIGHTCALF}
+LEFTBOOT = {id:'LEFTBOOT',depth:0,x:160,y:295,ox:48,oy:30,w:96,h:96,rot:0,rRot:0,parent:LEFTCALF}
+RIGHTBOOT = {id:'RIGHTBOOT',depth:0,x:120,y:295,ox:48,oy:30,w:96,h:96,rot:0,rRot:0,parent:RIGHTCALF}
 RIGHTBICEP = {id:'RIGHTBICEP',depth:0,x:95,y:120,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:BODY}
 LEFTBICEP = {id:'LEFTBICEP',depth:0,x:175,y:120,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:BODY}
 RIGHTFOREARM = {id:'RIGHTFOREARM',depth:0,x:95,y:155,ox:32,oy:20,w:64,h:64,rot:0,rRot:0,parent:RIGHTBICEP}
@@ -182,7 +182,7 @@ function load_pose(){
   });
   document.getElementById('fileInput').click();
 }
-function load_data(data){       
+function load_data(data){
   let i = 0
   
 // {id:'BODY',x:140,y:140,ox:48,oy:48,w:96,h:96,rot:0,rRot:0,parent:null}
@@ -197,7 +197,7 @@ function load_data(data){
   RIGHTBOOT.depth=data[i].depth;RIGHTBOOT.x=data[i].x;RIGHTBOOT.y=data[i].y;RIGHTBOOT.h=data[i].h;RIGHTBOOT.w=data[i].w;RIGHTBOOT.ox=data[i].ox;RIGHTBOOT.oy=data[i].oy;RIGHTBOOT.rot=data[i++].rot
   
   RIGHTBICEP.depth=data[i].depth;RIGHTBICEP.x=data[i].x;RIGHTBICEP.y=data[i].y;RIGHTBICEP.h=data[i].h;RIGHTBICEP.w=data[i].w;RIGHTBICEP.ox=data[i].ox;RIGHTBICEP.oy=data[i].oy;RIGHTBICEP.rot=data[i++].rot
- 
+  
   LEFTBICEP.depth=data[i].depth;LEFTBICEP.x=data[i].x;LEFTBICEP.y=data[i].y;LEFTBICEP.h=data[i].h;LEFTBICEP.w=data[i].w;LEFTBICEP.ox=data[i].ox;LEFTBICEP.oy=data[i].oy;LEFTBICEP.rot=data[i++].rot
   RIGHTFOREARM.depth=data[i].depth;RIGHTFOREARM.x=data[i].x;RIGHTFOREARM.y=data[i].y;RIGHTFOREARM.h=data[i].h;RIGHTFOREARM.w=data[i].w;RIGHTFOREARM.ox=data[i].ox;RIGHTFOREARM.oy=data[i].oy;RIGHTFOREARM.rot=data[i++].rot
   LEFTFOREARM.depth=data[i].depth;LEFTFOREARM.x=data[i].x;LEFTFOREARM.y=data[i].y;LEFTFOREARM.h=data[i].h;LEFTFOREARM.w=data[i].w;LEFTFOREARM.ox=data[i].ox;LEFTFOREARM.oy=data[i].oy;LEFTFOREARM.rot=data[i++].rot
@@ -251,8 +251,8 @@ function save_pose(){
   downloadJSON(all)
 }
 function set_relative_coords(obj){
-  obj.pDis = Math.round(point_distance(obj.parent.x,obj.parent.y,obj.x,obj.y))
-  obj.pDir = Math.round(point_direction(obj.parent.x,obj.parent.y,obj.x,obj.y)+obj.parent.rot)
+  obj.pDis = point_distance(obj.parent.x,obj.parent.y,obj.x,obj.y)
+  obj.pDir = point_direction(obj.parent.x,obj.parent.y,obj.x,obj.y)+obj.parent.rot
   obj.rRot =  obj.parent.rot - obj.rot
 }
 function draw(){
@@ -302,10 +302,19 @@ if(keyboard_check_pressed(vk_s)){save_pose()}
 if(keyboard_check_pressed(vk_l)){load_pose()}
 if(keyboard_check_pressed(vk_i)){load_image()}
   hide = keyboard_check(vk_space)
-   var mod=3
+  var mod=3
   if(inside(mouse_x, mouse_y, width.x,width.y, width.w, width.h, 0, 0, 0)){
   if(selected==HEAD.id){HEAD.w+=wheelDir*mod;HEAD.ox+=wheelDir*mod/2}
-  if(selected==BODY.id){BODY.w+=wheelDir*mod;BODY.ox-=wheelDir*mod/2}
+    if(selected==BODY.id){
+      let temp = BODY.w/BODY.ox
+      let tempOx = BODY.ox
+      BODY.w+=wheelDir*mod;
+      BODY.ox= BODY.w/temp
+      LEFTBICEP.x+=BODY.ox-tempOx;set_relative_coords(LEFTBICEP);
+      RIGHTBICEP.x-=BODY.ox-tempOx;set_relative_coords(RIGHTBICEP);
+      LEFTTHIGH.x+=BODY.ox-tempOx;set_relative_coords(LEFTTHIGH);
+      RIGHTTHIGH.x-=BODY.ox-tempOx;set_relative_coords(RIGHTTHIGH);
+    }
   if(selected==LEFTTHIGH.id){LEFTTHIGH.w+=wheelDir*mod;LEFTTHIGH.ox+=wheelDir*mod/2}
   if(selected==RIGHTTHIGH.id){RIGHTTHIGH.w+=wheelDir*mod;RIGHTTHIGH.ox+=wheelDir*mod/2}
   if(selected==LEFTCALF.id){LEFTCALF.w+=wheelDir*mod;LEFTCALF.ox+=wheelDir*mod/2}
@@ -321,13 +330,25 @@ if(keyboard_check_pressed(vk_i)){load_image()}
   }
   if(inside(mouse_x, mouse_y, height.x,height.y, height.w, height.h, 0, 0, 0)){
   if(selected==HEAD.id){HEAD.h+=wheelDir*mod;HEAD.oy+=wheelDir*mod}
-  if(selected==BODY.id){BODY.h+=wheelDir*mod;}
-  if(selected==LEFTTHIGH.id){LEFTTHIGH.g+=wheelDir*mod;LEFTTHIGH.oy+=wheelDir*mod}
-  if(selected==RIGHTTHIGH.id){RIGHTTHIGH.h+=wheelDir*mod;RIGHTTHIGH.oy+=wheelDir*mod}
-  if(selected==LEFTCALF.id){LEFTCALF.h+=wheelDir*mod;LEFTCALF.oy+=wheelDir*mod}
-  if(selected==RIGHTCALF.id){RIGHTCALF.h+=wheelDir*mod;RIGHTCALF.oy+=wheelDir*mod}
-  if(selected==LEFTBOOT.id){LEFTBOOT.h+=wheelDir*mod;LEFTBOOT.oy+=wheelDir*mod}
-  if(selected==RIGHTBOOT.id){RIGHTBOOT.h+=wheelDir*mod;RIGHTBOOT.oy+=wheelDir*mod}
+    if(selected==BODY.id){
+      BODY.h+=wheelDir*mod;
+      LEFTTHIGH.y+=wheelDir*mod;set_relative_coords(LEFTTHIGH);
+      RIGHTTHIGH.y+=wheelDir*mod;set_relative_coords(RIGHTTHIGH);
+    }
+  if(selected==LEFTTHIGH.id){LEFTTHIGH.h+=wheelDir*mod;LEFTCALF.pDis+=wheelDir*mod}
+  if(selected==RIGHTTHIGH.id){RIGHTTHIGH.h+=wheelDir*mod;RIGHTCALF.pDis+=wheelDir*mod}
+  if(selected==LEFTCALF.id){LEFTCALF.h+=wheelDir*mod;LEFTBOOT.pDis+=wheelDir*mod}
+  if(selected==RIGHTCALF.id){RIGHTCALF.h+=wheelDir*mod;RIGHTBOOT.pDis+=wheelDir*mod}
+    if(selected==LEFTBOOT.id){
+      let temp = LEFTBOOT.h/LEFTBOOT.oy
+      LEFTBOOT.h+=wheelDir*mod;
+      LEFTBOOT.oy=LEFTBOOT.h/temp
+    }
+    if(selected==RIGHTBOOT.id){
+      let temp = RIGHTBOOT.h/RIGHTBOOT.oy
+      RIGHTBOOT.h+=wheelDir*mod;
+      RIGHTBOOT.oy=RIGHTBOOT.h/temp
+    }
   if(selected==RIGHTBICEP.id){RIGHTBICEP.h+=wheelDir*mod;RIGHTFOREARM.pDis+=wheelDir*mod}
   if(selected==LEFTBICEP.id){LEFTBICEP.h+=wheelDir*mod;LEFTFOREARM.pDis+=wheelDir*mod}
   if(selected==RIGHTFOREARM.id){RIGHTFOREARM.h+=wheelDir*mod;RIGHTHAND.pDis+=wheelDir*mod}
@@ -336,7 +357,7 @@ if(keyboard_check_pressed(vk_i)){load_image()}
   if(selected==LEFTHAND.id){LEFTHAND.h+=wheelDir*mod}
   }
   if(inside(mouse_x, mouse_y, rotate.x,rotate.y, rotate.w, rotate.h, 0, 0, 0)){
-   
+    
   if(selected==HEAD.id){HEAD.rRot+=wheelDir*mod}
   if(selected==BODY.id){BODY.rot+=wheelDir*mod}
   if(selected==LEFTTHIGH.id){LEFTTHIGH.rRot+=wheelDir*mod}
