@@ -26,9 +26,11 @@ canvas {
 
 <script>
 
-canvas.width=800
-canvas.height = 600
+canvas.width=500
+canvas.height=500
 canMake=false
+master_rot=0
+
 // THIS IS BASE OBJECT I BASED ALL OTHERS OFF OF.
 gizmo = function(id, x, y, w, h, ox, oy, rot, spr) {
   this.id = id;
@@ -40,36 +42,100 @@ gizmo = function(id, x, y, w, h, ox, oy, rot, spr) {
   this.oy = oy;
   this.rot = rot;
   this.spr = spr;
+  this.sel = false;
   
 };
 parts = [];
+pnum=0
+rotMod = 5
 function start(){
   
 }
 
 function loop(){
   input()
+  
 }
 
 function draw(){
-  for(let i = 0; i < parts.length; i ++){
-    draw_image(parts[i].spr,parts[i].x,parts[i].y,parts[i].w,parts[i].h)
+  if(master_rot!=0){
+    var cw = canvas.width/2
+    var ch = canvas.height/2
+    for(let i = 0; i < parts.length; i ++){
+      let dis = point_distance(parts[i].x+parts[i].ox,parts[i].y+parts[i].oy,cw,ch)
+      let dir = point_direction(cw,ch,parts[i].x+parts[i].ox,parts[i].y+parts[i].oy)
+      parts[i].x = cw+lengthdir_x(dis, dir+master_rot) - parts[i].ox
+      parts[i].y = ch+lengthdir_y(dis, dir+master_rot) - parts[i].oy
+      parts[i].rot -= master_rot
+    }
   }
+  
+  master_rot=0
+  for(let i = 0; i < parts.length; i ++){
+    draw_image(parts[i].spr,parts[i].x,parts[i].y,parts[i].w,parts[i].h,parts[i].rot,parts[i].ox,parts[i].oy);
+    if(parts[i].sel==true){
+      draw_set_color(255,0,0)
+      draw_set_linewidth(6)
+      draw_set_linedash([10,3])
+      draw_rectangle(parts[i].x,parts[i].y,parts[i].w,parts[i].h,true,parts[i].rot,parts[i].ox,parts[i].oy)
+      draw_set_color(0,255,255)
+      draw_circle(parts[i].x+parts[i].ox,parts[i].y+parts[i].oy, 8, false)
+    }
+  }
+  draw_set_color(0,0,0)
+  draw_circle(canvas.width/2, canvas.height/2,  8, false) // center of canvas
+  //ctx.restore()
 }
 ///////////////////////////////////////////////////////////////////////
 function input(){
-  if(mouse_check_pressed()){
-    for(let i = parts.length; i > 0; i --){
-      if(inside(mouse_x, mouse_y, parts[i-1].x, parts[i-1].y, parts[i-1].w, parts[i-1].h, 0, 0, 0)){
-        alert(parts[i-1].id)
+  var mx = mouse_x;
+  var my = mouse_y;
+  var offx = 0;
+  var offy = 0;
+  if(keyboard_check_pressed(vk_up)){
+    pnum++
+  if(pnum>=parts.length){pnum=0}
+  }
+  if(keyboard_check_pressed(vk_down)){
+    pnum--
+  if(pnum<0){pnum=parts.length-1}
+  }
+  for(let i = parts.length; i>0; i--){
+    //pnum
+    parts[i-1].sel=false
+    parts[pnum].sel=true
+    if (parts[i-1].sel==true){
+      if(keyboard_check(vk_shift)){
+        master_rot+=wheelDir *rotMod//rotates the whole canvas!!
+      }else{
+        parts[i-1].rot+=wheelDir//rotates on ox,oy
+      }
+      if(keyboard_check(vk_space)){
+      if(keyboard_check_pressed(vk_a)){parts[i-1].ox -= 5}
+      if(keyboard_check_pressed(vk_d)){parts[i-1].ox += 5}
+      if(keyboard_check_pressed(vk_w)){parts[i-1].oy -= 5}
+      if(keyboard_check_pressed(vk_s)){parts[i-1].oy += 5}
+        console.log('move origin')
+      }else{
+      if(keyboard_check(vk_a)){parts[i-1].x -= 5}
+      if(keyboard_check(vk_d)){parts[i-1].x += 5}
+      if(keyboard_check(vk_w)){parts[i-1].y -= 5}
+      if(keyboard_check(vk_s)){parts[i-1].y += 5}
+        console.log('move coordinates')
       }
     }
   }
-  if(keyboard_check_pressed(vk_ctrl)){canMake=true}
-  if(mouse_check_released()){// make new part
-  if(canMake==true){canMake=false;create_part()}
+  for(let i = parts.length; i>0; i--){
+    var mx = mouse_x;
+    var my = mouse_y;
+    
+  }
+  if(mouse_check_pressed()&&keyboard_check(vk_ctrl)){
+    key_down[vk_ctrl] = false; // because idk grr
+    create_part()
   }
 if(keyboard_check_pressed(vk_escape)){window.close()}
+  wheelDir=0
 }
 function create_part(){
   var fileInput = document.createElement('input');
@@ -93,7 +159,6 @@ function create_part(){
             let oy = h/2
             let temp = new gizmo(id, mouse_x, mouse_y, w, h, ox, oy, 0, sprite)
             parts.push(temp)
-            
           },1)
           //alert(sprite.naturalWidth)
           
