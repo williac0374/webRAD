@@ -90,46 +90,53 @@ function draw(){
 function input(){
   var mx = mouse_x;
   var my = mouse_y;
-  var offx = 0;
-  var offy = 0;
-  if(keyboard_check_pressed(vk_up)){
-    pnum++
-  if(pnum>=parts.length){pnum=0}
+  if(mouse_check_pressed()){
+    pnum = -1
   }
-  if(keyboard_check_pressed(vk_down)){
-    pnum--
-  if(pnum<0){pnum=parts.length-1}
+  
+  if(pnum<0 && keyboard_check(vk_ctrl)==false){
+    master_rot+=wheelDir *rotMod//rotates the whole canvas!!
   }
   for(let i = parts.length; i>0; i--){
+    //inside(px, py, rx, ry, width, height, angle, originX, originY)
+    if(inside(mx, my, parts[i-1].x, parts[i-1].y, parts[i-1].h, parts[i-1].w, parts[i-1].rot, parts[i-1].ox, parts[i-1].oy)){
+      if(mouse_check_pressed()){
+        pnum = i-1
+      }
+    }
     //pnum
     parts[i-1].sel=false
-    parts[pnum].sel=true
+    if(pnum>=0){
+      parts[pnum].sel=true
+    }
     if (parts[i-1].sel==true){
-      if(keyboard_check(vk_shift)){
-        master_rot+=wheelDir *rotMod//rotates the whole canvas!!
-      }else{
+      
+      if(!keyboard_check(vk_w)&& !keyboard_check(vk_h)){
         parts[i-1].rot+=wheelDir//rotates on ox,oy
       }
+      if(keyboard_check(vk_w)){
+        parts[i-1].w+=wheelDir//rotates on ox,oy
+      }
+      if(keyboard_check(vk_h)){
+        parts[i-1].h+=wheelDir//rotates on ox,oy
+      }
       if(keyboard_check(vk_space)){
-      if(keyboard_check_pressed(vk_a)){parts[i-1].ox -= 5}
-      if(keyboard_check_pressed(vk_d)){parts[i-1].ox += 5}
-      if(keyboard_check_pressed(vk_w)){parts[i-1].oy -= 5}
-      if(keyboard_check_pressed(vk_s)){parts[i-1].oy += 5}
-        console.log('move origin')
+        parts[i-1].ox = mx - parts[i-1].x
+        parts[i-1].oy = my - parts[i-1].y
       }else{
-      if(keyboard_check(vk_a)){parts[i-1].x -= 5}
-      if(keyboard_check(vk_d)){parts[i-1].x += 5}
-      if(keyboard_check(vk_w)){parts[i-1].y -= 5}
-      if(keyboard_check(vk_s)){parts[i-1].y += 5}
+      if(keyboard_check(vk_left)){parts[i-1].x -= 5}
+      if(keyboard_check(vk_right)){parts[i-1].x += 5}
+      if(keyboard_check(vk_up)){parts[i-1].y -= 5}
+      if(keyboard_check(vk_down)){parts[i-1].y += 5}
         console.log('move coordinates')
+      }
+      if(keyboard_check_pressed(vk_delete)){
+        parts.splice(i-1, 1); // destroys part
+        pnum = -1;
       }
     }
   }
-  for(let i = parts.length; i>0; i--){
-    var mx = mouse_x;
-    var my = mouse_y;
-    
-  }
+  
   if(mouse_check_pressed()&&keyboard_check(vk_ctrl)){
     key_down[vk_ctrl] = false; // because idk grr
     create_part()
