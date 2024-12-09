@@ -1,3 +1,4 @@
+<!-- TO DO 1. depth sorting       2. frames saving/loading-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,32 +6,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Basic Template</title>
 <style>
-body{
+body {
   margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   height: 100vh;
-  background-color: black;
-  
+  background-color: #333;
 }
 canvas {
-  // border: 2px solid #000;
-  background-color: white;
+  position: absolute;
+  left: 50px;
+  top: 50px;
+  width: 500px;
+  height: 500px;
+  background-color: #ddd;
+  border-radius: 4px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: #444;
+}
+#menu {
+  position: absolute;
+  left: 600px; /* To the right of the canvas */
+  top: 50px;
+  width: 300px;
+  height: 500px;
+  background-color: blue;
+  border-radius: 4px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: #444;
 }
 </style>
 </head>
 
 <body>
 <canvas id="canvas"></canvas>
-
+<div id="menu"><div>
 <script>
 
 canvas.width=500
 canvas.height=500
 canMake=false
 master_rot=0
-
 // THIS IS BASE OBJECT I BASED ALL OTHERS OFF OF.
 gizmo = function(id, x, y, w, h, ox, oy, rot, spr) {
   this.id = id;
@@ -46,90 +62,95 @@ gizmo = function(id, x, y, w, h, ox, oy, rot, spr) {
   
 };
 parts = [];
-pnum=0
-rotMod = 5
+pnum=0;
+rotMod = 5;
 function start(){
   
 }
 
 function loop(){
-  input()
+  input();
   
 }
 
 function draw(){
   if(master_rot!=0){
-    var cw = canvas.width/2
-    var ch = canvas.height/2
+    var cw = canvas.width/2;
+    var ch = canvas.height/2;
     for(let i = 0; i < parts.length; i ++){
-      let dis = point_distance(parts[i].x+parts[i].ox,parts[i].y+parts[i].oy,cw,ch)
-      let dir = point_direction(cw,ch,parts[i].x+parts[i].ox,parts[i].y+parts[i].oy)
-      parts[i].x = cw+lengthdir_x(dis, dir+master_rot) - parts[i].ox
-      parts[i].y = ch+lengthdir_y(dis, dir+master_rot) - parts[i].oy
-      parts[i].rot -= master_rot
+      let dis = point_distance(parts[i].x+parts[i].ox,parts[i].y+parts[i].oy,cw,ch);
+      let dir = point_direction(cw,ch,parts[i].x+parts[i].ox,parts[i].y+parts[i].oy);
+      parts[i].x = cw+lengthdir_x(dis, dir+master_rot) - parts[i].ox;
+      parts[i].y = ch+lengthdir_y(dis, dir+master_rot) - parts[i].oy;
+      parts[i].rot -= master_rot;
     }
   }
   
-  master_rot=0
+  master_rot=0;
   for(let i = 0; i < parts.length; i ++){
     draw_image(parts[i].spr,parts[i].x,parts[i].y,parts[i].w,parts[i].h,parts[i].rot,parts[i].ox,parts[i].oy);
     if(parts[i].sel==true){
-      draw_set_color(255,0,0)
-      draw_set_linewidth(6)
-      draw_set_linedash([10,3])
-      draw_rectangle(parts[i].x,parts[i].y,parts[i].w,parts[i].h,true,parts[i].rot,parts[i].ox,parts[i].oy)
-      draw_set_color(0,255,255)
-      draw_circle(parts[i].x+parts[i].ox,parts[i].y+parts[i].oy, 8, false)
+      draw_set_color(255,0,0);
+      draw_set_linewidth(6);
+      draw_set_linedash([10,3]);
+      draw_rectangle(parts[i].x,parts[i].y,parts[i].w,parts[i].h,true,parts[i].rot,parts[i].ox,parts[i].oy);
+      draw_set_color(0,255,255);
+      draw_circle(parts[i].x+parts[i].ox,parts[i].y+parts[i].oy, 8, false);
     }
   }
-  draw_set_color(0,0,0)
-  draw_circle(canvas.width/2, canvas.height/2,  8, false) // center of canvas
+  draw_set_color(0,0,0);
+  draw_circle(canvas.width/2, canvas.height/2,  8, false); // center of canvas
   //ctx.restore()
 }
 ///////////////////////////////////////////////////////////////////////
+var offX = 0;
+var offY = 0;
 function input(){
+  
   var mx = mouse_x;
   var my = mouse_y;
   if(mouse_check_pressed()){
-    pnum = -1
+    pnum = -1;
   }
   
   if(pnum<0 && keyboard_check(vk_ctrl)==false){
-    master_rot+=wheelDir *rotMod//rotates the whole canvas!!
+    master_rot+=wheelDir *rotMod;//rotates the whole canvas!!
   }
   for(let i = parts.length; i>0; i--){
-    //inside(px, py, rx, ry, width, height, angle, originX, originY)
     if(inside(mx, my, parts[i-1].x, parts[i-1].y, parts[i-1].h, parts[i-1].w, parts[i-1].rot, parts[i-1].ox, parts[i-1].oy)){
-      if(mouse_check_pressed()){
-        pnum = i-1
+      if(mouse_check_released()){
+        pnum = i-1;
       }
     }
     //pnum
-    parts[i-1].sel=false
+    if(!mouse_down){
+      parts[i-1].sel=false;
+    }
     if(pnum>=0){
-      parts[pnum].sel=true
+      parts[pnum].sel=true;
     }
     if (parts[i-1].sel==true){
-      
+      if(mouse_check()){
+        parts[i-1].x = mx - offX;
+        parts[i-1].y = my - offY;
+      }else{
+        offX = mx - parts[i-1].x;
+        offY = my - parts[i-1].y;
+      }
       if(!keyboard_check(vk_w)&& !keyboard_check(vk_h)){
-        parts[i-1].rot+=wheelDir//rotates on ox,oy
+        parts[i-1].rot+=wheelDir;//rotates on ox,oy
       }
       if(keyboard_check(vk_w)){
-        parts[i-1].w+=wheelDir//rotates on ox,oy
+        parts[i-1].w+=wheelDir;//rotates on ox,oy
       }
       if(keyboard_check(vk_h)){
-        parts[i-1].h+=wheelDir//rotates on ox,oy
+        parts[i-1].h+=wheelDir;//rotates on ox,oy
       }
-      if(keyboard_check(vk_space)){
-        parts[i-1].ox = mx - parts[i-1].x
-        parts[i-1].oy = my - parts[i-1].y
-      }else{
-      if(keyboard_check(vk_left)){parts[i-1].x -= 5}
-      if(keyboard_check(vk_right)){parts[i-1].x += 5}
-      if(keyboard_check(vk_up)){parts[i-1].y -= 5}
-      if(keyboard_check(vk_down)){parts[i-1].y += 5}
-        console.log('move coordinates')
+      if(keyboard_check(vk_shift)){
+        parts[i-1].ox = mx - parts[i-1].x;
+        parts[i-1].oy = my - parts[i-1].y;
       }
+      
       if(keyboard_check_pressed(vk_delete)){
         parts.splice(i-1, 1); // destroys part
         pnum = -1;
@@ -139,12 +160,12 @@ function input(){
   
   if(mouse_check_pressed()&&keyboard_check(vk_ctrl)){
     key_down[vk_ctrl] = false; // because idk grr
-    create_part()
+    create_part(mx,my);
   }
 if(keyboard_check_pressed(vk_escape)){window.close()}
-  wheelDir=0
+  wheelDir=0;
 }
-function create_part(){
+function create_part(x,y){
   var fileInput = document.createElement('input');
   fileInput.type = 'file';
   fileInput.accept = 'image/*';
@@ -160,13 +181,13 @@ function create_part(){
           var sprite = draw_set_image(fileData)
           setTimeout(function(){
             let id = file.name.split('.')[0]
-            let w = sprite.naturalWidth
-            let h = sprite.naturalHeight
-            let ox = w/2
-            let oy = h/2
-            let temp = new gizmo(id, mouse_x, mouse_y, w, h, ox, oy, 0, sprite)
-            parts.push(temp)
-          },1)
+            let w = sprite.naturalWidth;
+            let h = sprite.naturalHeight;
+            let ox = w/2;
+            let oy = h/2;
+            let temp = new gizmo(id, x, y, w, h, ox, oy, 0, sprite);
+            parts.push(temp);
+          },1);
           //alert(sprite.naturalWidth)
           
         };
