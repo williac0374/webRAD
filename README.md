@@ -10,5 +10,5 @@ https://williac0374.github.io/webRAD/divEdit.html
 here is the gameShell
 https://williac0374.github.io/webRAD/gameShell.html
 <br>
-here is the pivotm8tor
-https://williac0374.github.io/webRAD/puppet.html
+here is the PixelPivot
+https://williac0374.github.io/webRAD/PixelPivot.html
