@@ -1,4 +1,4 @@
-<!-- TO DO 1. depth sorting       2. frames saving/loading-->
+<!-- TO DO 1. depth sorting       2. project saving/loading-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,7 +43,7 @@ canvas {
   font-size: 16px;
   cursor: pointer;
   background-color: #333;
-  color: #fff;
+  color: #666;
   border-radius: 2px;
   border-width: 2px;
   border-style: solid;
@@ -84,11 +84,17 @@ canvas {
 </head>
 
 <body>
+<input type="file" id="fileInput" accept=".json" style="display:none">
 <canvas id="canvas"></canvas>
 <div id="menu">
-<input class="menuButts" id="wide"onchange = "wide()"size=2 value=500>
-<input class="menuButts" id="tall"onchange = "tall()"size=2 value=460 >
-<button class="menuButts" onmouseenter = "hide=true" onclick = "setTimeout(function(){saveCanvasAsPNG()},1000)" >SavePng</button>
+<input class="menuButts" style = "width: 7%;" id="wide" onwheel="adjustValue(event, this)" onchange = "wide()"size=2 value=500>
+<input class="menuButts" style = "width: 7%;" id="tall" onwheel="adjustValue(event, this)" onchange = "tall()"size=2 value=460 >
+<button class="menuButts" onclick = "load()" >LoadAnim8tion</button>
+<button class="menuButts" onclick = "save()" >SaveAnim8tion</button>
+<button class="menuButts" onmouseenter = "hide=true" onmouseleave = "hide=false" onclick = "setTimeout(function(){saveCanvasAsPNG()},1000)" >SavePng</button>
+<input class="menuButts" id = "rotMod"style = "width: 4%;" id="mod" onwheel="adjustValue(event, this)" onchange = "rotMod = this.value"size=2 value=5 >
+<button class="menuButts" onclick="player(speedMod, this)">PLAY</button>
+<input class="menuButts" id = "speedMod"style = "width: 10%;" id="mod" onwheel="adjustValue(event, this)" onchange = "speedMod = this.value"size=2 value=5 >
 </div>
 <div id="frames">
 <button class="frameButts" >FRAME1</button>
@@ -126,267 +132,388 @@ canvas {
 canvas = document.getElementById("canvas");
 canvas.width=500
 canvas.height=460
-function saveCanvasAsPNG() {
-  const dataUrl = canvas.toDataURL('image/png'); // Get canvas data as PNG
-  const link = document.createElement('a'); // Create a link element
-  link.href = dataUrl; // Set link's href to the PNG data URL
-  link.download = 'output.png'; // Set the default filename for the image
-  link.click(); // Trigger a click on the link to download the image
-setTimeout(function(){hide=false},1000);
+canvasWcenter = canvas.width/2;
+canvasHcenter = canvas.height/2
+movie = null
+movieFrame = 1
+frameNumber = 5
+speedMod=250
+function save(){
+  downloadJSON(JSON.stringify(frames))
+}
+function downloadJSON(jsonContent) {
+const blob = new Blob([jsonContent], { type: 'text/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'generated.json';
+  link.click();
+}
+function load(){
+  divs = [];
+  document.getElementById('fileInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/json') {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const fileContent = e.target.result;
+        frames = JSON.parse(fileContent);  // Display as string
+        var Fbuttons = document.querySelectorAll('.frameButts');
+        for(let i = 1; i < Fbuttons.length; i++){
+          if(frames[i]==null){
+            Fbuttons[i-1].saved=false
+            Fbuttons[i-1].style.backgroundColor = '#333'; // Set all other button colors
+          }else{
+            Fbuttons[i-1].style.backgroundColor = "#040";
+            Fbuttons[i-1].saved=true
+          }
+        }
+        load_frame(1)
+        framePick(1)
+      };
+      reader.readAsText(file);  // Read the file content as text
+    } else {
+      alert('Please select a valid JSON file');
+    }
+  });
+  document.getElementById('fileInput').click();
 }
 
-const buttons = document.querySelectorAll('.frameButts'); // Select all buttons with class 'frameButts'
-var frames = [];
-buttons.forEach((button) => {
-frames.push({})// this sets up blank frames array
-  button.onclick = () => { // this is how you select and save current frame
-    let f = parseInt(button.innerText.match(/\d+/)[0]);
-    //document.title = frames[f].length
-    if(f==frame){ // if this is the current frame it should save the current parts to the frames[frame]
-      save_frame(f)
+function player(speed, elem){
+  if(elem.textContent == "PLAY"){
+    elem.textContent = "PLAYING";
+    movie = setInterval(function(){
+      load_frame(movieFrame)
+      framePick(movieFrame++)
+      
+    if(movieFrame>=30 || frames[movieFrame]==null){movieFrame=1}},speed);
     }else{
-      frame = f // selects the new frame
-      if(frames[f].length!=undefined){
-        load_frame(f); // loads the new frame
-      }
-      framePick(f);  // this visually shows which frame is selected
+      elem.textContent = "PLAY";
+      clearInterval(movie);
+      movieFrame=1;
+      load_frame(movieFrame)
+      framePick(movieFrame)
     }
     
-  };
-});
-var frame = 1; // The frame to match
-framePick(frame);
-function framePick(f){
-  buttons.forEach((button) => {
-  if (button.textContent === `FRAME${f}`) {
-    button.style.backgroundColor = '#3f3'; // Set the matched button color
-    //changes to the new frames parts data
-  } else {
-    button.style.backgroundColor = '#333'; // Set all other button colors
+    
   }
-});
+  
+  function adjustValue(event, inputElement) {
+    event.preventDefault(); // Prevent the page from scrolling.
+    const step = parseFloat(inputElement.step) || 1; // Get the step or default to 1.
+    var min=1;
+    var max=1000
+    if(inputElement.id=="rotMod"){
+      min = 1;
+      max = 99;
+    }
+    if(inputElement.id=="wide" || inputElement.id=="tall"){
+      min = 16;
+      max = 512;
+    }
+    if(inputElement.id=="speedMod"){
+      min = 10;
+      max = 1000;
+    }
+    var delta = event.deltaY < 0 ? step : -step;
+  if(inputElement.id=="wide" || inputElement.id=="tall"){delta*=16}
+  if(inputElement.id=="speedMod"){delta*=50}
+    let newValue = parseFloat(inputElement.value) + delta;
+    newValue = Math.min(Math.max(newValue, min), max);
+    inputElement.value = newValue;
+  if(inputElement.id=="rotMod"){rotMod=newValue}
+  if(inputElement.id=="speedMod"){speedMod=newValue}
+  if(inputElement.id=="wide"){wide()}
+  if(inputElement.id=="tall"){tall()}
+  }
+  function saveCanvasAsPNG() {
+    const dataUrl = canvas.toDataURL('image/png'); // Get canvas data as PNG
+    const link = document.createElement('a'); // Create a link element
+    link.href = dataUrl; // Set link's href to the PNG data URL
+    link.download = 'output.png'; // Set the default filename for the image
+    link.click(); // Trigger a click on the link to download the image
+  setTimeout(function(){hide=false},1000);
+  }
+  
+  const buttons = document.querySelectorAll('.frameButts'); // Select all buttons with class 'frameButts'
+  var frames = [];
+  buttons.forEach((button) => {
+    frames.push(null)// this sets up blank frames array
+    button.saved = false
+    button.onclick = () => { // this is how you select and save current frame
+      let f = parseInt(button.innerText.match(/\d+/)[0]);
+      //document.title = frames[f].length
+      if(f==frame){ // if this is the current frame it should save the current parts to the frames[frame]
+        save_frame(f)
+        button.saved = true
+        button.style.color = "#fff";
+        
+      }else{
+        frame = f // selects the new frame
+        if(frames[f]!=null){
+          if(frames[f].length!=undefined){
+            load_frame(f); // loads the new frame
+          }
+        }
+        framePick(f);  // this visually shows which frame is selected
+      }
+      
+    };
+  });
+  var frame = 1; // The frame to match
+  framePick(frame);
+  function framePick(f){
+    buttons.forEach((button) => {
+    if (button.textContent === `FRAME${f}`) {
+      button.style.backgroundColor = '#3f3'; // Set the matched button color
+      //changes to the new frames parts data
+    } else {
+      if(button.saved==false){
+        button.style.backgroundColor = '#333'; // Set all other button colors
+      }else{
+        button.style.backgroundColor = "#040";
+        button.style.color = "#000";
+      }
+    }
+  });
 }
 
 function load_frame(f){
-var temp = []
-for(let i = 0; i < frames[f].length; i++){
-  let id = frames[f][i].id;
-  let x = frames[f][i].x;
-  let y = frames[f][i].y;
-  let w = frames[f][i].w;
-  let h = frames[f][i].h;
-  let ox = frames[f][i].ox;
-  let oy = frames[f][i].oy;
-  let rot = frames[f][i].rot;
-  let sprite = draw_set_image(frames[f][i].spr);
-  let t = new gizmo(id, x, y, w, h, ox, oy, rot, sprite);
-  temp.push(t)
-}
-parts = temp;
-
+  var temp = []
+  if(frames[f]!=null){
+    for(let i = 0; i < frames[f].length; i++){
+      let id = frames[f][i].id;
+      let x = frames[f][i].x;
+      let y = frames[f][i].y;
+      let w = frames[f][i].w;
+      let h = frames[f][i].h;
+      let ox = frames[f][i].ox;
+      let oy = frames[f][i].oy;
+      let rot = frames[f][i].rot;
+      let sprite = draw_set_image(frames[f][i].spr);
+      let t = new gizmo(id, x, y, w, h, ox, oy, rot, sprite);
+      temp.push(t)
+    }
+    parts = temp;
+  }
+  
 }
 function save_frame(f){
-var temp = []
-for(let i = 0; i < parts.length; i++){
-  let id = parts[i].id;
-  let x = parts[i].x;
-  let y = parts[i].y;
-  let w = parts[i].w;
-  let h = parts[i].h;
-  let ox = parts[i].ox;
-  let oy = parts[i].oy;
-  let rot = parts[i].rot;
-  let sprite = parts[i].spr.src;
-  let t = new gizmo(id, x, y, w, h, ox, oy, rot, sprite);
-  temp.push(t)
-}
-frames[f] = temp;
+  var temp = []
+  for(let i = 0; i < parts.length; i++){
+    let id = parts[i].id;
+    let x = parts[i].x;
+    let y = parts[i].y;
+    let w = parts[i].w;
+    let h = parts[i].h;
+    let ox = parts[i].ox;
+    let oy = parts[i].oy;
+    let rot = parts[i].rot;
+    let sprite = parts[i].spr.src;
+    let t = new gizmo(id, x, y, w, h, ox, oy, rot, sprite);
+    temp.push(t)
+  }
+  frames[f] = temp;
 }
 
 function wide(){
-canvas.width = document.getElementById("wide").value;
-canvas.style.width = canvas.width + "px";
+  canvas.width = document.getElementById("wide").value;
+  canvas.style.width = canvas.width + "px";
 }
 function tall(){
-canvas.height = document.getElementById("tall").value;
-canvas.style.height = canvas.height + "px";
+  canvas.height = document.getElementById("tall").value;
+  canvas.style.height = canvas.height + "px";
 }
 canMake=false
 master_rot=0
 // THIS IS BASE OBJECT I BASED ALL OTHERS OFF OF.
 gizmo = function(id, x, y, w, h, ox, oy, rot, spr) {
-this.id = id;
-this.x = x;
-this.y = y;
-this.w = w;
-this.h = h;
-this.ox = ox;
-this.oy = oy;
-this.rot = rot;
-this.spr = spr;
-this.sel = false;
-
+  this.id = id;
+  this.x = x;
+  this.y = y;
+  this.w = w;
+  this.h = h;
+  this.ox = ox;
+  this.oy = oy;
+  this.rot = rot;
+  this.spr = spr;
+  this.sel = false;
+  
 };
 parts = [];
 pnum=0;
 rotMod = 5;
 hide=false;
 function start(){
-hide=false;
+  hide=false;
 }
 
 function loop(){
-input();
-document.title=hide
-
+  input();
+  document.title = rotMod;
 }
 
 function draw(){
-if(master_rot!=0){
-  var cw = canvas.width/2;
-  var ch = canvas.height/2;
+  if(master_rot!=0){
+    
+    for(let i = 0; i < parts.length; i ++){
+      let dis = point_distance(parts[i].x+parts[i].ox,parts[i].y+parts[i].oy,canvasWcenter,canvasHcenter);
+      let dir = point_direction(canvasWcenter,canvasHcenter,parts[i].x+parts[i].ox,parts[i].y+parts[i].oy);
+      parts[i].x = canvasWcenter+lengthdir_x(dis, dir+master_rot) - parts[i].ox;
+      parts[i].y = canvasHcenter+lengthdir_y(dis, dir+master_rot) - parts[i].oy;
+      parts[i].rot -= master_rot;
+    }
+  }
+  
+  master_rot=0;
   for(let i = 0; i < parts.length; i ++){
-    let dis = point_distance(parts[i].x+parts[i].ox,parts[i].y+parts[i].oy,cw,ch);
-    let dir = point_direction(cw,ch,parts[i].x+parts[i].ox,parts[i].y+parts[i].oy);
-    parts[i].x = cw+lengthdir_x(dis, dir+master_rot) - parts[i].ox;
-    parts[i].y = ch+lengthdir_y(dis, dir+master_rot) - parts[i].oy;
-    parts[i].rot -= master_rot;
+    draw_image(parts[i].spr,parts[i].x,parts[i].y,parts[i].w,parts[i].h,parts[i].rot,parts[i].ox,parts[i].oy);
+    if(parts[i].sel==true && hide==false){
+      draw_set_color(255,0,0);
+      draw_set_linewidth(6);
+      draw_set_linedash([10,3]);
+      draw_rectangle(parts[i].x,parts[i].y,parts[i].w,parts[i].h,true,parts[i].rot,parts[i].ox,parts[i].oy);
+      draw_set_color(0,255,255);
+      draw_circle(parts[i].x+parts[i].ox,parts[i].y+parts[i].oy, 8, false);
+    }
   }
-}
-
-master_rot=0;
-for(let i = 0; i < parts.length; i ++){
-  draw_image(parts[i].spr,parts[i].x,parts[i].y,parts[i].w,parts[i].h,parts[i].rot,parts[i].ox,parts[i].oy);
-  if(parts[i].sel==true && hide==false){
-    draw_set_color(255,0,0);
-    draw_set_linewidth(6);
-    draw_set_linedash([10,3]);
-    draw_rectangle(parts[i].x,parts[i].y,parts[i].w,parts[i].h,true,parts[i].rot,parts[i].ox,parts[i].oy);
-    draw_set_color(0,255,255);
-    draw_circle(parts[i].x+parts[i].ox,parts[i].y+parts[i].oy, 8, false);
+  draw_set_color(0,0,0);
+  if(hide==false){
+    draw_circle(canvasWcenter, canvasHcenter,  8, false); // center of canvas
   }
-}
-draw_set_color(0,0,0);
-if(hide==false){
-  draw_circle(canvas.width/2, canvas.height/2,  8, false); // center of canvas
-}
 }
 ///////////////////////////////////////////////////////////////////////
 var offX = 0;
 var offY = 0;
 function input(){
-
-var mx = mouse_x;
-var my = mouse_y;
-if(keyboard_check(vk_space)){hide=true}else{hide=false}
-if(mx>canvas.width){
-  if(keyboard_check_pressed(vk_delete)){
-    if(frame>1){
-      frames[frame]=frames[frame-1];
-      load_frame(frame-1)
-    }
-    
-  }
-}
-if(mouse_check_pressed()){
-  pnum = -1;
-}
-
-if(pnum<0 && keyboard_check(vk_ctrl)==false){
-  if(mx>0 && mx<canvas.width && my>0 && my<canvas.height){
-    master_rot+=wheelDir *rotMod;//rotates the whole canvas!!
-  }
-}
-for(let i = parts.length; i>0; i--){
-  if(inside(mx, my, parts[i-1].x, parts[i-1].y, parts[i-1].h, parts[i-1].w, parts[i-1].rot, parts[i-1].ox, parts[i-1].oy)){
-    if(mouse_check_released()){
-      pnum = i-1;
-    }
-  }
-  //pnum
-  if(!mouse_down){
-    parts[i-1].sel=false;
-  }
-  if(pnum>=0){
-    parts[pnum].sel=true;
-  }
-  if (parts[i-1].sel==true){
-    if(mouse_check()){
-      parts[i-1].x = mx - offX;
-      parts[i-1].y = my - offY;
-    }else{
-      offX = mx - parts[i-1].x;
-      offY = my - parts[i-1].y;
-    }
-    if(!keyboard_check(vk_w)&& !keyboard_check(vk_h)){
-      if(mx>0 && mx<canvas.width && my>0 && my<canvas.height){
-        parts[i-1].rot+=wheelDir;//rotates on ox,oy
-      }
-    }
-    if(mx>0 && mx<canvas.width && my>0 && my<canvas.height){
-      if(keyboard_check(vk_w)){
-        parts[i-1].w+=wheelDir;//rotates on ox,oy
-      }
-      if(keyboard_check(vk_h)){
-        parts[i-1].h+=wheelDir;//rotates on ox,oy
-      }
-    }
-    if(keyboard_check(vk_shift)){
-      parts[i-1].ox = mx - parts[i-1].x;
-      parts[i-1].oy = my - parts[i-1].y;
-    }
-    
+  
+  var mx = mouse_x;
+  var my = mouse_y;
+  if(mx>canvas.width){
     if(keyboard_check_pressed(vk_delete)){
-      parts.splice(i-1, 1); // destroys part
-      pnum = -1;
+      if(frame>1){
+        frames[frame]=frames[frame-1];
+        load_frame(frame-1)
+      }
+      
     }
   }
-}
-
-if(mouse_check_pressed()&&keyboard_check(vk_ctrl)){
-  key_down[vk_ctrl] = false; // because idk grr
-  create_part(mx,my);
-}
+  if(mouse_check_pressed()){
+    pnum = -1;
+  }
+  
+  if(pnum<0 && keyboard_check(vk_ctrl)==false){
+    if(mx>0 && mx<canvas.width && my>0 && my<canvas.height){
+      master_rot+=wheelDir *rotMod;//rotates the whole canvas!!
+    }
+  }
+  for(let i = parts.length; i>0; i--){
+    /// moves all the pieces and the "canvas origin" at once
+    if(keyboard_check_pressed(vk_up)){
+      canvasHcenter-=rotMod;
+      parts[i-1].y-=rotMod;
+    }
+    if(keyboard_check_pressed(vk_down)){
+      canvasHcenter+=rotMod;
+      parts[i-1].y+=rotMod;
+    }
+    if(keyboard_check_pressed(vk_left)){
+      canvasHcenter-=rotMod;
+      parts[i-1].x-=rotMod;
+    }
+    if(keyboard_check_pressed(vk_right)){
+      canvasWcenter+=rotMod;
+      parts[i-1].x+=rotMod;
+    }
+    
+    if(inside(mx, my, parts[i-1].x, parts[i-1].y, parts[i-1].h, parts[i-1].w, parts[i-1].rot, parts[i-1].ox, parts[i-1].oy)){
+      if(mouse_check_released()){
+        pnum = i-1;
+      }
+    }
+    //pnum
+    if(!mouse_down){
+      parts[i-1].sel=false;
+    }
+    if(pnum>=0){
+      parts[pnum].sel=true;
+    }
+    if (parts[i-1].sel==true){
+      if(mouse_check()){
+        parts[i-1].x = mx - offX;
+        parts[i-1].y = my - offY;
+      }else{
+        offX = mx - parts[i-1].x;
+        offY = my - parts[i-1].y;
+      }
+      if(!keyboard_check(vk_w)&& !keyboard_check(vk_h)){
+        if(mx>0 && mx<canvas.width && my>0 && my<canvas.height){
+          parts[i-1].rot+=wheelDir*rotMod;//rotates on ox,oy
+        }
+      }
+      if(mx>0 && mx<canvas.width && my>0 && my<canvas.height){
+        if(keyboard_check(vk_w)){
+          parts[i-1].w+=wheelDir*rotMod;//scales width
+        }
+        if(keyboard_check(vk_h)){
+          parts[i-1].h+=wheelDir*rotMod;//scales height
+        }
+      }
+      if(keyboard_check(vk_shift)){
+        parts[i-1].ox = mx - parts[i-1].x;
+        parts[i-1].oy = my - parts[i-1].y;
+      }
+      
+      if(keyboard_check_pressed(vk_delete)){
+        parts.splice(i-1, 1); // destroys part
+        pnum = -1;
+      }
+    }
+  }
+  
+  if(mouse_check_pressed()&&keyboard_check(vk_ctrl)){
+    key_down[vk_ctrl] = false; // because idk grr
+    create_part(mx,my);
+  }
 if(keyboard_check_pressed(vk_escape)){window.close()}
-wheelDir=0;
+  wheelDir=0;
 }
 
 
 
 function create_part(x,y){
-var fileInput = document.createElement('input');
-fileInput.type = 'file';
-fileInput.accept = 'image/*';
-fileInput.addEventListener('change', function(event) {
-  var file = event.target.files[0];
-  if (file) {
-    var reader = new FileReader();
-    reader.onload = function(readerEvent) {
-      // Set the base64 value to the text box
-      // textBox.value = readframes[f]erEvent.target.result;
-      var fileData =  readerEvent.target.result
-      //gizmo = function(x, y, w, h, ox, oy, spr) {
-        var sprite = draw_set_image(fileData)
-        setTimeout(function(){
-          let id = file.name.split('.')[0]
-          let w = sprite.naturalWidth;
-          let h = sprite.naturalHeight;
-          let ox = w/2;
-          let oy = h/2;
-          let temp = new gizmo(id, x, y, w, h, ox, oy, 0, sprite);
-          parts.push(temp);
-        },1);
-        //alert(sprite.naturalWidth)
-        
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-  fileInput.click();
-}
-////////////////////////////////////////////////////////////////////////
-</script>
-<script type='text/javascript' src='engine.js'></script>
-
-</body>
-</html>
+  var fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    if (file) {
+      var reader = new FileReader();
+      reader.onload = function(readerEvent) {
+        // Set the base64 value to the text box
+        // textBox.value = readframes[f]erEvent.target.result;
+        var fileData =  readerEvent.target.result
+        //gizmo = function(x, y, w, h, ox, oy, spr) {
+          var sprite = draw_set_image(fileData)
+          setTimeout(function(){
+            let id = file.name.split('.')[0]
+            let w = sprite.naturalWidth;
+            let h = sprite.naturalHeight;
+            let ox = w/2;
+            let oy = h/2;
+            let temp = new gizmo(id, x, y, w, h, ox, oy, 0, sprite);
+            parts.push(temp);
+          },1);
+          //alert(sprite.naturalWidth)
+          
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    fileInput.click();
+  }
+  ////////////////////////////////////////////////////////////////////////
+  </script>
+  <script type='text/javascript' src='engine.js'></script>
+  
+  </body>
+  </html>
