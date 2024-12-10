@@ -88,6 +88,7 @@ canvas {
 <div id="menu">
 <input class="menuButts" id="wide"onchange = "wide()"size=2 value=500>
 <input class="menuButts" id="tall"onchange = "tall()"size=2 value=460 >
+<button class="menuButts" onmouseenter = "hide=true" onclick = "setTimeout(function(){saveCanvasAsPNG()},1000)" >SavePng</button>
 </div>
 <div id="frames">
 <button class="frameButts" >FRAME1</button>
@@ -125,26 +126,36 @@ canvas {
 canvas = document.getElementById("canvas");
 canvas.width=500
 canvas.height=460
+function saveCanvasAsPNG() {
+  const dataUrl = canvas.toDataURL('image/png'); // Get canvas data as PNG
+  const link = document.createElement('a'); // Create a link element
+  link.href = dataUrl; // Set link's href to the PNG data URL
+  link.download = 'output.png'; // Set the default filename for the image
+  link.click(); // Trigger a click on the link to download the image
+setTimeout(function(){hide=false},1000);
+}
 
-var frame = 13; // The frame to match
 const buttons = document.querySelectorAll('.frameButts'); // Select all buttons with class 'frameButts'
 var frames = [];
 buttons.forEach((button) => {
 frames.push({})// this sets up blank frames array
   button.onclick = () => { // this is how you select and save current frame
     let f = parseInt(button.innerText.match(/\d+/)[0]);
+    //document.title = frames[f].length
     if(f==frame){ // if this is the current frame it should save the current parts to the frames[frame]
       save_frame(f)
     }else{
       frame = f // selects the new frame
-      
-      load_frame(f); // loads the new frame
+      if(frames[f].length!=undefined){
+        load_frame(f); // loads the new frame
+      }
       framePick(f);  // this visually shows which frame is selected
     }
     
   };
 });
-
+var frame = 1; // The frame to match
+framePick(frame);
 function framePick(f){
   buttons.forEach((button) => {
   if (button.textContent === `FRAME${f}`) {
@@ -157,7 +168,7 @@ function framePick(f){
 }
 
 function load_frame(f){
-  var temp = []
+var temp = []
 for(let i = 0; i < frames[f].length; i++){
   let id = frames[f][i].id;
   let x = frames[f][i].x;
@@ -171,8 +182,8 @@ for(let i = 0; i < frames[f].length; i++){
   let t = new gizmo(id, x, y, w, h, ox, oy, rot, sprite);
   temp.push(t)
 }
-  parts = temp;
-  
+parts = temp;
+
 }
 function save_frame(f){
 var temp = []
@@ -189,7 +200,7 @@ for(let i = 0; i < parts.length; i++){
   let t = new gizmo(id, x, y, w, h, ox, oy, rot, sprite);
   temp.push(t)
 }
-  frames[f] = temp;
+frames[f] = temp;
 }
 
 function wide(){
@@ -219,13 +230,14 @@ this.sel = false;
 parts = [];
 pnum=0;
 rotMod = 5;
+hide=false;
 function start(){
-
+hide=false;
 }
 
 function loop(){
 input();
-
+document.title=hide
 
 }
 
@@ -245,7 +257,7 @@ if(master_rot!=0){
 master_rot=0;
 for(let i = 0; i < parts.length; i ++){
   draw_image(parts[i].spr,parts[i].x,parts[i].y,parts[i].w,parts[i].h,parts[i].rot,parts[i].ox,parts[i].oy);
-  if(parts[i].sel==true){
+  if(parts[i].sel==true && hide==false){
     draw_set_color(255,0,0);
     draw_set_linewidth(6);
     draw_set_linedash([10,3]);
@@ -255,8 +267,9 @@ for(let i = 0; i < parts.length; i ++){
   }
 }
 draw_set_color(0,0,0);
-draw_circle(canvas.width/2, canvas.height/2,  8, false); // center of canvas
-//ctx.restore()
+if(hide==false){
+  draw_circle(canvas.width/2, canvas.height/2,  8, false); // center of canvas
+}
 }
 ///////////////////////////////////////////////////////////////////////
 var offX = 0;
@@ -265,6 +278,16 @@ function input(){
 
 var mx = mouse_x;
 var my = mouse_y;
+if(keyboard_check(vk_space)){hide=true}else{hide=false}
+if(mx>canvas.width){
+  if(keyboard_check_pressed(vk_delete)){
+    if(frame>1){
+      frames[frame]=frames[frame-1];
+      load_frame(frame-1)
+    }
+    
+  }
+}
 if(mouse_check_pressed()){
   pnum = -1;
 }
