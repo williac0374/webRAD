@@ -11,7 +11,8 @@ body {
   height: 100vh;
   background-color: #333;
 }
-canvas {
+
+#canvas {
   position: absolute;
   left: 50px;
   top: 50px;
@@ -22,6 +23,13 @@ canvas {
   border-width: 10px;
   border-style: solid;
   border-color: #444;
+}
+#output_canvas {
+  position:absolute;
+  z-index:9999;
+  background-color: #f00;
+  display:none
+  
 }
 #frames {
   overflow-y: auto;
@@ -98,14 +106,14 @@ canvas {
 
 <body>
 <input type="file" id="fileInput" accept=".json" style="display:none">
-<canvas id="output_canvas" style="display:none"></canvas>
+<canvas id="output_canvas" ></canvas>
 <canvas id="canvas"></canvas>
 <div id="menu">
-<input class="menuButts" style = "width: 7%;" id="wide" onwheel="adjustValue(event, this)" onchange = "wide()"size=2 value=500>
-<input class="menuButts" style = "width: 7%;" id="tall" onwheel="adjustValue(event, this)" onchange = "tall()"size=2 value=460 >
+<input class="menuButts" style = "width: 7%;" id="wide" onwheel="adjustValue(event, this)" onchange = "wide()"size=2 value=128>
+<input class="menuButts" style = "width: 7%;" id="tall" onwheel="adjustValue(event, this)" onchange = "tall()"size=2 value=128 >
 <button class="menuButts" onclick = "load()" >LoadAnim8tion</button>
 <button class="menuButts" onclick = "save()" >SaveAnim8tion</button>
-<button class="menuButts" onmouseenter = "hide=true" onmouseleave = "hide=false" onclick = "setTimeout(function(){saveCanvasAsPNG()},1000)" >SavePng</button>
+<button class="menuButts" onmouseenter = "hide=true" onmouseleave = "hide=false" onclick = "setTimeout(function(){export_frames()},1000)" >SavePng</button>
 <input class="menuButts" id = "rotMod"style = "width: 4%;" id="mod" onwheel="adjustValue(event, this)" onchange = "rotMod = this.value"size=2 value=5 >
 <button class="menuButts" onclick="player(speedMod, this)">PLAY</button>
 <input class="menuButts" id = "speedMod"style = "width: 10%;" id="mod" onwheel="adjustValue(event, this)" onchange = "speedMod = this.value"size=2 value=5 >
@@ -160,8 +168,10 @@ WHEN THE CURRENT FRAME IS WHERE YOU WANT IT, CLICK THE SELCTED FRAME'S BUTTON TO
 WHEN THE MOUSE IS NOT ON THE CANVAS PRESSING DELETE WILL UNSAVE THE FRAME.
 `
 canvas = document.getElementById("canvas");
-canvas.width=500
-canvas.height=460
+canvas.width=128
+canvas.height=128
+canvas.style.width = canvas.width + "px";
+canvas.style.height = canvas.height + "px";
 canvasWcenter = canvas.width/2;
 canvasHcenter = canvas.height/2
 movie = null
@@ -422,7 +432,7 @@ function draw(){
 var offX = 0;
 var offY = 0;
 function input(){
-if(keyboard_check(vk_space)){hide=false}else{hide=true};
+//if(keyboard_check(vk_space)){hide=false}else{hide=true};
   var mx = mouse_x;
   var my = mouse_y;
   if(mx>canvas.width){
@@ -521,54 +531,55 @@ if(keyboard_check_pressed(vk_escape)){window.close()}
 }
 
 function export_frames(){   //////////DOESNT WORK YET AAAGGG!!!!!!!!!!!!!!!1
-  // gets frame length
-  var frame_length = 0
+  // puts relavent frames into a temp obect
+  var temp = []
   for(let i = 1; i < frames.length; i++){
     if (frames[i]!=null){ //output_canvas
-      frame_length++
+      temp.push(frames[i])
     }
   }
   // sets up offscreen canvas for image compilation
   var o_canvas = document.getElementById("output_canvas")
   var o_ctx = o_canvas.getContext("2d");
   output_canvas.height = canvas.height;
-  output_canvas.width = canvas.width*frame_length;
-  var temp = []
-  for(let i = 1; i <= frame_length; i++){
-    // frames[frame_length] objects and draw them to output_canvas
-    // multiplying thier x coordinates by frame_length
-    // to setup the sprite strip canvas off all the frames for exporting.
-    let id = temp[i].id;
-    let x = temp[i].x*frame_length;
-    let y = temp[i].y;
-    let w = temp[i].w;
-    let h = temp[i].h;
-    let ox = temp[i].ox;
-    let oy = temp[i].oy;
-    let rot = temp[i].rot;
-    let depth = temp[i].depth;
-    let sprite = draw_set_image(temp[i].spr);
-    let t = new gizmo(id, x, y, w, h, ox, oy, rot, depth, sprite);
-    temp.push(t);
-  }
-  // the temp array is filled with all the parts of the current frame
+  output_canvas.width = canvas.width*temp.length;
+  output_canvas.style.width = output_canvas.width + "px";
+  output_canvas.style.height = output_canvas.height + "px";
+  // the temp array is filled with all the frames
   // draw all the temp objects
   for(let i = 0; i < temp.length; i++){
-    var img = new Image();
-    temp.src = temp[i].spr;
-    o_ctx.save();
-    o_ctx.translate(temp[i].x+temp[i].ox,temp[i].y+temp[i].oy);
-    o_ctx.rotate(temp[i].rot*Math.PI/180);//tu_r2d = -180 / Math.PI, tu_d2r = Math.PI / -180
-    o_ctx.drawImage(img,-temp[i].ox,-temp[i].oy,temp[i].w,temp[i].h);
-    o_ctx.restore()
-    
+    for(let p = 0; p < temp[i].length; p++){
+      // this adjust for the sprite strip placement left to right frame1 - frame?
+      temp[i][p].x *= i+1;
+      var img = new Image();
+      temp.src = temp[i][p].spr;
+      temp.onload = () => {
+      o_ctx.save();
+      o_ctx.translate(temp[i][p].x+temp[i][p].ox,temp[i][p].y+temp[i][p].oy);
+      o_ctx.rotate(temp[i][p].rot*Math.PI/180);//tu_r2d = -180 / Math.PI, tu_d2r = Math.PI / -180
+      o_ctx.drawImage(img,-temp[i][p].ox,-temp[i][p].oy,temp[i][p].w,temp[i][p].h);
+      o_ctx.restore()
+      }
+    }
     
   }
-  
-  
-  
-  
+  /*
+  setTimeout(() => {
+    const dataUrl = o_canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = "sprite_strip.png";
+    link.click();
+  }, 500); // Adjust timeout if images take longer to load
+  */
+  showSpriteStrip()
 }
+
+function showSpriteStrip(){
+  var o_canvas = document.getElementById("output_canvas")
+  o_canvas.style.display='block'
+}
+
 
 function create_part(x,y){
   var fileInput = document.createElement('input');
