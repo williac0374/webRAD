@@ -98,6 +98,7 @@ canvas {
 
 <body>
 <input type="file" id="fileInput" accept=".json" style="display:none">
+<canvas id="output_canvas" style="display:none"></canvas>
 <canvas id="canvas"></canvas>
 <div id="menu">
 <input class="menuButts" style = "width: 7%;" id="wide" onwheel="adjustValue(event, this)" onchange = "wide()"size=2 value=500>
@@ -421,7 +422,7 @@ function draw(){
 var offX = 0;
 var offY = 0;
 function input(){
-  if(keyboard_check(vk_space)){hide=false}else{hide=true};
+if(keyboard_check(vk_space)){hide=false}else{hide=true};
   var mx = mouse_x;
   var my = mouse_y;
   if(mx>canvas.width){
@@ -519,7 +520,55 @@ if(keyboard_check_pressed(vk_escape)){window.close()}
   wheelDir=0;
 }
 
-
+function export_frames(){   //////////DOESNT WORK YET AAAGGG!!!!!!!!!!!!!!!1
+  // gets frame length
+  var frame_length = 0
+  for(let i = 1; i < frames.length; i++){
+    if (frames[i]!=null){ //output_canvas
+      frame_length++
+    }
+  }
+  // sets up offscreen canvas for image compilation
+  var o_canvas = document.getElementById("output_canvas")
+  var o_ctx = o_canvas.getContext("2d");
+  output_canvas.height = canvas.height;
+  output_canvas.width = canvas.width*frame_length;
+  var temp = []
+  for(let i = 1; i <= frame_length; i++){
+    // frames[frame_length] objects and draw them to output_canvas
+    // multiplying thier x coordinates by frame_length
+    // to setup the sprite strip canvas off all the frames for exporting.
+    let id = temp[i].id;
+    let x = temp[i].x*frame_length;
+    let y = temp[i].y;
+    let w = temp[i].w;
+    let h = temp[i].h;
+    let ox = temp[i].ox;
+    let oy = temp[i].oy;
+    let rot = temp[i].rot;
+    let depth = temp[i].depth;
+    let sprite = draw_set_image(temp[i].spr);
+    let t = new gizmo(id, x, y, w, h, ox, oy, rot, depth, sprite);
+    temp.push(t);
+  }
+  // the temp array is filled with all the parts of the current frame
+  // draw all the temp objects
+  for(let i = 0; i < temp.length; i++){
+    var img = new Image();
+    temp.src = temp[i].spr;
+    o_ctx.save();
+    o_ctx.translate(temp[i].x+temp[i].ox,temp[i].y+temp[i].oy);
+    o_ctx.rotate(temp[i].rot*Math.PI/180);//tu_r2d = -180 / Math.PI, tu_d2r = Math.PI / -180
+    o_ctx.drawImage(img,-temp[i].ox,-temp[i].oy,temp[i].w,temp[i].h);
+    o_ctx.restore()
+    
+    
+  }
+  
+  
+  
+  
+}
 
 function create_part(x,y){
   var fileInput = document.createElement('input');
