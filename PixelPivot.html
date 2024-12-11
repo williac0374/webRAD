@@ -144,8 +144,8 @@ canvas {
 <div id="info"></div>
 <script>
 info = document.getElementById("info");
-info.innerText = `----------PIXELPIVOT----------                     
-PRESS CONTROL AND CLICK THE MOUSE ON THE CANVAS TO LOAD AN IMAGE.  
+info.innerText = `----------PIXELPIVOT----------
+PRESS CONTROL AND CLICK THE MOUSE ON THE CANVAS TO LOAD AN IMAGE.
 CLICK INSIDE THE IMAGE TO SELECT IT.
 HOLD DOWN THE SHIFT KEY AND MOVE THE MOUSE TO MOVE ITS PIVOT POINT.
 HOLD DOWN THE W KEY AND MOUSE WHEEL TO ADJUST ITS WIDTH.
@@ -155,7 +155,7 @@ PRESS THE DELETE KEY TO REMOVE THE SELECTED IMAGE.
 WHEN AN IMAGE IS SELECTED MOUSE WHEEL TO ROTATE IT ON ITS PIVOT.
 WITH NO IMAGE SELECTED MOUSE WHEEL TO ROTATE THE WHOLE FRAME.
 USE THE ARROW KEYS TO MOVE THE WHOLE FRAME .
-WHEN THE CURRENT FRAME IS WHERE YOU WANT IT, CLICK THE SELCTED FRAME'S BUTTON TO SAVE ITS STATE.  
+WHEN THE CURRENT FRAME IS WHERE YOU WANT IT, CLICK THE SELCTED FRAME'S BUTTON TO SAVE ITS STATE.
 WHEN THE MOUSE IS NOT ON THE CANVAS PRESSING DELETE WILL UNSAVE THE FRAME.
 `
 canvas = document.getElementById("canvas");
@@ -349,10 +349,14 @@ function save_frame(f){
 function wide(){
   canvas.width = document.getElementById("wide").value;
   canvas.style.width = canvas.width + "px";
+  canvasWcenter = canvas.width/2;
+  canvasHcenter = canvas.height/2
 }
 function tall(){
   canvas.height = document.getElementById("tall").value;
   canvas.style.height = canvas.height + "px";
+  canvasWcenter = canvas.width/2;
+  canvasHcenter = canvas.height/2
 }
 canMake=false
 master_rot=0
@@ -417,7 +421,7 @@ function draw(){
 var offX = 0;
 var offY = 0;
 function input(){
-  
+  if(keyboard_check(vk_space)){hide=false}else{hide=true};
   var mx = mouse_x;
   var my = mouse_y;
   if(mx>canvas.width){
