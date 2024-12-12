@@ -1,8 +1,5 @@
 <!-- TO DO -->
-<!--1.  update visual w and h displays on load -->
-<!--2. fix post animation export object x positions -->
 <!--3. add a visible porperty to parts objects -->
-<!--4. make my own loading gif -->
 <!--5. redo help screen -->
 <!--6. make a (offline capable)export gif option -->
 <!-- TO DO -->
@@ -14,7 +11,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PIXEL PIVOT</title>
-<style> 
+<style>
 body {
   margin: 0;
   height: 100vh;
@@ -35,8 +32,8 @@ body {
 }
 #output_canvas {
   position:absolute;
-  z-index:9999;
-  //background-color: #f00;
+  z-index:999999;
+  background-color: #f00;
   display:none
   
 }
@@ -208,8 +205,10 @@ function load(){
         frames = JSON.parse(fileContent);  // Display as string
         canvas.height = frames[0].h;
         canvas.style.height = canvas.height + "px";
+        document.getElementById("tall").value=canvas.height;
         canvas.width = frames[0].w;
         canvas.style.width = canvas.width + "px";
+        document.getElementById("wide").value=canvas.width;
         canvasWcenter = canvas.width/2;
         canvasHcenter = canvas.height/2
         
@@ -233,16 +232,19 @@ function load(){
   });
   document.getElementById('fileInput').click();
 }
-
+isPlaying=false
 function player(speed, elem){
   if(elem.textContent == "PLAY"){
     elem.textContent = "PLAYING";
+    isPlaying=true
     movie = setInterval(function(){
+      
       load_frame(movieFrame)
       framePick(movieFrame++)
       
     if(movieFrame>=30 || frames[movieFrame]==null){movieFrame=1}},speed);
     }else{
+      isPlaying=false
       elem.textContent = "PLAY";
       clearInterval(movie);
       movieFrame=1;
@@ -349,7 +351,8 @@ function load_frame(f){
       let rot = frames[f][i].rot;
       let depth = frames[f][i].depth;
       let sprite = draw_set_image(frames[f][i].spr);
-      let t = new gizmo(id, x, y, w, h, ox, oy, rot, depth, sprite);
+      let visible = frames[f][i].visible;
+      let t = new gizmo(id, x, y, w, h, ox, oy, rot, depth, sprite , visible);
       temp.push(t)
     }
     parts = temp;
@@ -366,10 +369,11 @@ function save_frame(f){
     let h = parts[i].h;
     let ox = parts[i].ox;
     let oy = parts[i].oy;
-    let rot = parts[i].rot;
+    let rot = parts[i].rot;3584
     let depth = parts[i].depth
     let sprite = parts[i].spr.src;
-    let t = new gizmo(id, x, y, w, h, ox, oy, rot, depth, sprite);
+    let visible = parts[i].visible;
+    let t = new gizmo(id, x, y, w, h, ox, oy, rot, depth, sprite, visible);
     temp.push(t)
   }
   frames[f] = temp;
@@ -392,7 +396,7 @@ function tall(){
 canMake=false
 master_rot=0
 // THIS IS BASE OBJECT I BASED ALL OTHERS OFF OF.
-gizmo = function(id, x, y, w, h, ox, oy, rot, depth, spr) {
+gizmo = function(id, x, y, w, h, ox, oy, rot, depth, spr, visible) {
   this.id = id;
   this.x = x;
   this.y = y;
@@ -404,6 +408,7 @@ gizmo = function(id, x, y, w, h, ox, oy, rot, depth, spr) {
   this.spr = spr;
   this.sel = false;
   this.depth = depth;
+  this.visible = visible;
   
 };
 parts = [];
@@ -433,7 +438,9 @@ function draw(){
   
   master_rot=0;
   for(let i = 0; i < parts.length; i ++){
-    draw_image(parts[i].spr,parts[i].x,parts[i].y,parts[i].w,parts[i].h,parts[i].rot,parts[i].ox,parts[i].oy);
+    
+    if(parts[i].visible==false){if(isPlaying==false){draw_set_alpha(0.2)}else{draw_set_alpha(0.0)}} draw_image(parts[i].spr,parts[i].x,parts[i].y,parts[i].w,parts[i].h,parts[i].rot,parts[i].ox,parts[i].oy);
+    draw_set_alpha(1)
     if(parts[i].sel==true && hide==false){
       draw_set_color(255,0,0);
       draw_set_linewidth(6);
@@ -505,6 +512,13 @@ function input(){
       parts[pnum].sel=true;
     }
     if (parts[i-1].sel==true){
+      if(keyboard_check_pressed(vk_v)){
+        if(parts[i-1].visible==true){
+          parts[i-1].visible = false;
+        }else{
+          parts[i-1].visible = true;
+        }
+      }
       if(mouse_check()){
         parts[i-1].x = mx - offX;
         parts[i-1].y = my - offY;
@@ -549,18 +563,94 @@ function input(){
 if(keyboard_check_pressed(vk_escape)){window.close()}
   wheelDir=0;
 }
-// Global variable to control loading
-loading = null;
-function export_frames(){
+function make_canvas(w, h) {
+  const temp_canvas = document.createElement('canvas');
+  temp_canvas.style.position='absolute'
+  temp_canvas.width = w;
+  temp_canvas.height = h;
+  temp_canvas.zIndex = 99999;
+  temp_canvas.style.display = 'none';
+  document.body.appendChild(temp_canvas);
+  return {canvas:temp_canvas,ctx:temp_canvas.getContext('2d')};
+}
+function export_frames() {
+  loading = true;
+  createLoadingOverlay("loading.gif");
+
+  // Prepare the frames
+  const temp = frames.filter((frame, index) => index > 0 && frame != null);
+
+  // Setup the output canvas
+  const o_canvas = document.getElementById("output_canvas");
+  const o_ctx = o_canvas.getContext("2d");
+  o_canvas.height = canvas.height;
+  o_canvas.width = canvas.width * temp.length;
+  o_canvas.style.width = o_canvas.width + "px";
+  o_canvas.style.height = o_canvas.height + "px";
+
+  const frameCanvases = [];
+  let loadedFrames = 0;
+
+  // Create offscreen canvases for each frame
+  for (let i = 0; i < temp.length; i++) {
+    const { canvas: frameCanvas, ctx: frameCtx } = make_canvas(canvas.width, canvas.height);
+    frameCanvases.push(frameCanvas);
+
+    // Draw each part of the frame
+    for (let p = 0; p < temp[i].length; p++) {
+      const part = temp[i][p];
+      const img = new Image();
+      img.src = part.spr;
+
+      img.onload = function () {
+        if(part.visible==true){
+        frameCtx.save();
+        frameCtx.translate(part.x + part.ox, part.y + part.oy);
+        frameCtx.rotate((part.rot * Math.PI) / 180);
+        frameCtx.drawImage(img, -part.ox, -part.oy, part.w, part.h);
+        frameCtx.restore();
+        }
+        // Check if all parts in this frame are loaded
+        if (p === temp[i].length - 1) {
+          loadedFrames++;
+          if (loadedFrames === temp.length) {
+            drawSpriteStrip(frameCanvases, o_ctx, o_canvas);
+          }
+        }
+      };
+    }
+  }
+}
+
+// Draw all frame canvases onto the output canvas
+function drawSpriteStrip(frameCanvases, o_ctx, o_canvas) {
+  for (let i = 0; i < frameCanvases.length; i++) {
+    o_ctx.drawImage(frameCanvases[i], canvas.width * i, 0, canvas.width, canvas.height);
+  }
+
+  // Save and download the sprite strip
+  const dataUrl = o_canvas.toDataURL("image/png");
+  const link = document.createElement("a");
+  link.href = dataUrl;
+  link.download = "sprite_strip.png";
+  link.click();
+
+  // Show the output canvas
+ // o_canvas.style.display = "block";
+  loading = false;
+}
+
+
+function export_framesBAK(){
   loading = true
   createLoadingOverlay("loading.gif");
-  // puts relavent frames into a temp obect
   var temp = []
   for(let i = 1; i < frames.length; i++){
     if (frames[i]!=null){ //output_canvas
       temp.push(frames[i])
     }
   }
+temp.push({})
   console.log(temp)
   // sets up offscreen canvas for image compilation
   var o_canvas = document.getElementById("output_canvas")
@@ -569,114 +659,115 @@ function export_frames(){
   o_canvas.width = canvas.width*temp.length;
   o_canvas.style.width = o_canvas.width + "px";
   o_canvas.style.height = o_canvas.height + "px";
-  // the temp array is filled with all the frames
-  // draw all the temp objects
-  
-  for(let i = 0; i < temp.length; i++){
+  for(let i = temp.length-1; i >= 0; i--){
     for(let p = 0; p < temp[i].length; p++){
-      // this adjust for the sprite strip placement left to right frame1 - frame?
+    if(temp[i][p]!={}){
       temp[i][p].x += i*canvas.width;
-      var img = new Image();
-      img.src = temp[i][p].spr;
-      img.onload = () => {
+      temp[i][p].index = p+1;
+      temp[i][p].total_parts = temp[i].length;
+      temp[i][p].img = new Image();
+      temp[i][p].img.src = temp[i][p].spr;
+      temp[i][p].img.onload = () => {
         o_ctx.save();
         o_ctx.translate(temp[i][p].x+temp[i][p].ox,temp[i][p].y+temp[i][p].oy);
-        o_ctx.rotate(temp[i][p].rot*Math.PI/180);//tu_r2d = -180 / Math.PI, tu_d2r = Math.PI / -180
-        o_ctx.drawImage(img,-temp[i][p].ox,-temp[i][p].oy,temp[i][p].w,temp[i][p].h);
-        o_ctx.restore()
+        o_ctx.rotate(temp[i][p].rot*Math.PI/180);
+        o_ctx.drawImage(temp[i][p].img,-temp[i][p].ox,-temp[i][p].oy,temp[i][p].w,temp[i][p].h);
+        o_ctx.restore();//x,y,w,h
+        console.log(temp[i][p].index,temp[i][p].total_parts)
+        if(i>0){
+          o_ctx.clearRect((i-1)*canvas.width, 0, canvas.width, canvas.height);
+        }
       }
     }
-    
   }
-  /**/
-  setTimeout(() => {
-    loading = false;
-    const dataUrl = o_canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.href = dataUrl;
-    link.download = "sprite_strip.png";
-    link.click();
-  }, temp.length*1000); // Adjust timeout if images take longer to load
   
-  // showSpriteStrip()
+}
+setTimeout(() => {
+  loading = false;
+  const dataUrl = o_canvas.toDataURL("image/png");
+  const link = document.createElement("a");
+  link.href = dataUrl;
+  link.download = "sprite_strip.png";
+  link.click();
+}, temp.length*1000); // Adjust timeout if images take longer to load
 }
 
 function createLoadingOverlay(gifUrl) {
-  // Check if the overlay already exists
-  let existingOverlay = document.getElementById("loading-overlay");
-  if (existingOverlay) return;
-  
-  // Create the overlay div
-  const overlay = document.createElement("div");
-  overlay.id = "loading-overlay";
-  
-  // Style the overlay
-  Object.assign(overlay.style, {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    width: "25%",
-    height: "25%",
-    transform: "translate(-50%, -50%)",
-  backgroundImage: `url(${gifUrl})`,
-    backgroundSize: "contain",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
-    zIndex: "10000",
-  });
-  
-  // Append the overlay to the body
-  document.body.appendChild(overlay);
-  
-  // Watch for changes to the loading variable
-  const checkLoading = setInterval(() => {
-    if (!loading) {
-      // Remove the overlay
-      overlay.remove();
-      clearInterval(checkLoading);
-    }
-  }, 100); // Check every 100ms
+// Check if the overlay already exists
+let existingOverlay = document.getElementById("loading-overlay");
+if (existingOverlay) return;
+
+// Create the overlay div
+const overlay = document.createElement("div");
+overlay.id = "loading-overlay";
+
+// Style the overlay
+Object.assign(overlay.style, {
+  position: "fixed",
+  top: "50%",
+  left: "50%",
+  width: "25%",
+  height: "25%",
+  transform: "translate(-50%, -50%)",
+backgroundImage: `url(${gifUrl})`,
+  backgroundSize: "contain",
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "center",
+  zIndex: "10000",
+});
+
+// Append the overlay to the body
+document.body.appendChild(overlay);
+
+// Watch for changes to the loading variable
+const checkLoading = setInterval(() => {
+  if (!loading) {
+    // Remove the overlay
+    overlay.remove();
+    clearInterval(checkLoading);
+  }
+}, 100); // Check every 100ms
 }
 function showSpriteStrip(){
-  var o_canvas = document.getElementById("output_canvas")
-  o_canvas.style.display='block'
+var o_canvas = document.getElementById("output_canvas")
+o_canvas.style.display='block'
 }
 
 
 function create_part(x,y){
-  var fileInput = document.createElement('input');
-  fileInput.type = 'file';
-  fileInput.accept = 'image/*';
-  fileInput.addEventListener('change', function(event) {
-    var file = event.target.files[0];
-    if (file) {
-      var reader = new FileReader();
-      reader.onload = function(readerEvent) {
-        // Set the base64 value to the text box
-        // textBox.value = readframes[f]erEvent.target.result;
-        var fileData =  readerEvent.target.result
-        //gizmo = function(x, y, w, h, ox, oy, spr) {
-          var sprite = draw_set_image(fileData)
-          setTimeout(function(){
-            let id = file.name.split('.')[0]
-            let w = sprite.naturalWidth;
-            let h = sprite.naturalHeight;
-            let ox = w/2;
-            let oy = h/2;
-            let temp = new gizmo(id, x, y, w, h, ox, oy, 0, 0, sprite);
-            parts.push(temp);
-          },1);
-          //alert(sprite.naturalWidth)
-          
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-    fileInput.click();
-  }
-  ////////////////////////////////////////////////////////////////////////
-  </script>
-  <script type='text/javascript' src='engine.js'></script>
-  
-  </body>
-  </html>
+var fileInput = document.createElement('input');
+fileInput.type = 'file';
+fileInput.accept = 'image/*';
+fileInput.addEventListener('change', function(event) {
+  var file = event.target.files[0];
+  if (file) {
+    var reader = new FileReader();
+    reader.onload = function(readerEvent) {
+      // Set the base64 value to the text box
+      // textBox.value = readframes[f]erEvent.target.result;
+      var fileData =  readerEvent.target.result
+      //gizmo = function(x, y, w, h, ox, oy, spr) {
+        var sprite = draw_set_image(fileData)
+        setTimeout(function(){
+          let id = file.name.split('.')[0]
+          let w = sprite.naturalWidth;
+          let h = sprite.naturalHeight;
+          let ox = w/2;
+          let oy = h/2;
+          let temp = new gizmo(id, x, y, w, h, ox, oy, 0, 0, sprite, true);
+          parts.push(temp);
+        },1);
+        //alert(sprite.naturalWidth)
+        
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  fileInput.click();
+}
+////////////////////////////////////////////////////////////////////////
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
