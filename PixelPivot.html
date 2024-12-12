@@ -27,7 +27,7 @@ body {
 #output_canvas {
   position:absolute;
   z-index:9999;
-  background-color: #f00;
+  //background-color: #f00;
   display:none
   
 }
@@ -115,7 +115,7 @@ body {
 <button class="menuButts" onclick = "save()" >SaveAnim8tion</button>
 <button class="menuButts" onmouseenter = "hide=true" onmouseleave = "hide=false" onclick = "setTimeout(function(){export_frames()},1000)" >SavePng</button>
 <input class="menuButts" id = "rotMod"style = "width: 4%;" id="mod" onwheel="adjustValue(event, this)" onchange = "rotMod = this.value"size=2 value=5 >
-<button class="menuButts" onclick="player(speedMod, this)">PLAY</button>
+<button class="menuButts" onmouseenter = "hide=true" onmouseleave = "hide=false" onclick="player(speedMod, this)">PLAY</button>
 <input class="menuButts" id = "speedMod"style = "width: 10%;" id="mod" onwheel="adjustValue(event, this)" onchange = "speedMod = this.value"size=2 value=5 >
 </div>
 <div id="frames">
@@ -197,6 +197,13 @@ function load(){
       reader.onload = function(e) {
         const fileContent = e.target.result;
         frames = JSON.parse(fileContent);  // Display as string
+        canvas.height = frames[0].h;
+        canvas.style.height = canvas.height + "px";
+        canvas.width = frames[0].w;
+        canvas.style.width = canvas.width + "px";
+        canvasWcenter = canvas.width/2;
+        canvasHcenter = canvas.height/2
+        
         var Fbuttons = document.querySelectorAll('.frameButts');
         for(let i = 1; i < Fbuttons.length; i++){
           if(frames[i]==null){
@@ -301,6 +308,8 @@ function player(speed, elem){
   });
   var frame = 1; // The frame to match
   framePick(frame);
+  // saves the inital canvas width and height to frames[0]
+frames[0]={w: canvas.width, h: canvas.height}
   function framePick(f){
     buttons.forEach((button) => {
     if (button.textContent === `FRAME${f}`) {
@@ -362,12 +371,14 @@ function wide(){
   canvas.style.width = canvas.width + "px";
   canvasWcenter = canvas.width/2;
   canvasHcenter = canvas.height/2
+  frames[0].w = canvas.width;
 }
 function tall(){
   canvas.height = document.getElementById("tall").value;
   canvas.style.height = canvas.height + "px";
   canvasWcenter = canvas.width/2;
   canvasHcenter = canvas.height/2
+  frames[0].h = canvas.height;
 }
 canMake=false
 master_rot=0
@@ -529,8 +540,11 @@ function input(){
 if(keyboard_check_pressed(vk_escape)){window.close()}
   wheelDir=0;
 }
-
-function export_frames(){   //////////DOESNT WORK YET AAAGGG!!!!!!!!!!!!!!!1
+// Global variable to control loading
+loading = null;
+function export_frames(){
+  loading = true
+  createLoadingOverlay("loading.gif");
   // puts relavent frames into a temp obect
   var temp = []
   for(let i = 1; i < frames.length; i++){
@@ -538,43 +552,82 @@ function export_frames(){   //////////DOESNT WORK YET AAAGGG!!!!!!!!!!!!!!!1
       temp.push(frames[i])
     }
   }
+  console.log(temp)
   // sets up offscreen canvas for image compilation
   var o_canvas = document.getElementById("output_canvas")
   var o_ctx = o_canvas.getContext("2d");
-  output_canvas.height = canvas.height;
-  output_canvas.width = canvas.width*temp.length;
-  output_canvas.style.width = output_canvas.width + "px";
-  output_canvas.style.height = output_canvas.height + "px";
+  o_canvas.height = canvas.height;
+  o_canvas.width = canvas.width*temp.length;
+  o_canvas.style.width = o_canvas.width + "px";
+  o_canvas.style.height = o_canvas.height + "px";
   // the temp array is filled with all the frames
   // draw all the temp objects
+  
   for(let i = 0; i < temp.length; i++){
     for(let p = 0; p < temp[i].length; p++){
       // this adjust for the sprite strip placement left to right frame1 - frame?
-      temp[i][p].x *= i+1;
+      temp[i][p].x += i*canvas.width;
       var img = new Image();
-      temp.src = temp[i][p].spr;
-      temp.onload = () => {
-      o_ctx.save();
-      o_ctx.translate(temp[i][p].x+temp[i][p].ox,temp[i][p].y+temp[i][p].oy);
-      o_ctx.rotate(temp[i][p].rot*Math.PI/180);//tu_r2d = -180 / Math.PI, tu_d2r = Math.PI / -180
-      o_ctx.drawImage(img,-temp[i][p].ox,-temp[i][p].oy,temp[i][p].w,temp[i][p].h);
-      o_ctx.restore()
+      img.src = temp[i][p].spr;
+      img.onload = () => {
+        o_ctx.save();
+        o_ctx.translate(temp[i][p].x+temp[i][p].ox,temp[i][p].y+temp[i][p].oy);
+        o_ctx.rotate(temp[i][p].rot*Math.PI/180);//tu_r2d = -180 / Math.PI, tu_d2r = Math.PI / -180
+        o_ctx.drawImage(img,-temp[i][p].ox,-temp[i][p].oy,temp[i][p].w,temp[i][p].h);
+        o_ctx.restore()
       }
     }
     
   }
-  /*
+  /**/
   setTimeout(() => {
+    loading = false;
     const dataUrl = o_canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = dataUrl;
     link.download = "sprite_strip.png";
     link.click();
-  }, 500); // Adjust timeout if images take longer to load
-  */
-  showSpriteStrip()
+  }, temp.length*1000); // Adjust timeout if images take longer to load
+  
+  // showSpriteStrip()
 }
 
+function createLoadingOverlay(gifUrl) {
+  // Check if the overlay already exists
+  let existingOverlay = document.getElementById("loading-overlay");
+  if (existingOverlay) return;
+  
+  // Create the overlay div
+  const overlay = document.createElement("div");
+  overlay.id = "loading-overlay";
+  
+  // Style the overlay
+  Object.assign(overlay.style, {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    width: "25%",
+    height: "25%",
+    transform: "translate(-50%, -50%)",
+  backgroundImage: `url(${gifUrl})`,
+    backgroundSize: "contain",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    zIndex: "10000",
+  });
+  
+  // Append the overlay to the body
+  document.body.appendChild(overlay);
+  
+  // Watch for changes to the loading variable
+  const checkLoading = setInterval(() => {
+    if (!loading) {
+      // Remove the overlay
+      overlay.remove();
+      clearInterval(checkLoading);
+    }
+  }, 100); // Check every 100ms
+}
 function showSpriteStrip(){
   var o_canvas = document.getElementById("output_canvas")
   o_canvas.style.display='block'
