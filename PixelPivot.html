@@ -1,5 +1,5 @@
+
 <!-- TO DO -->
-<!--3. add a visible porperty to parts objects -->
 <!--5. redo help screen -->
 <!--6. make a (offline capable)export gif option -->
 <!-- TO DO -->
@@ -43,7 +43,7 @@ body {
   left: 580px;
   top: 0px;
   width: 150px;
-  height: 95%;
+  height: 94.5%;
   background-color: blue;
   border-radius: 4px;
   border-width: 10px;
@@ -168,7 +168,8 @@ HOLD DOWN THE H KEY AND MOUSE WHEEL TO ADJUST ITS HEIGHT.
 HOLD DOWN THE D KEY ADJUST ITS DEPTH(KINDA BUGGY).
 PRESS THE DELETE KEY TO REMOVE THE SELECTED IMAGE.
 WHEN AN IMAGE IS SELECTED MOUSE WHEEL TO ROTATE IT ON ITS PIVOT.
-WITH NO IMAGE SELECTED MOUSE WHEEL TO ROTATE THE WHOLE FRAME.
+WITH NO IMAGE SELECTED PRESS R PLUS MOUSE WHEEL TO ROTATE THE WHOLE FRAME.
+WITH NO IMAGE SELECTED PRESS Z PLUS MOUSE WHEEL TO ZOOM THE CANVAS.
 USE THE ARROW KEYS TO MOVE THE WHOLE FRAME .
 WHEN THE CURRENT FRAME IS WHERE YOU WANT IT, CLICK THE SELCTED FRAME'S BUTTON TO SAVE ITS STATE.
 WHEN THE MOUSE IS NOT ON THE CANVAS PRESSING DELETE WILL UNSAVE THE FRAME.
@@ -184,6 +185,7 @@ movie = null
 movieFrame = 1
 frameNumber = 5
 speedMod=250
+sourceFrame = 1
 function save(){
   downloadJSON(JSON.stringify(frames))
 }
@@ -415,8 +417,10 @@ parts = [];
 pnum=0;
 rotMod = 5;
 hide=false;
+tempPart = null
 function start(){
   hide=false;
+  key_down[vk_ctrl] = false; // because idk grr
 }
 
 function loop(){
@@ -439,7 +443,7 @@ function draw(){
   master_rot=0;
   for(let i = 0; i < parts.length; i ++){
     
-    if(parts[i].visible==false){if(isPlaying==false){draw_set_alpha(0.2)}else{draw_set_alpha(0.0)}} draw_image(parts[i].spr,parts[i].x,parts[i].y,parts[i].w,parts[i].h,parts[i].rot,parts[i].ox,parts[i].oy);
+  if(parts[i].visible==false){if(isPlaying==false){draw_set_alpha(0.2)}else{draw_set_alpha(0.0)}} draw_image(parts[i].spr,parts[i].x,parts[i].y,parts[i].w,parts[i].h,parts[i].rot,parts[i].ox,parts[i].oy);
     draw_set_alpha(1)
     if(parts[i].sel==true && hide==false){
       draw_set_color(255,0,0);
@@ -459,9 +463,15 @@ function draw(){
 var offX = 0;
 var offY = 0;
 function input(){
-//if(keyboard_check(vk_space)){hide=false}else{hide=true};
-  var mx = mouse_x;
-  var my = mouse_y;
+  /////////////////////////////////////////////
+  ///ZOOM CORRECTION
+  //////////////////////////////////////////////
+  var rect = canvas.getBoundingClientRect()
+  var scaleX = canvas.width / rect.width;
+  var scaleY = canvas.height / rect.height;
+  var mx = mouse_x  * scaleX;
+  var my = mouse_y  * scaleY;
+  /////////////////////////////////////////////
   if(mx>canvas.width){
     if(keyboard_check_pressed(vk_delete)){
       if(frame>1){
@@ -474,10 +484,25 @@ function input(){
   if(mouse_check_pressed()){
     pnum = -1;
   }
-  
+  //copy / pastes current frames parts
+  if(keyboard_check(vk_ctrl)){
+    if( keyboard_check_pressed(vk_c)){
+      sourceFrame = frame
+    }
+    if( keyboard_check_pressed(vk_v)){
+      parts=[]
+      load_frame(sourceFrame)
+    }
+  }
   if(pnum<0 && keyboard_check(vk_ctrl)==false){
     if(mx>0 && mx<canvas.width && my>0 && my<canvas.height){
-      master_rot+=wheelDir *rotMod;//rotates the whole canvas!!
+      if(keyboard_check(vk_r)){
+        master_rot+=wheelDir *rotMod;//rotates the whole canvas!!
+      }
+      if(keyboard_check(vk_z)){
+        canvas.style.width = parseInt(canvas.style.width) +wheelDir *rotMod + 'px'
+        canvas.style.height = parseInt(canvas.style.height) +wheelDir *rotMod + 'px'
+      }
     }
   }
   for(let i = parts.length; i>0; i--){
@@ -502,6 +527,7 @@ function input(){
     if(inside(mx, my, parts[i-1].x, parts[i-1].y, parts[i-1].h, parts[i-1].w, parts[i-1].rot, parts[i-1].ox, parts[i-1].oy)){
       if(mouse_check_released()){
         pnum = i-1;
+        hide = false
       }
     }
     //pnum
@@ -522,6 +548,7 @@ function input(){
       if(mouse_check()){
         parts[i-1].x = mx - offX;
         parts[i-1].y = my - offY;
+        hide=true
       }else{
         offX = mx - parts[i-1].x;
         offY = my - parts[i-1].y;
@@ -557,7 +584,6 @@ function input(){
   }
   
   if(mouse_check_pressed()&&keyboard_check(vk_ctrl)){
-    key_down[vk_ctrl] = false; // because idk grr
     create_part(mx,my);
   }
 if(keyboard_check_pressed(vk_escape)){window.close()}
@@ -571,15 +597,15 @@ function make_canvas(w, h) {
   temp_canvas.zIndex = 99999;
   temp_canvas.style.display = 'none';
   document.body.appendChild(temp_canvas);
-  return {canvas:temp_canvas,ctx:temp_canvas.getContext('2d')};
+return {canvas:temp_canvas,ctx:temp_canvas.getContext('2d')};
 }
 function export_frames() {
   loading = true;
   createLoadingOverlay("loading.gif");
-
+  
   // Prepare the frames
   const temp = frames.filter((frame, index) => index > 0 && frame != null);
-
+  
   // Setup the output canvas
   const o_canvas = document.getElementById("output_canvas");
   const o_ctx = o_canvas.getContext("2d");
@@ -587,28 +613,28 @@ function export_frames() {
   o_canvas.width = canvas.width * temp.length;
   o_canvas.style.width = o_canvas.width + "px";
   o_canvas.style.height = o_canvas.height + "px";
-
+  
   const frameCanvases = [];
   let loadedFrames = 0;
-
+  
   // Create offscreen canvases for each frame
   for (let i = 0; i < temp.length; i++) {
-    const { canvas: frameCanvas, ctx: frameCtx } = make_canvas(canvas.width, canvas.height);
+  const { canvas: frameCanvas, ctx: frameCtx } = make_canvas(canvas.width, canvas.height);
     frameCanvases.push(frameCanvas);
-
+    
     // Draw each part of the frame
     for (let p = 0; p < temp[i].length; p++) {
       const part = temp[i][p];
       const img = new Image();
       img.src = part.spr;
-
+      
       img.onload = function () {
         if(part.visible==true){
-        frameCtx.save();
-        frameCtx.translate(part.x + part.ox, part.y + part.oy);
-        frameCtx.rotate((part.rot * Math.PI) / 180);
-        frameCtx.drawImage(img, -part.ox, -part.oy, part.w, part.h);
-        frameCtx.restore();
+          frameCtx.save();
+          frameCtx.translate(part.x + part.ox, part.y + part.oy);
+          frameCtx.rotate((part.rot * Math.PI) / 180);
+          frameCtx.drawImage(img, -part.ox, -part.oy, part.w, part.h);
+          frameCtx.restore();
         }
         // Check if all parts in this frame are loaded
         if (p === temp[i].length - 1) {
@@ -627,16 +653,16 @@ function drawSpriteStrip(frameCanvases, o_ctx, o_canvas) {
   for (let i = 0; i < frameCanvases.length; i++) {
     o_ctx.drawImage(frameCanvases[i], canvas.width * i, 0, canvas.width, canvas.height);
   }
-
+  
   // Save and download the sprite strip
   const dataUrl = o_canvas.toDataURL("image/png");
   const link = document.createElement("a");
   link.href = dataUrl;
   link.download = "sprite_strip.png";
   link.click();
-
+  
   // Show the output canvas
- // o_canvas.style.display = "block";
+  // o_canvas.style.display = "block";
   loading = false;
 }
 
@@ -756,6 +782,7 @@ fileInput.addEventListener('change', function(event) {
           let oy = h/2;
           let temp = new gizmo(id, x, y, w, h, ox, oy, 0, 0, sprite, true);
           parts.push(temp);
+          key_down[vk_ctrl] = false; // because idk grr
         },1);
         //alert(sprite.naturalWidth)
         
