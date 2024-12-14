@@ -92,7 +92,7 @@ if(source_h==null){source_h=h}
     ctx.translate(x+ox,y+oy);
     ctx.rotate(rot*Math.PI/180);//tu_r2d = -180 / Math.PI, tu_d2r = Math.PI / -180
     //ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-    ctx.drawImage(source_x, source_y, source_w, source_h, img,-ox,-oy,w,h);
+    ctx.drawImage(img,source_x, source_y, source_w, source_h, -ox,-oy,w,h);
     ctx.restore()
   }else{
     ctx.drawImage(img, x, y, w, h);
