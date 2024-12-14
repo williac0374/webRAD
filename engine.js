@@ -47,12 +47,12 @@ function play(sound){
 function requestFullscreen(element) {if (!element) {element = document.documentElement;}if (element.requestFullscreen) {element.requestFullscreen();} else if (element.webkitRequestFullscreen) {element.webkitRequestFullscreen();} else if (element.msRequestFullscreen) {element.msRequestFullscreen();} else if (element.mozRequestFullScreen) {element.mozRequestFullScreen();} else {console.error("Fullscreen API is not supported on this browser.");}}
 // detects fullscreen change
 document.addEventListener('fullscreenchange', function() {
-if (document.fullscreenElement) {
-  fullscreen=true;
-} else {
-  fullscreen=false;
-}
- 
+  if (document.fullscreenElement) {
+    fullscreen=true;
+  } else {
+    fullscreen=false;
+  }
+  
 });
 
 // draw text:
@@ -77,7 +77,13 @@ function draw_set_image(file){
   temp.src = file;
   return temp;
 }
-function draw_image(img,x,y,w,h,rot,ox,oy){
+function draw_image(img,x,y,w,h,rot,ox,oy,source_x,source_y,source_w,source_h){
+if(w==null){w=img.width}
+if(h==null){h=img.height}
+if(source_x==null){source_x=0}
+if(source_y==null){source_y=0}
+if(source_w==null){source_w=w}
+if(source_h==null){source_h=h}
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
   ctx.globalAlpha =master_alpha;
@@ -85,7 +91,8 @@ function draw_image(img,x,y,w,h,rot,ox,oy){
     ctx.save();
     ctx.translate(x+ox,y+oy);
     ctx.rotate(rot*Math.PI/180);//tu_r2d = -180 / Math.PI, tu_d2r = Math.PI / -180
-    ctx.drawImage(img,-ox,-oy,w,h);
+    //ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+    ctx.drawImage(source_x, source_y, source_w, source_h, img,-ox,-oy,w,h);
     ctx.restore()
   }else{
     ctx.drawImage(img, x, y, w, h);
@@ -272,8 +279,8 @@ function main() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     draw();
   }
-    loop();
-
+  loop();
+  
   //clears keypresses and mousepress
   for (let _k = 0; _k < all_keys_pressed.length; _k++) key_pressed[all_keys_pressed[_k]] = false;
   for (let _k = 0; _k < all_keys_released.length; _k++) key_released[all_keys_released[_k]] = false;
