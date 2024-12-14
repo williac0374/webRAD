@@ -764,9 +764,12 @@ function create_part(x,y){
 var fileInput = document.createElement('input');
 fileInput.type = 'file';
 fileInput.accept = 'image/*';
+fileInput.multiple = true; // Enable selection of multiple files
 fileInput.addEventListener('change', function(event) {
-  var file = event.target.files[0];
-  if (file) {
+  var files = event.target.files
+  
+  if (files[0]) {
+    for(let i = 0; i < files.length; i++){
     var reader = new FileReader();
     reader.onload = function(readerEvent) {
       // Set the base64 value to the text box
@@ -775,7 +778,7 @@ fileInput.addEventListener('change', function(event) {
       //gizmo = function(x, y, w, h, ox, oy, spr) {
         var sprite = draw_set_image(fileData)
         setTimeout(function(){
-          let id = file.name.split('.')[0]
+          let id = files[i].name.split('.')[0]
           let w = sprite.naturalWidth;
           let h = sprite.naturalHeight;
           let ox = w/2;
@@ -787,8 +790,9 @@ fileInput.addEventListener('change', function(event) {
         //alert(sprite.naturalWidth)
         
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(files[i]);
     }
+  }
   });
   fileInput.click();
 }
