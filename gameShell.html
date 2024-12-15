@@ -10,12 +10,12 @@ body{
   display: flex;
   justify-content: center;
   align-items: center;
-  //height: 100vh;
+  height: 100vh;
   background-color: black;
   
 }
 canvas {
-  //border: 2px solid #000;
+  // border: 2px solid #000;
   background-color: white;
 }
 </style>
@@ -25,60 +25,67 @@ canvas {
 <canvas id="canvas"></canvas>
 
 <script>
-wide = window.innerWidth;//screen.availWidth
-tall = window.innerHeight;//screen.availHeight
-canvas.height = tall;
-canvas.width = wide;
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+
+canvas.width=640;
+canvas.height=360;
+j_walk=null;joe=null
 
 function start(){
-  bd = draw_set_image('joeBackDrop.png')
-  f1 = draw_set_image('frame1.png')
-  bx = 45;
-  by = 290;
+  ///sets up sprites
+  b_drop = draw_set_image('joeBackDrop.png')
+  
+  j_walk =  draw_set_image('joe_walking.png');
+  j_walk.loaded=false;
+j_walk.onload = function () {j_walk.loaded=true};
+  
+  j_punch =  draw_set_image('joe_punching.png');
+  j_punch.loaded=false;
+j_punch.onload = function () {j_punch.loaded=true};
+  
+  j_kick =  draw_set_image('joe_kick.png');
+  j_kick.loaded=false;
+j_kick.onload = function () {j_kick.loaded=true};
+  
+  ///////////////////////////////////////////////////////////
+joe = {x:270, y:305-128, spr:j_walk, frm:0}
+  setInterval(function(){
+    joe.frm++
+    if(joe.frm>=joe.spr.width/joe.spr.height)joe.frm=0
+  },100);
+  setInterval(function(){
+    joe.spr=choose(j_walk,j_punch,j_kick)
+  },5000);
 }
-
 function loop(){
   input()
 }
 
 function draw(){
-  draw_image(bd,0,0,canvas.width,canvas.height)
-  draw_image(f1,bx,by,154,154)
-  draw_set_color(255,255,255)
-  draw_text(12, 12, 'mx: '+mouse_x+' , my: '+mouse_y, 24)
+  draw_image(b_drop,0,0,canvas.width,canvas.height)
+  draw_strip(joe.x,joe.y,joe.spr,joe.frm)
+  //draw_text(100,100,mouse_x+' , '+mouse_y,24)
 }
 
 function input(){
   if(mouse_check_pressed()){
-      bx=mouse_x
+    canvas.style.width = window.innerWidth+'px'
+    canvas.style.height = window.innerHeight+'px'
   }
+}
+
+function draw_strip(x,y,strip,frame){
+  scale = 0.75
+  if (strip.loaded==false) return;
+  let frame_width = strip.height
+  let frames = strip.width/strip.height
+  if(frame>=frames) frame=frames-1 // locks it at last frame if asked to draw more frames than it has
+  draw_image(strip,x,y,strip.height*scale,strip.height*scale,0,0,0,frame_width*frame,0,frame_width,frame_width)
   
-  /*
-  //adjusts for fullscreen mouse
-  mx = mouse_x / scaleX;
-  my = mouse_y / scaleY
-  if(mouse_check_pressed()){
-    targetX=mx;
-    //let scaleX = window.innerWidth / originalCanvasWidth;
-    //let scaleY = window.innerHeight / originalCanvasHeight;
-    if(!big){
-      big=true
-      
-      scaleX = window.innerWidth / og_width;
-      scaleY = window.innerHeight / og_height;
-      room_width = window.innerWidth;
-      room_viewport_width = window.innerWidth;
-      tu_canvas.width = window.innerWidth;
-      room_height = window.innerHeight;
-      room_viewport_height = window.innerHeight;
-      tu_canvas.height = window.innerHeight;
-      */
-      
-    }
-    
-    </script>
-    <script type='text/javascript' src='engine.js'></script>
-    
-    </body>
-    </html>
-    
+  
+}
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
