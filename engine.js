@@ -222,7 +222,7 @@ function mMove(e) {
   mouse_x -= canvas.offsetLeft;
   mouse_y -= canvas.offsetTop;
 };
-if(navigator.userAgent.includes("Android")){
+
   addEventListener("touchstart", function(e){
     var touch = e.touches[0];
     mouse_x = touch.clientX - canvas.offsetLeft;
@@ -251,7 +251,7 @@ if(navigator.userAgent.includes("Android")){
       mouse_released = true;
     }
   });
-}
+
 addEventListener("keydown", kDown, false);//16 is shift e.keyCode;
 addEventListener("keyup", kUp, false);
 addEventListener("mousedown",mDown,false);
