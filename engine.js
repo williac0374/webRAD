@@ -75,15 +75,28 @@ if(size==null){size=24}
 function draw_set_image(file){
   let temp = new Image();
   temp.src = file;
+  temp.loaded=false;
+temp.onload = function () {temp.loaded=true};
   return temp;
+}
+function draw_strip(x,y,strip,frame,w,h,rot,ox,oy){
+if (w==null){w=strip.width}
+if (h==null){h=strip.height}
+if(rot==null){rot=0}
+if(ox==null){ox=0}
+if(oy==null){oy=0}
+  if (strip.loaded==false) return;
+  let frames = w/h
+  if(frame>=frames) frame=frames-1 // locks it at last frame if asked to draw more frames than it has
+  draw_image(strip,x,y,h,h,rot,ox,oy,(w/frames)*frame,0,w/frames,h)
 }
 function draw_image(img,x,y,w,h,rot,ox,oy,source_x,source_y,source_w,source_h){
 if(w==null){w=img.width}
 if(h==null){h=img.height}
 if(source_x==null){source_x=0}
 if(source_y==null){source_y=0}
-if(source_w==null){source_w=w}
-if(source_h==null){source_h=h}
+if(source_w==null){source_w=img.width}
+if(source_h==null){source_h=img.height}
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
   ctx.globalAlpha =master_alpha;
@@ -166,7 +179,36 @@ function radtodeg(_degree) { return _degree * tu_r2d; }
 function keyboard_check(_key) { return key_down[_key]; }
 function keyboard_check_pressed(_key) { return key_pressed[_key]; }
 function keyboard_check_released(_key) { return key_released[_key]; }
-// mouse functions:
+// mouse touch functions:
+function swiped(sensitivy){
+  let dis = sensitivy;
+  let dir = 0;
+  let swiped=null;
+  if (typeof startX == "undefined") {
+    let startX = -100;
+    let startY= -100;
+    let endX = -100;
+    let endY = -100;
+  };
+  if(mouse_check_pressed()){
+    startX = mx;
+    startY = my;
+  };
+  if(mouse_check_released()){
+    swiped='none'
+    endX = mx;
+    endY = my;
+    if(point_distance(startX,startY,endX,endY)>dis){
+      dir = point_direction(startX,startY,endX,endY);
+    if(dir>45 && dir<135){swiped='up'};
+    if(dir<=45 && dir>=-45){swiped='right'};
+    if(dir<-45 && dir>-135){swiped='down'};
+    if(dir>=135 || dir<=-135){swiped='left'};
+    };
+  };
+  return swiped;
+};
+
 function mouse_check() { return mouse_down; }
 function mouse_check_pressed() { return mouse_pressed; }
 function mouse_check_released() { return mouse_released; }
@@ -222,7 +264,7 @@ function mMove(e) {
   mouse_x -= canvas.offsetLeft;
   mouse_y -= canvas.offsetTop;
 };
-
+if(navigator.userAgent.includes("Android")){
   addEventListener("touchstart", function(e){
     var touch = e.touches[0];
     mouse_x = touch.clientX - canvas.offsetLeft;
@@ -251,7 +293,7 @@ function mMove(e) {
       mouse_released = true;
     }
   });
-
+}
 addEventListener("keydown", kDown, false);//16 is shift e.keyCode;
 addEventListener("keyup", kUp, false);
 addEventListener("mousedown",mDown,false);
