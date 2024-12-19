@@ -191,13 +191,13 @@ function swiped(sensitivy){
     let endY = -100;
   };
   if(mouse_check_pressed()){
-    startX = mx;
-    startY = my;
+    startX = mouse_x;
+    startY = mouse_y;
   };
   if(mouse_check_released()){
     swiped='none'
-    endX = mx;
-    endY = my;
+    endX = mouse_x;
+    endY = mouse_y;
     if(point_distance(startX,startY,endX,endY)>dis){
       dir = point_direction(startX,startY,endX,endY);
     if(dir>45 && dir<135){swiped='up'};
@@ -243,56 +243,58 @@ function mDown(){
     mouse_down = true;
   }
 }
-function mUp(){
+function mDown() {
+  if (!mouse_down) {
+    mouse_down = true;
+    mouse_pressed = true;
+  } else {
+    mouse_down = true;
+  }
+}
+
+function mUp() {
   if (!mouse_down) {
     mouse_down = false;
     mouse_pressed = false;
-  }
-  else{
+  } else {
     mouse_down = false;
     mouse_released = true;
   }
 }
+
 function mMove(e) {
-  if (e.pageX != undefined && e.pageY != undefined) {
-    mouse_x = e.pageX;
-    mouse_y = e.pageY;
+  let x, y;
+  
+  // Check for touch input
+  if (e.touches) {
+    x = e.touches[0].clientX;
+    y = e.touches[0].clientY;
+  } 
+  // Otherwise use mouse input
+  else if (e.pageX != undefined && e.pageY != undefined) {
+    x = e.pageX;
+    y = e.pageY;
   } else {
-    mouse_x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-    mouse_y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+    x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+    y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
   }
-  mouse_x -= canvas.offsetLeft;
-  mouse_y -= canvas.offsetTop;
-};
-if(navigator.userAgent.includes("Android")){
-  addEventListener("touchstart", function(e){
-    var touch = e.touches[0];
-    mouse_x = touch.clientX - canvas.offsetLeft;
-    mouse_y = touch.clientY - canvas.offsetTop;
-    if (!mouse_down) {
-      mouse_down = true;
-      mouse_pressed = true;
-    }else{
-      mouse_down = true;
-    }
-  });
-  addEventListener("touchmove", function(e){
-    var touch = e.touches[0];
-    if(mouse_down==true){
-      mouse_x = touch.clientX - canvas.offsetLeft;
-      mouse_y = touch.clientY - canvas.offsetTop;
-    }
-  });
-  addEventListener("touchend", function(e){
-    if (!mouse_down) {
-      mouse_down = false;
-      mouse_pressed = false;
-    }
-    else{
-      mouse_down = false;
-      mouse_released = true;
-    }
-  });
+  /////////////////////////////////////////////
+  ///ZOOM CORRECTION
+  //////////////////////////////////////////////
+  var rect = canvas.getBoundingClientRect()
+  let scaleX = canvas.width / rect.width;
+  let scaleY = canvas.height / rect.height;
+  mouse_x = (x - canvas.offsetLeft)* scaleX;
+  mouse_y = (y - canvas.offsetTop)* scaleY;
+  e.preventDefault(); // Prevent scrolling behavior
+}
+function touchStart(e) {
+  mMove(e);
+  mDown();
+}
+
+function touchEnd(e) {
+  mUp();
 }
 addEventListener("keydown", kDown, false);//16 is shift e.keyCode;
 addEventListener("keyup", kUp, false);
@@ -300,6 +302,11 @@ addEventListener("mousedown",mDown,false);
 addEventListener("mouseup",mUp,false);
 addEventListener("mousemove",mMove,false);
 addEventListener('wheel', wheel,false);
+// Add touch event listeners with { passive: false }
+addEventListener("touchstart", touchStart, { passive: false });
+addEventListener("touchend", touchEnd, { passive: false });
+addEventListener("touchmove", mMove, { passive: false });
+
 function wheel(e) {
   if (e.deltaY < 0) {
     wheelDir++;
