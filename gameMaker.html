@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basic Template</title>
+<style>
+body{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: black;
+  
+}
+canvas {
+  // border: 2px solid #000;
+  background-color: white;
+}
+</style>
+</head>
+
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+
+canvas.width=320;
+canvas.height=640;
+/*
+
+game_sprite_example = draw_set_image('icon.png');
+
+
+game_object_example = {
+  name:"fred",
+  sprite:game_sprite_example,
+  x:0,
+  y:0,
+  w:32,
+  h:32,
+  dx:0,
+  dy:0,
+  rot:0,
+  ox:0,
+  oy:0,
+  move:function(){
+    this.x += this.dx;
+    this.y += this.dy;
+  },
+  draw:function(){
+    draw_image(this.sprite,this.x,this.y,this.w,this.h,this.rot,this.ox,this.oy)
+  },
+  loop:function(){
+    this.move();
+    this.draw();
+    
+  }
+}
+
+*/
+game_sprites = []
+game_objects = [];
+function make_obj(name,sprite,x,y,w,h,start_code,loop_code){
+  let temp = {
+    name:name,
+    sprite:sprite,
+    x:x,
+    y:y,
+    w:w,
+    h:h,
+    dx:0,
+    dy:0,
+    rot:0,
+    ox:0,
+    oy:0,
+    init:function(){
+      eval(start_code);
+    },
+    move:function(){
+      this.x += this.dx;
+      this.y += this.dy;
+    },
+    draw:function(){
+      draw_image(this.sprite,this.x,this.y,this.w,this.h,this.rot,this.ox,this.oy)
+    },
+    loop:function(){
+      eval(loop_code)
+      this.move();
+      this.draw();
+      
+    }
+    
+  }
+  temp.init();
+  game_objects.push(temp)
+}
+function start(){
+  var gob_id=0
+  game_sprite_example = draw_set_image('icon.png');
+  make_obj("fred",game_sprite_example,33,44,64,64,`this.ox=32;this.oy=32`,`
+  this.x = mouse_x;
+  this.y = mouse_y;
+  if(mouse_check()){
+  make_obj("object${gob_id++}",game_sprite_example,this.x,this.y,64,64,'this.ox=32;this.oy=32','this.rot+=irandom(10)')
+  }
+  `)
+  
+  
+  
+}
+function game_objects_loop(){
+  for(let i = game_objects.length-1; i >= 0 ; i--){
+    game_objects[i].loop()
+  }
+  document.title= game_objects.length+' objects  ,  fps: '+fps;
+}
+function loop(){
+  game_objects_loop()
+}
+
+function draw(){
+  
+}
+
+
+
+
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
