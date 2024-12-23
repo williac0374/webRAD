@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basic Template</title>
+<style>
+body{
+  margin: 0;
+  height: 100vh;
+  background-color: black;
+  
+}
+#sprites {
+  display: flex; 
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow: scroll;
+  position: absolute;
+  background-color: green;
+  width:40vw;
+  height:100vh;
+}
+canvas {
+  position: absolute;
+  //border: 1vw solid #0f0;
+  background-color: white;
+  left:40vw;
+  width:25vw;
+  height:100vh;
+}
+#objects {
+  position: absolute;
+  background-color: green;
+  left:62vw;
+  width:38vw;
+  height:100vh;
+}
+</style>
+</head>
+
+<body>
+<div id="sprites" onclick="create_sprite()"></div>
+<canvas id="canvas"></canvas>
+<div id="objects"></div>
+<script>
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+
+canvas.width=320;
+canvas.height=640
+function start(){
+  
+}
+
+function loop(){
+  
+}
+
+function draw(){
+  
+}
+
+function input(){
+  
+}
+
+function create_sprite(){
+  var fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    if (file) {
+      var reader = new FileReader();
+      reader.onload = function(readerEvent) {
+        // Set the base64 value to the text box
+        // textBox.value = readframes[f]erEvent.target.result;
+        var fileData =  readerEvent.target.result
+        var temp = draw_set_image(fileData)
+        temp.onload = function () {
+        // Create a new div element
+        const newDiv = document.createElement('div');
+        newDiv.style.width = `${temp.width}px`;
+        newDiv.style.height = `${temp.height}px`;
+        newDiv.style.backgroundImage = `url('${fileData}')`;
+          newDiv.file_name = fileData
+                    newDiv.onclick=function(){
+            alert(this.file_name)
+            
+            
+          };
+        newDiv.style.backgroundSize = 'cover'; // Ensure the image covers the div
+        newDiv.style.backgroundPosition = 'center'; // Center the image
+        newDiv.style.backgroundRepeat = 'no-repeat'; // Prevent image repetition
+        document.getElementById('sprites').appendChild(newDiv);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  fileInput.click();
+}
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
