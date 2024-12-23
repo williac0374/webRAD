@@ -12,7 +12,7 @@ body{
   
 }
 #sprites {
-  display: flex; 
+  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   overflow: scroll;
@@ -48,6 +48,7 @@ window.onerror = function(message, source, lineno, colno, error) {let code = loc
 
 canvas.width=320;
 canvas.height=640
+sprites = []
 function start(){
   
 }
@@ -78,21 +79,24 @@ function create_sprite(){
         var fileData =  readerEvent.target.result
         var temp = draw_set_image(fileData)
         temp.onload = function () {
-        // Create a new div element
-        const newDiv = document.createElement('div');
+          // Create a new div element
+          const newDiv = document.createElement('div');
         newDiv.style.width = `${temp.width}px`;
         newDiv.style.height = `${temp.height}px`;
         newDiv.style.backgroundImage = `url('${fileData}')`;
-          newDiv.file_name = fileData
-                    newDiv.onclick=function(){
-            alert(this.file_name)
+          newDiv.file_name = file.name;
+          newDiv.fileb64 = fileData
+          newDiv.onclick=function(event){
+           sprites.push({name:this.file_name,base64:this.fileb64})
+            event.stopPropagation(); // Prevent the event from reaching the parent
+            
             
             
           };
-        newDiv.style.backgroundSize = 'cover'; // Ensure the image covers the div
-        newDiv.style.backgroundPosition = 'center'; // Center the image
-        newDiv.style.backgroundRepeat = 'no-repeat'; // Prevent image repetition
-        document.getElementById('sprites').appendChild(newDiv);
+          newDiv.style.backgroundSize = 'cover'; // Ensure the image covers the div
+          newDiv.style.backgroundPosition = 'center'; // Center the image
+          newDiv.style.backgroundRepeat = 'no-repeat'; // Prevent image repetition
+          document.getElementById('sprites').appendChild(newDiv);
         }
       };
       reader.readAsDataURL(file);
