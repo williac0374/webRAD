@@ -76,8 +76,11 @@ function make_obj(name,sprite,x,y,w,h,start_code,loop_code){
     rot:0,
     ox:0,
     oy:0,
+    destroy:false,
+    start_code:start_code,
+    loop_code:loop_code,
     init:function(){
-      eval(start_code);
+      eval(this.start_code);
     },
     move:function(){
       this.x += this.dx;
@@ -87,7 +90,7 @@ function make_obj(name,sprite,x,y,w,h,start_code,loop_code){
       draw_image(this.sprite,this.x,this.y,this.w,this.h,this.rot,this.ox,this.oy)
     },
     loop:function(){
-      eval(loop_code)
+      eval(this.loop_code)
       this.move();
       this.draw();
       
@@ -97,39 +100,58 @@ function make_obj(name,sprite,x,y,w,h,start_code,loop_code){
   temp.init();
   game_objects.push(temp)
 }
-function start(){
-  var gob_id=0
-  game_sprite_example = draw_set_image('icon.png');
-  make_obj("fred",game_sprite_example,33,44,64,64,`this.ox=32;this.oy=32`,`
-  this.x = mouse_x;
-  this.y = mouse_y;
-  if(mouse_check()){
-  make_obj("object${gob_id++}",game_sprite_example,this.x,this.y,64,64,'this.ox=32;this.oy=32','this.rot+=irandom(10)')
+
+
+  function start(){
+    var gob_id=0
+    game_sprite_example = draw_set_image('flakey.png');
+    sprite_example = draw_set_image('loading.gif');
+    make_obj("fred1",game_sprite_example,33,144,64,64,``,'')
+    make_obj("fred3",game_sprite_example,63,44,64,64,``,'')
+    make_obj("super_fred",game_sprite_example,93,144,84,64,``,if_script(clicked,`this.sprite=sprite_example`))
+    make_obj("fred",game_sprite_example,133,44,32,32,``,clickMutate)
   }
-  `)
-  
-  
-  
-}
-function game_objects_loop(){
-  for(let i = game_objects.length-1; i >= 0 ; i--){
-    game_objects[i].loop()
+  function game_objects_loop(){
+    for(let i = game_objects.length-1; i >= 0 ; i--){
+      //checks if it is to be destroyed
+      if(game_objects[i].destroy==true){
+        game_objects.splice(i,1); // destroys object
+      }else{
+        game_objects[i].loop();
+      }
+    }
+    document.title= game_objects.length+' objects  ,  fps: '+fps;
   }
-  document.title= game_objects.length+' objects  ,  fps: '+fps;
-}
-function loop(){
-  game_objects_loop()
-}
-
-function draw(){
+  function loop(){
+    game_objects_loop()
+  }
   
+  function draw(){
+    
+  }
+  
+  ///////////////////////////////////////////////
+///SCRIPT ENGINE STUFF
+// CONDITIONAL HANDLER
+function if_script(){
+  var code = 'if('+arguments[0]+'){';
+    for(let i = 1; i < arguments.length; i ++){
+      code += arguments[i] + ';'
+    }
+  return code+'}';
 }
-
-
-
-
-</script>
-<script type='text/javascript' src='engine.js'></script>
-
-</body>
-</html>
+//EVENT SCRIPTS
+clicked = `inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, this.rot, this.ox, this.oy)&& mouse_check_pressed()`
+//ACTION SCRIPTS
+down = `this.y+=20`;
+right = `this.x+=20`;
+mutate = `this.w = irandom(128); this.h = irandom(128)`
+clickMutate = if_script(clicked,down,right,mutate)
+  
+  
+  </script>
+  <script type='text/javascript' src='engine.js'></script>
+  
+  </body>
+  </html>
+  
