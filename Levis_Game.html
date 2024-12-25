@@ -44,7 +44,7 @@ g_board = [
 [8,9,0,9,9,9,0,9,0,9,6],
 [0,9,0,8,6,0,0,9,0,9,0],
 [0,9,9,9,9,9,9,9,7,9,0],
-[0,0,5,0,0,0,0,0,0,9,0]
+[0,0,5,0,0,7,0,0,0,9,0]
 ]
 setTimeout(function(){
   var WIDTH = window.innerWidth;
@@ -54,10 +54,10 @@ setTimeout(function(){
   }else{ // phone in portrait mode
     canvas.style.width = WIDTH + 'px'
   }
-window.addEventListener('resize', () => {
+  window.addEventListener('resize', () => {
     console.log('Window resized');
-    console.log(`New dimensions: ${window.innerWidth} x ${window.innerHeight}`);
-});
+  console.log(`New dimensions: ${window.innerWidth} x ${window.innerHeight}`);
+  });
 },100)
 shake=false;
 
@@ -128,6 +128,7 @@ function draw_board(){
   draw_set_color(72,72,72);draw_set_linewidth(4);
   draw_line(360,220,380,220); draw_line(380,220,380,60);draw_line(380,60,340,60);draw_line(340,60,340,40);
   draw_line(80,180,60,180);draw_line(60,180,60,100);draw_line(60,100,40,100);
+  draw_line(220,480,220,460);draw_line(60,460,220,460);draw_line(60,380,60,460);draw_line(40,380,60,380);
   draw_line(200,220,220,220);draw_line(220,220,220,380);draw_line(220,380,140,380);draw_line(140,380,140,400);
   draw_line(360,460,400,500);
   // draw portal line arrow ends
@@ -135,6 +136,7 @@ function draw_board(){
   draw_line(40,100,50,90);draw_line(40,100,50,110);
   draw_line(140,400,130,390);draw_line(140,400,150,390);
   draw_line(340,40,330,50);draw_line(340,40,350,50);
+  draw_line(40,380,50,370);draw_line(40,380,50,390);
   draw_line(400,500,390,480);draw_line(400,500,390,500);
   // draws board dots
   draw_circle(100, 20, 3, false);
@@ -230,44 +232,56 @@ if(g_board[obj.y/40][obj.x/40]==7){
   obj.target.push({x:120,y:360})
   obj.target.push({x:120,y:400})
   }
+  if(obj.x==200 && obj.y==480){ // fifth portal
+    obj.target=[];
+    obj.dir = 6;
+  obj.target.push({x:200,y:440});
+  obj.target.push({x:160,y:440});
+  obj.target.push({x:120,y:440});
+  obj.target.push({x:80,y:440});
+  obj.target.push({x:40,y:440});
+  obj.target.push({x:40,y:400})
+  obj.target.push({x:40,y:360})
+  obj.target.push({x:0,y:360})
+  }
 }
-  
- //first zoom
+
+//first zoom
 if(obj.x==280 && obj.y==0){
   obj.target =[]
-  obj.target.push({x:240,y:0})
-  obj.target.push({x:200,y:0})
-  obj.target.push({x:160,y:0})
-  obj.target.push({x:120,y:0})
-  obj.target.push({x:80,y:0})
+obj.target.push({x:240,y:0})
+obj.target.push({x:200,y:0})
+obj.target.push({x:160,y:0})
+obj.target.push({x:120,y:0})
+obj.target.push({x:80,y:0})
   
   
 }
- //second zoom
+//second zoom
 if(obj.x==0 && obj.y==120){
   obj.target =[]
-  obj.target.push({x:0,y:160})
-  obj.target.push({x:0,y:200})
-  obj.target.push({x:0,y:240})
-  obj.target.push({x:0,y:280})
-  obj.target.push({x:0,y:320})
+obj.target.push({x:0,y:160})
+obj.target.push({x:0,y:200})
+obj.target.push({x:0,y:240})
+obj.target.push({x:0,y:280})
+obj.target.push({x:0,y:320})
   
   
 }
-  
-   //third zoom
+
+//third zoom
 if(obj.x==320 && obj.y==160){
-    obj.target =[]
+  obj.target =[]
   obj.dir = 9;
-  obj.target.push({x:320,y:120})
-  obj.target.push({x:320,y:80})
-  obj.target.push({x:280,y:80})
-  obj.target.push({x:240,y:80})
-  obj.target.push({x:200,y:80})
+obj.target.push({x:320,y:120})
+obj.target.push({x:320,y:80})
+obj.target.push({x:280,y:80})
+obj.target.push({x:240,y:80})
+obj.target.push({x:200,y:80})
   
 }
-  
-  
+
+
 }
 function warp_player1(){
 if (typeof tick == "undefined") {
