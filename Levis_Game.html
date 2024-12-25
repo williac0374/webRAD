@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basic Template</title>
+<style>
+body{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: black;
+  
+}
+canvas {
+  // border: 2px solid #000;
+  background-color: white;
+}
+</style>
+</head>
+
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+
+canvas.width=440;
+canvas.height=520;
+g_board = [
+[0,0,0,2,3,3,4,0,8,6,0],
+[0,9,9,9,9,9,9,9,9,9,0],
+[8,9,0,0,0,5,2,3,1,9,0],
+[0,9,0,9,9,9,9,9,4,9,0],
+[4,9,7,9,0,6,0,9,0,9,5],
+[3,9,0,9,7,9,0,9,7,9,0],
+[3,9,0,9,0,9,5,9,6,9,0],
+[2,9,0,9,0,9,0,9,0,9,0],
+[5,9,0,9,0,9,0,9,0,9,0],
+[8,9,0,9,9,9,0,9,0,9,6],
+[0,9,0,8,6,0,0,9,0,9,0],
+[0,9,9,9,9,9,9,9,7,9,0],
+[0,0,5,0,0,0,0,0,0,9,0]
+]
+//setTimeout(function(){alert(window.innerHeight)},100)
+game_sprites = []
+game_objects = [];
+function make_obj(name,sprite,x,y,w,h,start_code,loop_code){
+  let temp = {
+    name:name,
+    sprite:sprite,
+    x:x,
+    y:y,
+    w:w,
+    h:h,
+    dx:0,
+    dy:0,
+    rot:0,
+    ox:0,
+    oy:0,
+    destroy:false,
+    start_code:start_code,
+    loop_code:loop_code,
+    init:function(){
+      eval(this.start_code);
+    },
+    move:function(){
+      this.x += this.dx;
+      this.y += this.dy;
+    },
+    draw:function(){
+      draw_image(this.sprite,this.x,this.y,this.w,this.h,this.rot,this.ox,this.oy)
+    },
+    loop:function(){
+      eval(this.loop_code)
+      this.move();
+      this.draw();
+      
+    }
+    
+  }
+  temp.init();
+  game_objects.push(temp)
+}
+
+function draw_board(){
+  for( let y = 0 ; y < g_board.length; y++){
+    for( let x = 0 ; x < g_board[y].length; x++){
+      if(g_board[y][x]==0){// empty
+        draw_set_linewidth(4)
+        draw_set_color(0,0,0);
+        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+      }
+      if(g_board[y][x]==9){ // non space
+        draw_set_linewidth(4)
+        draw_set_color(214,67,75);
+        draw_rectangle(x*40, y*40, 40, 40,false,0,0,0)
+      }
+      if(g_board[y][x]==7){ // blue portal
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,128,0,128,128)
+        draw_set_linewidth(4)
+        draw_set_color(0,0,0);
+        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+      }
+      if(g_board[y][x]==8){ // red portal
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,0,0,128,128)
+        draw_set_linewidth(4)
+        draw_set_color(0,0,0);
+        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+      }
+      if(g_board[y][x]==6){ // monster
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,0,128,128,128)
+        draw_set_linewidth(4)
+        draw_set_color(0,0,0);
+        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+      }
+      if(g_board[y][x]==5){ // heart
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,256,0,128,128)
+        draw_set_linewidth(4)
+        draw_set_color(0,0,0);
+        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+      }
+      if(g_board[y][x]==4){ // zoomHead
+        if(y==0){
+          //draw_image(img,x,y,w,h,rot,ox,oy,s_x,s_y,s_w,s_h)
+          draw_image(l_game,x*40,y*40,40,40,90,0,40,128,128,128,128)
+        }
+        if(y==3){
+          //draw_image(img,x,y,w,h,rot,ox,oy,s_x,s_y,s_w,s_h)
+          draw_image(l_game,x*40,y*40,40,40,180,40,40,128,128,128,128)
+        }
+        if(y==4){
+          
+          draw_image(l_game,x*40,y*40,40,40,0,0,0,128,128,128,128)
+        }
+        draw_set_linewidth(4)
+        draw_set_color(0,0,0);
+        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+      }
+      if(g_board[y][x]==3){ // zoom
+      if(y==0 || y==2){draw_image(l_game,x*40,y*40,40,40,90,0,40,256,128,128,128)}
+      if(x==0){draw_image(l_game,x*40,y*40,40,40,0,0,0,256,128,128,128)}
+        draw_set_linewidth(4)
+        draw_set_color(0,0,0);
+        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+      }
+      if(g_board[y][x]==2){ // zoomTail
+      if(y==7){draw_image(l_game,x*40,y*40,40,40,0,0,0,128,256,128,128)}
+        //draw_image(img,x,y,w,h,rot,ox,oy,s_x,s_y,s_w,s_h)
+      if(y==0){draw_image(l_game,x*40,y*40,40,40,90,0,40,128,256,128,128)}
+      if(y==2){draw_image(l_game,x*40,y*40,40,40,90,0,40,128,256,128,128)}
+        draw_set_linewidth(4)
+        draw_set_color(0,0,0);
+        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+      }
+      if(g_board[y][x]==1){ // zoomCorner
+        draw_image(l_game,x*40,y*40,40,40,180,40,40,0,256,128,128)
+        draw_set_linewidth(4)
+        draw_set_color(0,0,0);
+        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+      }
+    }
+    
+  }
+}
+function start(){
+  l_game = draw_set_image('Levis_game.png');
+  
+  
+  var gob_id=0
+  game_sprite_example = draw_set_image('flakey.png');
+  sprite_example = draw_set_image('loading.gif');
+  make_obj("fred1",game_sprite_example,33,144,64,64,``,'')
+  make_obj("fred3",game_sprite_example,63,44,64,64,``,'')
+  make_obj("super_fred",game_sprite_example,93,144,84,64,``,if_script(clicked,`this.sprite=sprite_example`))
+  make_obj("fred",game_sprite_example,133,44,32,32,``,clickMutate)
+}
+function game_objects_loop(){
+  for(let i = game_objects.length-1; i >= 0 ; i--){
+    //checks if it is to be destroyed
+    if(game_objects[i].destroy==true){
+      game_objects.splice(i,1); // destroys object
+    }else{
+      game_objects[i].loop();
+    }
+  }
+  document.title= game_objects.length+' objects  ,  fps: '+fps;
+}
+function loop(){
+  
+}
+
+function draw(){
+  draw_board()
+}
+
+///////////////////////////////////////////////
+///SCRIPT ENGINE STUFF
+// CONDITIONAL HANDLER
+function if_script(){
+  var code = 'if('+arguments[0]+'){';
+    for(let i = 1; i < arguments.length; i ++){
+      code += arguments[i] + ';'
+    }
+  return code+'}';
+}
+//EVENT SCRIPTS
+clicked = `inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, this.rot, this.ox, this.oy)&& mouse_check_pressed()`
+//ACTION SCRIPTS
+down = `this.y+=20`;
+right = `this.x+=20`;
+mutate = `this.w = irandom(128); this.h = irandom(128)`
+clickMutate = if_script(clicked,down,right,mutate)
+
+
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
