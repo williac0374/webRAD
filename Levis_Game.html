@@ -52,7 +52,7 @@ var HEIGHT = window.innerHeight;
 
 // Maintain the canvas's aspect ratio
 var aspectRatio = canvas.width / canvas.height;
-
+canvas.style.position = 'absolute';
 if (WIDTH > HEIGHT) { // Landscape mode
     canvas.style.height = HEIGHT + 'px';
     canvas.style.width = (HEIGHT * aspectRatio) + 'px';
@@ -70,7 +70,7 @@ var HEIGHT = window.innerHeight;
 
 // Maintain the canvas's aspect ratio
 var aspectRatio = canvas.width / canvas.height;
-
+canvas.style.position = 'absolute';
 if (WIDTH > HEIGHT) { // Landscape mode
     canvas.style.height = HEIGHT + 'px';
     canvas.style.width = (HEIGHT * aspectRatio) + 'px';
