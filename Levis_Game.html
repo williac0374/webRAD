@@ -29,6 +29,31 @@ window.onerror = function(message, source, lineno, colno, error) {let code = loc
 
 canvas.width=440;
 canvas.height=520;
+function resizeCanvas() {
+    var WIDTH = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+    var HEIGHT = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+    // Maintain the canvas's aspect ratio
+    var aspectRatio = canvas.width / canvas.height;
+    canvas.style.position = 'absolute';
+    if (WIDTH > HEIGHT) { // Landscape mode
+        canvas.style.height = HEIGHT + 'px';
+        canvas.style.width = (HEIGHT * aspectRatio) + 'px';
+        canvas.style.top = '0px';
+        canvas.style.left = ((WIDTH - (HEIGHT * aspectRatio)) / 2) + 'px'; // Center horizontally
+    } else { // Portrait mode
+        canvas.style.width = WIDTH + 'px';
+        canvas.style.height = (WIDTH / aspectRatio) + 'px';
+        canvas.style.top = ((HEIGHT - (WIDTH / aspectRatio)) / 2) + 'px'; // Center vertically
+        canvas.style.left = '0px';
+    }
+}
+
+// Call resizeCanvas immediately on load and bind to resize event
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+
 g_board = [
 [0,0,0,2,3,3,4,0,8,6,0],
 [0,9,9,9,9,9,9,9,9,9,0],
@@ -44,44 +69,7 @@ g_board = [
 [0,9,9,9,9,9,9,9,7,9,0],
 [0,0,5,0,0,7,0,0,0,9,0]
 ]
-setTimeout(function(){
-  var WIDTH = window.innerWidth;
-  var HEIGHT = window.innerHeight;
-  
-  // Maintain the canvas's aspect ratio
-  var aspectRatio = canvas.width / canvas.height;
-  canvas.style.position = 'absolute';
-  if (WIDTH > HEIGHT) { // Landscape mode
-    canvas.style.height = HEIGHT + 'px';
-    canvas.style.width = (HEIGHT * aspectRatio) + 'px';
-    canvas.style.top = '0px';
-    canvas.style.left = ((WIDTH - (HEIGHT * aspectRatio)) / 2) + 'px'; // Center horizontally
-  } else { // Portrait mode
-    canvas.style.width = WIDTH + 'px';
-    canvas.style.height = (WIDTH / aspectRatio) + 'px';
-    canvas.style.top = ((HEIGHT - (WIDTH / aspectRatio)) / 2) + 'px'; // Center vertically
-    canvas.style.left = '0px';
-  }
-  window.addEventListener('resize', () => {
-    var WIDTH = window.innerWidth;
-    var HEIGHT = window.innerHeight;
-    
-    // Maintain the canvas's aspect ratio
-    var aspectRatio = canvas.width / canvas.height;
-    canvas.style.position = 'absolute';
-    if (WIDTH > HEIGHT) { // Landscape mode
-      canvas.style.height = HEIGHT + 'px';
-      canvas.style.width = (HEIGHT * aspectRatio) + 'px';
-      canvas.style.top = '0px';
-      canvas.style.left = ((WIDTH - (HEIGHT * aspectRatio)) / 2) + 'px'; // Center horizontally
-    } else { // Portrait mode
-      canvas.style.width = WIDTH + 'px';
-      canvas.style.height = (WIDTH / aspectRatio) + 'px';
-      canvas.style.top = ((HEIGHT - (WIDTH / aspectRatio)) / 2) + 'px'; // Center vertically
-      canvas.style.left = '0px';
-    }
-  });
-},100)
+
 shake=false;
 
 
