@@ -47,23 +47,41 @@ g_board = [
 [0,0,5,0,0,7,0,0,0,9,0]
 ]
 setTimeout(function(){
-  var WIDTH = window.innerWidth;
-  var HEIGHT = window.innerHeight;
-  if(WIDTH>HEIGHT){ // desktop of phone in landscape mode
-    canvas.style.height = HEIGHT + 'px'
-    canvas.style.top = '0px'
-  }else{ // phone in portrait mode
-    canvas.style.width = WIDTH + 'px'
-  }
+var WIDTH = window.innerWidth;
+var HEIGHT = window.innerHeight;
+
+// Maintain the canvas's aspect ratio
+var aspectRatio = canvas.width / canvas.height;
+
+if (WIDTH > HEIGHT) { // Landscape mode
+    canvas.style.height = HEIGHT + 'px';
+    canvas.style.width = (HEIGHT * aspectRatio) + 'px';
+    canvas.style.top = '0px';
+    canvas.style.left = ((WIDTH - (HEIGHT * aspectRatio)) / 2) + 'px'; // Center horizontally
+} else { // Portrait mode
+    canvas.style.width = WIDTH + 'px';
+    canvas.style.height = (WIDTH / aspectRatio) + 'px';
+    canvas.style.top = ((HEIGHT - (WIDTH / aspectRatio)) / 2) + 'px'; // Center vertically
+    canvas.style.left = '0px';
+}
   window.addEventListener('resize', () => {
-  var WIDTH = window.innerWidth;
-  var HEIGHT = window.innerHeight;
-  if(WIDTH>HEIGHT){ // desktop of phone in landscape mode
-    canvas.style.height = HEIGHT + 'px'
-    canvas.style.top = '0px'
-  }else{ // phone in portrait mode
-    canvas.style.width = WIDTH + 'px'
-  }
+var WIDTH = window.innerWidth;
+var HEIGHT = window.innerHeight;
+
+// Maintain the canvas's aspect ratio
+var aspectRatio = canvas.width / canvas.height;
+
+if (WIDTH > HEIGHT) { // Landscape mode
+    canvas.style.height = HEIGHT + 'px';
+    canvas.style.width = (HEIGHT * aspectRatio) + 'px';
+    canvas.style.top = '0px';
+    canvas.style.left = ((WIDTH - (HEIGHT * aspectRatio)) / 2) + 'px'; // Center horizontally
+} else { // Portrait mode
+    canvas.style.width = WIDTH + 'px';
+    canvas.style.height = (WIDTH / aspectRatio) + 'px';
+    canvas.style.top = ((HEIGHT - (WIDTH / aspectRatio)) / 2) + 'px'; // Center vertically
+    canvas.style.left = '0px';
+}
   });
 },100)
 shake=false;
