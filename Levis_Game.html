@@ -16,6 +16,8 @@ body{
 }
 canvas {
   // border: 2px solid #000;
+  //height:100vh;
+  
   background-color: white;
 }
 </style>
@@ -44,54 +46,27 @@ g_board = [
 [0,9,9,9,9,9,9,9,7,9,0],
 [0,0,5,0,0,0,0,0,0,9,0]
 ]
-//setTimeout(function(){alert(window.innerHeight)},100)
-game_sprites = []
-game_objects = [];
-function make_obj(name,sprite,x,y,w,h,start_code,loop_code){
-  let temp = {
-    name:name,
-    sprite:sprite,
-    x:x,
-    y:y,
-    w:w,
-    h:h,
-    dx:0,
-    dy:0,
-    rot:0,
-    ox:0,
-    oy:0,
-    destroy:false,
-    start_code:start_code,
-    loop_code:loop_code,
-    init:function(){
-      eval(this.start_code);
-    },
-    move:function(){
-      this.x += this.dx;
-      this.y += this.dy;
-    },
-    draw:function(){
-      draw_image(this.sprite,this.x,this.y,this.w,this.h,this.rot,this.ox,this.oy)
-    },
-    loop:function(){
-      eval(this.loop_code)
-      this.move();
-      this.draw();
-      
-    }
-    
+setTimeout(function(){
+  var WIDTH = window.innerWidth;
+  var HEIGHT = window.innerHeight;
+  if(WIDTH>HEIGHT){ // desktop of phone in landscape mode
+    canvas.style.height = HEIGHT + 'px'
+  }else{ // phone in portrait mode
+    canvas.style.width = WIDTH + 'px'
   }
-  temp.init();
-  game_objects.push(temp)
-}
+window.addEventListener('resize', () => {
+    console.log('Window resized');
+    console.log(`New dimensions: ${window.innerWidth} x ${window.innerHeight}`);
+});
+},100)
+shake=false;
+
 
 function draw_board(){
   for( let y = 0 ; y < g_board.length; y++){
     for( let x = 0 ; x < g_board[y].length; x++){
       if(g_board[y][x]==0){// empty
-        draw_set_linewidth(4)
-        draw_set_color(0,0,0);
-        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,0,384,128,128)
       }
       if(g_board[y][x]==9){ // non space
         draw_set_linewidth(4)
@@ -100,82 +75,259 @@ function draw_board(){
       }
       if(g_board[y][x]==7){ // blue portal
         draw_image(l_game,x*40,y*40,40,40,0,0,0,128,0,128,128)
-        draw_set_linewidth(4)
-        draw_set_color(0,0,0);
-        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,0,384,128,128)
       }
       if(g_board[y][x]==8){ // red portal
         draw_image(l_game,x*40,y*40,40,40,0,0,0,0,0,128,128)
-        draw_set_linewidth(4)
-        draw_set_color(0,0,0);
-        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,0,384,128,128)
       }
       if(g_board[y][x]==6){ // monster
-        draw_image(l_game,x*40,y*40,40,40,0,0,0,0,128,128,128)
-        draw_set_linewidth(4)
-        draw_set_color(0,0,0);
-        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,384,0,128,128)
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,0,384,128,128)
       }
       if(g_board[y][x]==5){ // heart
         draw_image(l_game,x*40,y*40,40,40,0,0,0,256,0,128,128)
-        draw_set_linewidth(4)
-        draw_set_color(0,0,0);
-        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,0,384,128,128)
       }
       if(g_board[y][x]==4){ // zoomHead
         if(y==0){
           //draw_image(img,x,y,w,h,rot,ox,oy,s_x,s_y,s_w,s_h)
-          draw_image(l_game,x*40,y*40,40,40,90,0,40,128,128,128,128)
+          draw_image(l_game,x*40,y*40,40,40,90,0,40,0,128,128,128)
         }
         if(y==3){
           //draw_image(img,x,y,w,h,rot,ox,oy,s_x,s_y,s_w,s_h)
-          draw_image(l_game,x*40,y*40,40,40,180,40,40,128,128,128,128)
+          draw_image(l_game,x*40,y*40,40,40,180,40,40,0,128,128,128)
         }
         if(y==4){
           
-          draw_image(l_game,x*40,y*40,40,40,0,0,0,128,128,128,128)
+          draw_image(l_game,x*40,y*40,40,40,0,0,0,0,128,128,128)
         }
-        draw_set_linewidth(4)
-        draw_set_color(0,0,0);
-        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,0,384,128,128)
       }
       if(g_board[y][x]==3){ // zoom
-      if(y==0 || y==2){draw_image(l_game,x*40,y*40,40,40,90,0,40,256,128,128,128)}
-      if(x==0){draw_image(l_game,x*40,y*40,40,40,0,0,0,256,128,128,128)}
-        draw_set_linewidth(4)
-        draw_set_color(0,0,0);
-        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+      if(y==0 || y==2){draw_image(l_game,x*40,y*40,40,40,90,0,40,128,128,128,128)}
+      if(x==0){draw_image(l_game,x*40,y*40,40,40,0,0,0,128,128,128,128)}
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,0,384,128,128)
       }
       if(g_board[y][x]==2){ // zoomTail
-      if(y==7){draw_image(l_game,x*40,y*40,40,40,0,0,0,128,256,128,128)}
+      if(y==7){draw_image(l_game,x*40,y*40,40,40,0,0,0,384,128,128,128)}
         //draw_image(img,x,y,w,h,rot,ox,oy,s_x,s_y,s_w,s_h)
-      if(y==0){draw_image(l_game,x*40,y*40,40,40,90,0,40,128,256,128,128)}
-      if(y==2){draw_image(l_game,x*40,y*40,40,40,90,0,40,128,256,128,128)}
-        draw_set_linewidth(4)
-        draw_set_color(0,0,0);
-        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+      if(y==0){draw_image(l_game,x*40,y*40,40,40,90,0,40,384,128,128,128)}
+      if(y==2){draw_image(l_game,x*40,y*40,40,40,90,0,40,384,128,128,128)}
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,0,384,128,128)
       }
       if(g_board[y][x]==1){ // zoomCorner
-        draw_image(l_game,x*40,y*40,40,40,180,40,40,0,256,128,128)
-        draw_set_linewidth(4)
-        draw_set_color(0,0,0);
-        draw_rectangle(x*40, y*40, 40, 40,true,0,0,0)
+        draw_image(l_game,x*40,y*40,40,40,180,40,40,256,128,128,128)
+        draw_image(l_game,x*40,y*40,40,40,0,0,0,0,384,128,128)
       }
     }
     
   }
+  
+  // draw board portal lines
+  draw_set_color(72,72,72);draw_set_linewidth(4);
+  draw_line(360,220,380,220); draw_line(380,220,380,60);draw_line(380,60,340,60);draw_line(340,60,340,40);
+  draw_line(80,180,60,180);draw_line(60,180,60,100);draw_line(60,100,40,100);
+  draw_line(200,220,220,220);draw_line(220,220,220,380);draw_line(220,380,140,380);draw_line(140,380,140,400);
+  draw_line(360,460,400,500);
+  // draw portal line arrow ends
+  draw_line(340,40,330,50);draw_line(340,40,350,50);
+  draw_line(40,100,50,90);draw_line(40,100,50,110);
+  draw_line(140,400,130,390);draw_line(140,400,150,390);
+  draw_line(340,40,330,50);draw_line(340,40,350,50);
+  draw_line(400,500,390,480);draw_line(400,500,390,500);
+  // draws board dots
+  draw_circle(100, 20, 3, false);
+  draw_circle(300, 20, 3, false);
+  draw_circle(220, 100, 3, false);
+  draw_circle(340, 180, 3, false);
+  draw_circle(20, 140, 3, false);
+  draw_circle(20, 340, 3, false);
+  // draws board text
+  //draw_centered_text(x, y, text, size)
+  draw_centered_text(200, 20, "Z    O    O    M	", 10)
+  draw_centered_text(300, 100, "Z    O    O    M	", 10)
+  draw_centered_text(20, 210, "Z", 14)
+  draw_centered_text(20, 230, "O", 14)
+  draw_centered_text(20, 250, "O", 14)
+  draw_centered_text(20, 270,"M", 14)
+  
+  draw_centered_text(180,172,"3", 14)
+  draw_centered_text(180,187,"MORE", 12)
+  
+  
+  draw_centered_text(180,260,"END", 14)
+  
+  //draw home image
+  draw_image(l_game,160,280,40,40,0,0,0,384,256,128,128)
+  draw_image(l_game,160,320,40,40,0,0,0,256,256,128,128)
+  draw_set_linewidth(1)
+  draw_rectangle(160,280, 40, 80,true,0,0,0)
+  
+  
+  
+  
+  
+  let mx = floor(mouse_x/5)*5;
+  let my = floor(mouse_y/5)*5;
+  draw_circle(mx, my, 4, false)
+  document.title=mx+' , '+my
 }
 function start(){
   l_game = draw_set_image('Levis_game.png');
-
+  player1 = {x:400,y:480,dir:12,sprite:l_game,hp:3,target:null,draw:function(){
+    draw_image(this.sprite,this.x,this.y,40,40,0,0,0,0,256,128,128)
+  }
 }
 
-function loop(){
+}
+function check(obj){
+//monster
+if(g_board[obj.y/40][obj.x/40]==6){
+  obj.hp--;
+shake=true;setTimeout(function(){shake=false},500)
+}
+//heart
+if(g_board[obj.y/40][obj.x/40]==5){
+  obj.hp++;
+}
+//blue portal
+if(g_board[obj.y/40][obj.x/40]==7){
+  if(obj.x==320 && obj.y==440){ // first portal
+    obj.target=[];
+    obj.dir = 12;
+  obj.target.push({x:400,y:480})
+  }
+  //320 200
+  if(obj.x==320 && obj.y==200){ // second portal
+    obj.target=[];
+    obj.dir = 9;
+  obj.target.push({x:360,y:200});
+  obj.target.push({x:360,y:160})
+  obj.target.push({x:360,y:120})
+  obj.target.push({x:360,y:80})
+  obj.target.push({x:360,y:40})
+  obj.target.push({x:320,y:40})
+  obj.target.push({x:320,y:0})
+  }
+  if(obj.x==80 && obj.y==160){ // third portal
+    obj.target=[];
+    obj.dir = 6;
+  obj.target.push({x:40,y:160});
+  obj.target.push({x:40,y:120})
+  obj.target.push({x:40,y:80})
+  obj.target.push({x:0,y:80})
+  }
+  if(obj.x==160 && obj.y==200){ // forth portal
+    obj.target=[];
+    obj.dir = 3;
+  obj.target.push({x:200,y:200});
+  obj.target.push({x:200,y:240});
+  obj.target.push({x:200,y:280});
+  obj.target.push({x:200,y:320});
+  obj.target.push({x:200,y:360});
+  obj.target.push({x:160,y:360})
+  obj.target.push({x:120,y:360})
+  obj.target.push({x:120,y:400})
+  }
+}
   
+ //first zoom
+if(obj.x==280 && obj.y==0){
+  obj.target =[]
+  obj.target.push({x:240,y:0})
+  obj.target.push({x:200,y:0})
+  obj.target.push({x:160,y:0})
+  obj.target.push({x:120,y:0})
+  obj.target.push({x:80,y:0})
+  
+  
+}
+ //second zoom
+if(obj.x==0 && obj.y==120){
+  obj.target =[]
+  obj.target.push({x:0,y:160})
+  obj.target.push({x:0,y:200})
+  obj.target.push({x:0,y:240})
+  obj.target.push({x:0,y:280})
+  obj.target.push({x:0,y:320})
+  
+  
+}
+  
+   //third zoom
+if(obj.x==320 && obj.y==160){
+    obj.target =[]
+  obj.dir = 9;
+  obj.target.push({x:320,y:120})
+  obj.target.push({x:320,y:80})
+  obj.target.push({x:280,y:80})
+  obj.target.push({x:240,y:80})
+  obj.target.push({x:200,y:80})
+  
+}
+  
+  
+}
+function warp_player1(){
+if (typeof tick == "undefined") {
+  tick = 0
+}else{
+  tick++
+}
+if(tick>20){
+  if(player1.target.length>0){
+    player1.x = player1.target[0].x;
+    player1.y = player1.target[0].y;
+    player1.target.splice(0,1)
+  }else{
+    player1.target=null
+  }
+  tick=0
+}
+}
+function move(obj){
+if(obj.dir==12){obj.y-=40}
+if(obj.dir==9){obj.x-=40}
+if(obj.dir==6){obj.y+=40}
+if(obj.dir==3){obj.x+=40}
+
+// turns left
+if(obj.x==400 && obj.y==0){obj.dir=9}
+if(obj.x==320 && obj.y==80){obj.dir=9}
+if(obj.x==240 && obj.y==160){obj.dir=9}
+//turns down
+if(obj.x==0 && obj.y==0){obj.dir=6}
+if(obj.x==80 && obj.y==80){obj.dir=6}
+if(obj.x==160 && obj.y==160){obj.dir=6}
+
+//turns right
+if(obj.x==0 && obj.y==480){obj.dir=3}
+if(obj.x==80 && obj.y==400){obj.dir=3}
+
+//turns up
+if(obj.x==320 && obj.y==480){obj.dir=12}
+if(obj.x==240 && obj.y==400){obj.dir=12}
+
+//end
+if(obj.x==160 && obj.y==320){alert('WINNER WINNER CHRISTMAS DINNER!!!!')}
+
+}
+function loop(){
+if(keyboard_check_pressed(vk_1)){move(player1)}
+if(keyboard_check_pressed(vk_h)){player1.x=400,player1.y=480,player1.dir=12,player1.hp=3}
+if(keyboard_check_pressed(vk_c)){check(player1)}
+if(player1.target!=null){warp_player1()}// it has some targets
+
+
 }
 
 function draw(){
-  draw_board()
+if(shake==true){
+canvas.style.transform = `translate(${irandom(3)}px, ${irandom(3)}px)`;
+}
+draw_board()
+player1.draw();
 }
 
 
