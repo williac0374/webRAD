@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Basic Template</title>
+<title>LEVI'S GAME</title>
 <style>
 body{
   margin: 0;
@@ -51,12 +51,19 @@ setTimeout(function(){
   var HEIGHT = window.innerHeight;
   if(WIDTH>HEIGHT){ // desktop of phone in landscape mode
     canvas.style.height = HEIGHT + 'px'
+    canvas.style.top = '0px'
   }else{ // phone in portrait mode
     canvas.style.width = WIDTH + 'px'
   }
   window.addEventListener('resize', () => {
-    console.log('Window resized');
-  console.log(`New dimensions: ${window.innerWidth} x ${window.innerHeight}`);
+  var WIDTH = window.innerWidth;
+  var HEIGHT = window.innerHeight;
+  if(WIDTH>HEIGHT){ // desktop of phone in landscape mode
+    canvas.style.height = HEIGHT + 'px'
+    canvas.style.top = '0px'
+  }else{ // phone in portrait mode
+    canvas.style.width = WIDTH + 'px'
+  }
   });
 },100)
 shake=false;
