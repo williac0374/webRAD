@@ -18,18 +18,24 @@ canvas {
   
   background-color: white;
 }
+
 </style>
 </head>
 
 <body>
+<canvas id="hud"></canvas>
 <canvas id="canvas"></canvas>
-
+<canvas id="menu"></canvas>
 <script>
 window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
 
 canvas.width=440;
 canvas.height=520;
 function resizeCanvas() {
+  var hud = document.getElementById("hud")
+  var menu = document.getElementById("menu")
+  hud.style.backgroundColor = 'rgb(168,168,168)'
+  menu.style.backgroundColor = 'rgb(72,72,72)'
   var WIDTH = window.visualViewport ? window.visualViewport.width : window.innerWidth;
   var HEIGHT = window.visualViewport ? window.visualViewport.height : window.innerHeight;
   
@@ -41,11 +47,27 @@ function resizeCanvas() {
     canvas.style.width = (HEIGHT * aspectRatio) + 'px';
     canvas.style.top = '0px';
     canvas.style.left = ((WIDTH - (HEIGHT * aspectRatio)) / 2) + 'px'; // Center horizontally
+    hud.style.position = 'absolute';
+    hud.style.left = '0px'
+    hud.style.height = '100px'
+    hud.style.width = parseInt(canvas.style.left) + 'px'
+    menu.style.position = 'absolute';
+    menu.style.left = parseInt(canvas.style.left)+parseInt(canvas.style.width)+'px'
+    menu.style.height = '100px'
+    menu.style.width = WIDTH - (parseInt(canvas.style.left)+parseInt(canvas.style.width)) + 'px'
   } else { // Portrait mode
     canvas.style.width = WIDTH + 'px';
     canvas.style.height = (WIDTH / aspectRatio) + 'px';
     canvas.style.top = ((HEIGHT - (WIDTH / aspectRatio)) / 2) + 'px'; // Center vertically
     canvas.style.left = '0px';
+    hud.style.position = 'absolute';
+    hud.style.left = parseInt(canvas.style.left) + 'px'
+    hud.style.height = parseInt(canvas.style.top) + 'px'
+    hud.style.width = parseInt(canvas.style.width) + 'px'
+    menu.style.position = 'absolute';
+    menu.style.left = parseInt(canvas.style.left) + 'px'
+    menu.style.height = HEIGHT - parseInt(canvas.style.height) + 'px'
+    menu.style.width = parseInt(canvas.style.width) + 'px'
   }
   c_left=canvas.style.left;
   c_top=canvas.style.top;
