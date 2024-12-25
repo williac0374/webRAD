@@ -30,23 +30,25 @@ window.onerror = function(message, source, lineno, colno, error) {let code = loc
 canvas.width=440;
 canvas.height=520;
 function resizeCanvas() {
-    var WIDTH = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-    var HEIGHT = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-
-    // Maintain the canvas's aspect ratio
-    var aspectRatio = canvas.width / canvas.height;
-    canvas.style.position = 'absolute';
-    if (WIDTH > HEIGHT) { // Landscape mode
-        canvas.style.height = HEIGHT + 'px';
-        canvas.style.width = (HEIGHT * aspectRatio) + 'px';
-        canvas.style.top = '0px';
-        canvas.style.left = ((WIDTH - (HEIGHT * aspectRatio)) / 2) + 'px'; // Center horizontally
-    } else { // Portrait mode
-        canvas.style.width = WIDTH + 'px';
-        canvas.style.height = (WIDTH / aspectRatio) + 'px';
-        canvas.style.top = ((HEIGHT - (WIDTH / aspectRatio)) / 2) + 'px'; // Center vertically
-        canvas.style.left = '0px';
-    }
+  var WIDTH = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+  var HEIGHT = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  
+  // Maintain the canvas's aspect ratio
+  var aspectRatio = canvas.width / canvas.height;
+  canvas.style.position = 'absolute';
+  if (WIDTH > HEIGHT) { // Landscape mode
+    canvas.style.height = HEIGHT + 'px';
+    canvas.style.width = (HEIGHT * aspectRatio) + 'px';
+    canvas.style.top = '0px';
+    canvas.style.left = ((WIDTH - (HEIGHT * aspectRatio)) / 2) + 'px'; // Center horizontally
+  } else { // Portrait mode
+    canvas.style.width = WIDTH + 'px';
+    canvas.style.height = (WIDTH / aspectRatio) + 'px';
+    canvas.style.top = ((HEIGHT - (WIDTH / aspectRatio)) / 2) + 'px'; // Center vertically
+    canvas.style.left = '0px';
+  }
+  c_left=canvas.style.left;
+  c_top=canvas.style.top;
 }
 
 // Call resizeCanvas immediately on load and bind to resize event
@@ -69,10 +71,6 @@ g_board = [
 [0,9,9,9,9,9,9,9,7,9,0],
 [0,0,5,0,0,7,0,0,0,9,0]
 ]
-
-shake=false;
-
-
 function draw_board(){
   for( let y = 0 ; y < g_board.length; y++){
     for( let x = 0 ; x < g_board[y].length; x++){
@@ -181,134 +179,160 @@ function draw_board(){
   
   
   
-  let mx = floor(mouse_x/5)*5;
-  let my = floor(mouse_y/5)*5;
-  draw_circle(mx, my, 4, false)
-  document.title=mx+' , '+my
+  
+  
 }
 function start(){
+  
   l_game = draw_set_image('Levis_game.png');
-  player1 = {x:400,y:480,dir:12,sprite:l_game,hp:3,target:null,draw:function(){
-    draw_image(this.sprite,this.x,this.y,40,40,0,0,0,0,256,128,128)
+  player1 = {x:400,y:480,dir:12,sprite:l_game,hp:3,target:null,shake:false,draw:function(){
+    let s = 0
+  if(this.shake==true){s = choose(-2,-1,0,1,2)}
+    draw_image(this.sprite,this.x+s,this.y+s,40,40,0,0,0,0,256,128,128)
   }
 }
-
+player2 = {x:400,y:480,dir:12,sprite:l_game,hp:3,target:null,shake:false,draw:function(){
+  let s = 0
+if(this.shake==true){s = choose(-2,-1,0,1,2)}
+  draw_image(this.sprite,this.x+s,this.y+s,40,40,0,0,0,128,256,128,128)
 }
+}
+}
+
 function check(obj){
 //monster
 if(g_board[obj.y/40][obj.x/40]==6){
-  obj.hp--;
-shake=true;setTimeout(function(){shake=false},500)
+obj.hp--;
+
+obj.shake=true;setTimeout(function(){obj.shake=false},500)
 }
 //heart
 if(g_board[obj.y/40][obj.x/40]==5){
-  obj.hp++;
+obj.hp++;
 }
 //blue portal
 if(g_board[obj.y/40][obj.x/40]==7){
-  if(obj.x==320 && obj.y==440){ // first portal
-    obj.target=[];
-    obj.dir = 12;
-  obj.target.push({x:400,y:480})
-  }
-  //320 200
-  if(obj.x==320 && obj.y==200){ // second portal
-    obj.target=[];
-    obj.dir = 9;
-  obj.target.push({x:360,y:200});
-  obj.target.push({x:360,y:160})
-  obj.target.push({x:360,y:120})
-  obj.target.push({x:360,y:80})
-  obj.target.push({x:360,y:40})
-  obj.target.push({x:320,y:40})
-  obj.target.push({x:320,y:0})
-  }
-  if(obj.x==80 && obj.y==160){ // third portal
-    obj.target=[];
-    obj.dir = 6;
-  obj.target.push({x:40,y:160});
-  obj.target.push({x:40,y:120})
-  obj.target.push({x:40,y:80})
-  obj.target.push({x:0,y:80})
-  }
-  if(obj.x==160 && obj.y==200){ // forth portal
-    obj.target=[];
-    obj.dir = 3;
-  obj.target.push({x:200,y:200});
-  obj.target.push({x:200,y:240});
-  obj.target.push({x:200,y:280});
-  obj.target.push({x:200,y:320});
-  obj.target.push({x:200,y:360});
-  obj.target.push({x:160,y:360})
-  obj.target.push({x:120,y:360})
-  obj.target.push({x:120,y:400})
-  }
-  if(obj.x==200 && obj.y==480){ // fifth portal
-    obj.target=[];
-    obj.dir = 6;
-  obj.target.push({x:200,y:440});
-  obj.target.push({x:160,y:440});
-  obj.target.push({x:120,y:440});
-  obj.target.push({x:80,y:440});
-  obj.target.push({x:40,y:440});
-  obj.target.push({x:40,y:400})
-  obj.target.push({x:40,y:360})
-  obj.target.push({x:0,y:360})
-  }
+if(obj.x==320 && obj.y==440){ // first portal
+  obj.target=[];
+  obj.dir = 12;
+obj.target.push({x:400,y:480})
+}
+//320 200
+if(obj.x==320 && obj.y==200){ // second portal
+  obj.target=[];
+  obj.dir = 9;
+obj.target.push({x:360,y:200});
+obj.target.push({x:360,y:160})
+obj.target.push({x:360,y:120})
+obj.target.push({x:360,y:80})
+obj.target.push({x:360,y:40})
+obj.target.push({x:320,y:40})
+obj.target.push({x:320,y:0})
+}
+if(obj.x==80 && obj.y==160){ // third portal
+  obj.target=[];
+  obj.dir = 6;
+obj.target.push({x:40,y:160});
+obj.target.push({x:40,y:120})
+obj.target.push({x:40,y:80})
+obj.target.push({x:0,y:80})
+}
+if(obj.x==160 && obj.y==200){ // forth portal
+  obj.target=[];
+  obj.dir = 3;
+obj.target.push({x:200,y:200});
+obj.target.push({x:200,y:240});
+obj.target.push({x:200,y:280});
+obj.target.push({x:200,y:320});
+obj.target.push({x:200,y:360});
+obj.target.push({x:160,y:360})
+obj.target.push({x:120,y:360})
+obj.target.push({x:120,y:400})
+}
+if(obj.x==200 && obj.y==480){ // fifth portal
+  obj.target=[];
+  obj.dir = 6;
+obj.target.push({x:200,y:440});
+obj.target.push({x:160,y:440});
+obj.target.push({x:120,y:440});
+obj.target.push({x:80,y:440});
+obj.target.push({x:40,y:440});
+obj.target.push({x:40,y:400})
+obj.target.push({x:40,y:360})
+obj.target.push({x:0,y:360})
+}
 }
 
 //first zoom
 if(obj.x==280 && obj.y==0){
-  obj.target =[]
+obj.target =[]
 obj.target.push({x:240,y:0})
 obj.target.push({x:200,y:0})
 obj.target.push({x:160,y:0})
 obj.target.push({x:120,y:0})
 obj.target.push({x:80,y:0})
-  
-  
+
+
 }
 //second zoom
 if(obj.x==0 && obj.y==120){
-  obj.target =[]
+obj.target =[]
 obj.target.push({x:0,y:160})
 obj.target.push({x:0,y:200})
 obj.target.push({x:0,y:240})
 obj.target.push({x:0,y:280})
 obj.target.push({x:0,y:320})
-  
-  
+
+
 }
 
 //third zoom
 if(obj.x==320 && obj.y==160){
-  obj.target =[]
-  obj.dir = 9;
+obj.target =[]
+obj.dir = 9;
 obj.target.push({x:320,y:120})
 obj.target.push({x:320,y:80})
 obj.target.push({x:280,y:80})
 obj.target.push({x:240,y:80})
 obj.target.push({x:200,y:80})
-  
-}
 
+}
+//end
+if(obj.x==160 && obj.y==320 || obj.x==160 && obj.y==280){setTimeout(function(){alert('WINNER WINNER CHRISTMAS DINNER!!!!')},100)}
 
 }
 function warp_player1(){
 if (typeof tick == "undefined") {
-  tick = 0
+tick = 0
 }else{
-  tick++
+tick++
 }
-if(tick>20){
-  if(player1.target.length>0){
-    player1.x = player1.target[0].x;
-    player1.y = player1.target[0].y;
-    player1.target.splice(0,1)
-  }else{
-    player1.target=null
-  }
-  tick=0
+if(tick>2){ // sets warp speed
+if(player1.target.length>0){
+  player1.x = player1.target[0].x;
+  player1.y = player1.target[0].y;
+  player1.target.splice(0,1)
+}else{
+  player1.target=null
+}
+tick=0
+}
+}
+function warp_player2(){
+if (typeof tick == "undefined") {
+tick = 0
+}else{
+tick++
+}
+if(tick>2){ // sets warp speed
+if(player2.target.length>0){
+  player2.x = player2.target[0].x;
+  player2.y = player2.target[0].y;
+  player2.target.splice(0,1)
+}else{
+  player2.target=null
+}
+tick=0
 }
 }
 function move(obj){
@@ -334,25 +358,58 @@ if(obj.x==80 && obj.y==400){obj.dir=3}
 if(obj.x==320 && obj.y==480){obj.dir=12}
 if(obj.x==240 && obj.y==400){obj.dir=12}
 
-//end
-if(obj.x==160 && obj.y==320){alert('WINNER WINNER CHRISTMAS DINNER!!!!')}
+
 
 }
+function roll(obj){
+var pass = false
+var d6 = choose(1,2,3,4,5,6)
+
+if(obj.x==160 && obj.y==240){if(d6>2){pass=true}}
+if(obj.x==160 && obj.y==160){if(d6>4){pass=true}}
+if(obj.x==200 && obj.y==160){if(d6>5){pass=true}}
+
+
+document.title='d6 : '+d6
+if(pass==false){
+for(let i = 0; i < d6; i++){
+  setTimeout(function(){
+    move(obj)
+  if(i==d6-1){setTimeout(function(){check(obj)},10)}
+  },400*(i+1));
+}
+}
+}
 function loop(){
-if(keyboard_check_pressed(vk_1)){move(player1)}
+if(keyboard_check_pressed(vk_r)&&keyboard_check(vk_1)){roll(player1)}
+if(keyboard_check_pressed(vk_r)&&keyboard_check(vk_2)){roll(player2)}
 if(keyboard_check_pressed(vk_h)){player1.x=400,player1.y=480,player1.dir=12,player1.hp=3}
 if(keyboard_check_pressed(vk_c)){check(player1)}
 if(player1.target!=null){warp_player1()}// it has some targets
-
-
+if(player2.target!=null){warp_player2()}// it has some targets
+let mx = floor(mouse_x/40)*40;
+let my = floor(mouse_y/40)*40;
+draw_set_color(0,0,255)
+draw_centered_text(20, 20, mx+','+my, 10)
+draw_set_linewidth(2);
+draw_set_linedash([8,2])
+draw_rectangle(mx,my, 40, 40, true,0,0,0)
+draw_set_linedash([])
+if(mouse_check_pressed()){
+if(keyboard_check(vk_1)){
+  player1.x = mx;player1.y = my;player1.dir=9;check(player1)
+}
+if(keyboard_check(vk_2)){
+  player2.x = mx;player2.y = my;player2.dir=9;check(player2)
+}
+}
 }
 
 function draw(){
-if(shake==true){
-canvas.style.transform = `translate(${irandom(3)}px, ${irandom(3)}px)`;
-}
+
 draw_board()
 player1.draw();
+player2.draw();
 }
 
 
