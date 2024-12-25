@@ -167,27 +167,9 @@ function draw_board(){
 }
 function start(){
   l_game = draw_set_image('Levis_game.png');
-  
-  
-  var gob_id=0
-  game_sprite_example = draw_set_image('flakey.png');
-  sprite_example = draw_set_image('loading.gif');
-  make_obj("fred1",game_sprite_example,33,144,64,64,``,'')
-  make_obj("fred3",game_sprite_example,63,44,64,64,``,'')
-  make_obj("super_fred",game_sprite_example,93,144,84,64,``,if_script(clicked,`this.sprite=sprite_example`))
-  make_obj("fred",game_sprite_example,133,44,32,32,``,clickMutate)
+
 }
-function game_objects_loop(){
-  for(let i = game_objects.length-1; i >= 0 ; i--){
-    //checks if it is to be destroyed
-    if(game_objects[i].destroy==true){
-      game_objects.splice(i,1); // destroys object
-    }else{
-      game_objects[i].loop();
-    }
-  }
-  document.title= game_objects.length+' objects  ,  fps: '+fps;
-}
+
 function loop(){
   
 }
@@ -195,24 +177,6 @@ function loop(){
 function draw(){
   draw_board()
 }
-
-///////////////////////////////////////////////
-///SCRIPT ENGINE STUFF
-// CONDITIONAL HANDLER
-function if_script(){
-  var code = 'if('+arguments[0]+'){';
-    for(let i = 1; i < arguments.length; i ++){
-      code += arguments[i] + ';'
-    }
-  return code+'}';
-}
-//EVENT SCRIPTS
-clicked = `inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, this.rot, this.ox, this.oy)&& mouse_check_pressed()`
-//ACTION SCRIPTS
-down = `this.y+=20`;
-right = `this.x+=20`;
-mutate = `this.w = irandom(128); this.h = irandom(128)`
-clickMutate = if_script(clicked,down,right,mutate)
 
 
 </script>
