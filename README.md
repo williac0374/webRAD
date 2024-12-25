@@ -12,3 +12,6 @@ https://williac0374.github.io/webRAD/gameShell.html
 <br>
 here is the PixelPivot
 https://williac0374.github.io/webRAD/PixelPivot.html
+<br>
+here is the board game
+https://williac0374.github.io/webRAD/Levis_Game.html
