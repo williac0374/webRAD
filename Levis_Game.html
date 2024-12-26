@@ -128,8 +128,6 @@ function draw_menu(){
   menu_ctx.drawImage(l_game,0,256,128,128,0,0,40,40);
   menu_ctx.drawImage(l_game,128,256,128,128,wide/2-20,0,40,40);
   if (d6.loaded==false) return;
-  
-  
   menu_ctx.drawImage(d6,dice_1*64,0,64,64,44,0,40,40);
   menu_ctx.drawImage(d6,dice_2*64,0,64,64,wide/2-20+44 ,0,40,40);
   menu_ctx.strokeStyle = "rgb(200,200,25)";
@@ -149,17 +147,17 @@ function draw_menu(){
     }
     
   };
-  menu.addEventListener("touchstart", function(){
-      menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if(turn==2){
-      dice_2=roll(player2)
-      turn = 1;
-    }else{
-      dice_1=roll(player1)
-      turn = 2;
+  menu.ontouchstart = function() {
+    menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (turn == 2) {
+        dice_2 = roll(player2);
+        turn = 1;
+    } else {
+        dice_1 = roll(player1);
+        turn = 2;
     }
-  
-  }, { passive: false });
+};
+
   menu.addEventListener("mousemove", (event) => {
     const rect = canvas.getBoundingClientRect();
     menu_x = event.clientX - rect.left;
