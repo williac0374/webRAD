@@ -149,6 +149,17 @@ function draw_menu(){
     }
     
   };
+  menu.addEventListener("touchstart", function(){
+      menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if(turn==2){
+      dice_2=roll(player2)
+      turn = 1;
+    }else{
+      dice_1=roll(player1)
+      turn = 2;
+    }
+  
+  }, { passive: false });
   menu.addEventListener("mousemove", (event) => {
     const rect = canvas.getBoundingClientRect();
     menu_x = event.clientX - rect.left;
