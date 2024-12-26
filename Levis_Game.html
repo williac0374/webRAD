@@ -103,11 +103,14 @@ menu_x = 0;
 menu_y = 0;
 dice_1 = 0;
 dice_2 = 0;
+dice_rolling1 = false;
+dice_rolling2 = false;
 turn = 1;
 function draw_hud(){
   var hud = document.getElementById("hud")
   var wide = parseInt(hud.style.width)
   var hud_ctx = hud.getContext("2d");
+  hud_ctx.clearRect(0, 0, canvas.width, canvas.height);
   hud_ctx.drawImage(l_game,0,256,128,128, 0,0,40,40);
   hud_ctx.drawImage(l_game,128,256,128,128, wide/2-20,0,40,40);
   for(let i = 0;i < player1.hp; i ++){
@@ -124,37 +127,40 @@ function draw_menu(){
   var wide = parseInt(menu.style.width)
   var tall = parseInt(menu.style.height)
   var menu_ctx = menu.getContext("2d");
+  menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (l_game.loaded==false) return;
   menu_ctx.drawImage(l_game,0,256,128,128,0,0,40,40);
   menu_ctx.drawImage(l_game,128,256,128,128,wide/2-20,0,40,40);
   if (d6.loaded==false) return;
-  menu_ctx.drawImage(d6,dice_1*64,0,64,64,44,0,40,40);
-  menu_ctx.drawImage(d6,dice_2*64,0,64,64,wide/2-20+44 ,0,40,40);
+if(dice_rolling1==true){dice_1=choose(1,2,3,4,5,6)}
+if(dice_rolling2==true){dice_2=choose(1,2,3,4,5,6)}
+  menu_ctx.drawImage(d6,(dice_1-1)*64,0,64,64,44,0,40,40);
+  menu_ctx.drawImage(d6,(dice_2-1)*64,0,64,64,wide/2-20+44 ,0,40,40);
   menu_ctx.strokeStyle = "rgb(200,200,25)";
   menu_ctx.lineWidth = 4
   menu_ctx.beginPath();
-  if(turn==1)menu_ctx.strokeRect( 0,0,wide*0.4,tall);
-  if(turn==2)menu_ctx.strokeRect( wide*0.4,0,wide*0.4,tall);
+  document.title = 'turn: '+turn
+if(turn==1){menu_ctx.strokeRect( 0,0,wide*0.4,tall)}
+if(turn==2){menu_ctx.strokeRect( wide*0.4,0,wide*0.4,tall)}
   menu_ctx.closePath();
   menu.onclick = function(){
     menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if(turn==2){
-      dice_2=roll(player2)
-      turn = 1;
-    }else{
-      dice_1=roll(player1)
-      turn = 2;
+    if(dice_rolling1==false&&dice_rolling2==false){
+      if(turn==2){
+      if(player2.hp>0){shaking(player2)}else{shaking(player1);turn=1}
+      }else{
+      if(player1.hp>0){shaking(player1)}else{shaking(player2);turn=2}
+      }
     }
-    
   };
   menu.ontouchstart = function() {
     menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (turn == 2) {
-      dice_2 = roll(player2);
-      turn = 1;
-    } else {
-      dice_1 = roll(player1);
-      turn = 2;
+    if(dice_rolling1==false&&dice_rolling2==false){
+      if(turn==2){
+      if(player2.hp>0){shaking(player2)}else{shaking(player1);turn=1}
+      }else{
+      if(player1.hp>0){shaking(player1)}else{shaking(player2);turn=2}
+      }
     }
   };
   
@@ -162,7 +168,6 @@ function draw_menu(){
     const rect = canvas.getBoundingClientRect();
     menu_x = event.clientX - rect.left;
     menu_y = event.clientY - rect.top;
-    document.title = menu_x
   });
 }
 function draw_board(){
@@ -283,13 +288,21 @@ function start(){
   player1 = {name:"PLAYER1",x:400,y:480,dir:12,sprite:l_game,hp:3,target:null,shake:false,draw:function(){
     let s = 0
   if(this.shake==true){s = choose(-2,-1,0,1,2)}
-    draw_image(this.sprite,this.x+s,this.y+s,40,40,0,0,0,0,256,128,128)
+    if(this.x==player2.x && this.y==player2.y){
+      draw_image(this.sprite,this.x+s-5,this.y+s-5,32,32,0,0,0,0,256,128,128)
+    }else{
+      draw_image(this.sprite,this.x+s,this.y+s,40,40,0,0,0,0,256,128,128)
+    }
   }
 }
 player2 = {name:"PLAYER2",x:400,y:480,dir:12,sprite:l_game,hp:3,target:null,shake:false,draw:function(){
   let s = 0
 if(this.shake==true){s = choose(-2,-1,0,1,2)}
-  draw_image(this.sprite,this.x+s,this.y+s,40,40,0,0,0,128,256,128,128)
+  if(this.x==player1.x && this.y==player1.y){
+    draw_image(this.sprite,this.x+s+12,this.y+s+12,32,32,0,0,0,128,256,128,128)
+  }else{
+    draw_image(this.sprite,this.x+s,this.y+s,40,40,0,0,0,128,256,128,128)
+  }
 }
 }
 }
@@ -303,7 +316,7 @@ obj.shake=true;setTimeout(function(){obj.shake=false},500)
 }
 //heart
 if(g_board[obj.y/40][obj.x/40]==5){
-obj.hp++;
+if(obj.hp<6){obj.hp++}
 }
 //blue portal
 if(g_board[obj.y/40][obj.x/40]==7){
@@ -396,7 +409,9 @@ obj.target.push({x:200,y:80})
 if(obj.x==160 && obj.y==320 || obj.x==160 && obj.y==280){setTimeout(function(){
 if(confirm(obj.name+' WINS!!  play again?')){location.reload()}else{window.close()}},100)
 }
-
+if(player1.hp==0 && player2.hp==0){setTimeout(function(){
+if(confirm('EVERYONE IS DEAD!!!!!!  play again?')){location.reload()}else{window.close()}},100)
+}
 }
 function warp_player1(){
 if (typeof tick == "undefined") {
@@ -406,11 +421,11 @@ tick++
 }
 if(tick>2){ // sets warp speed
 if(player1.target.length>0){
-player1.x = player1.target[0].x;
-player1.y = player1.target[0].y;
-player1.target.splice(0,1)
+  player1.x = player1.target[0].x;
+  player1.y = player1.target[0].y;
+  player1.target.splice(0,1)
 }else{
-player1.target=null
+  player1.target=null
 }
 tick=0
 }
@@ -423,11 +438,11 @@ tick++
 }
 if(tick>2){ // sets warp speed
 if(player2.target.length>0){
-player2.x = player2.target[0].x;
-player2.y = player2.target[0].y;
-player2.target.splice(0,1)
+  player2.x = player2.target[0].x;
+  player2.y = player2.target[0].y;
+  player2.target.splice(0,1)
 }else{
-player2.target=null
+  player2.target=null
 }
 tick=0
 }
@@ -458,6 +473,28 @@ if(obj.x==240 && obj.y==400){obj.dir=12}
 
 
 }
+function shaking(obj){
+if(obj.name=="PLAYER1"){
+dice_rolling1=true;
+setTimeout(function(){
+  dice_1=roll(player1);
+  dice_rolling1=false;
+if(player2.hp>0){turn = 2};
+  var menu_ctx = menu.getContext("2d");
+  menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
+},1000)
+}
+if(obj.name=="PLAYER2"){
+dice_rolling2=true;
+setTimeout(function(){
+  dice_2=roll(player2);
+  dice_rolling2=false;
+if(player1.hp>0){turn = 1};
+  var menu_ctx = menu.getContext("2d");
+  menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
+},1000)
+}
+}
 function roll(obj){
 var pass = false
 var d6 = choose(1,2,3,4,5,6)
@@ -466,21 +503,20 @@ if(obj.x==160 && obj.y==160){if(d6>4){pass=true}}
 if(obj.x==200 && obj.y==160){if(d6>5){pass=true}}
 if(pass==false){
 for(let i = 0; i < d6; i++){
-setTimeout(function(){
-  move(obj)
-if(i==d6-1){setTimeout(function(){check(obj)},10)}
-},400*(i+1));
+  setTimeout(function(){
+    move(obj)
+  if(i==d6-1){setTimeout(function(){check(obj)},10)}
+  },400*(i+1));
 }
 }
 return d6
 }
 function loop(){
-if(keyboard_check_pressed(vk_r)&&keyboard_check(vk_1)){roll(player1)}
-if(keyboard_check_pressed(vk_r)&&keyboard_check(vk_2)){roll(player2)}
 if(keyboard_check_pressed(vk_h)){player1.x=400,player1.y=480,player1.dir=12,player1.hp=3}
 if(keyboard_check_pressed(vk_c)){check(player1)}
 if(player1.target!=null){warp_player1()}// it has some targets
 if(player2.target!=null){warp_player2()}// it has some targets
+  /*
 let mx = floor(mouse_x/40)*40;
 let my = floor(mouse_y/40)*40;
 draw_set_color(0,0,255)
@@ -489,12 +525,14 @@ draw_set_linewidth(2);
 draw_set_linedash([8,2])
 draw_rectangle(mx,my, 40, 40, true,0,0,0)
 draw_set_linedash([])
+ */ 
+  
 if(mouse_check_pressed()){
 if(keyboard_check(vk_1)){
-player1.x = mx;player1.y = my;player1.dir=9;check(player1)
+  player1.x = mx;player1.y = my;player1.dir=12;check(player1)
 }
 if(keyboard_check(vk_2)){
-player2.x = mx;player2.y = my;player2.dir=9;check(player2)
+  player2.x = mx;player2.y = my;player2.dir=12;check(player2)
 }
 }
 }
