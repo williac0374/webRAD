@@ -98,6 +98,7 @@ g_board = [
 [0,0,5,0,0,7,0,0,0,9,0]
 ]
 l_game = null;
+d6 = null;
 function draw_hud(){
   var hud = document.getElementById("hud")
   var wide = parseInt(hud.style.width)
@@ -113,17 +114,17 @@ function draw_hud(){
 }
 function draw_menu(){
   /* */
-  d6 = draw_set_image('d_six.png')
+ 
   var menu = document.getElementById("menu")
   var wide = parseInt(menu.style.width)
   var menu_ctx = menu.getContext("2d");
   if (l_game.loaded==false) return;
-  //menu_ctx.drawImage(l_game,0,256,128,128,0,0,40,40);
- // menu_ctx.drawImage(l_game,128,256,128,128,wide/2-20,0,40,40);
+  menu_ctx.drawImage(l_game,0,256,128,128,0,0,40,40);
+  menu_ctx.drawImage(l_game,128,256,128,128,wide/2-20,0,40,40);
   if (d6.loaded==false) return;
   //context.drawImage(img, sx, sy, swidth, sheight, x, y, width, height)
-  menu_ctx.drawImage(d6,0,0,64,64,0,80,64,64);
-  menu_ctx.drawImage(d6,0,0,64,64,80,80,64,64);
+  menu_ctx.drawImage(d6,0,0,64,64,44,0,40,40);
+  menu_ctx.drawImage(d6,0,0,64,64,wide/2-20+44 ,0,40,40);
   
 }
 function draw_board(){
@@ -240,6 +241,7 @@ function draw_board(){
 function start(){
   
   l_game = draw_set_image('Levis_game.png');
+   d6 = draw_set_image('d_six.png')
   player1 = {x:400,y:480,dir:12,sprite:l_game,hp:3,target:null,shake:false,draw:function(){
     let s = 0
   if(this.shake==true){s = choose(-2,-1,0,1,2)}
