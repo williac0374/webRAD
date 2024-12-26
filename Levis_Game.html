@@ -99,6 +99,11 @@ g_board = [
 ]
 l_game = null;
 d6 = null;
+menu_x = 0;
+menu_y = 0;
+dice_1 = 0;
+dice_2 = 0;
+turn = 1;
 function draw_hud(){
   var hud = document.getElementById("hud")
   var wide = parseInt(hud.style.width)
@@ -114,18 +119,42 @@ function draw_hud(){
 }
 function draw_menu(){
   /* */
- 
+  
   var menu = document.getElementById("menu")
   var wide = parseInt(menu.style.width)
+  var tall = parseInt(menu.style.height)
   var menu_ctx = menu.getContext("2d");
   if (l_game.loaded==false) return;
   menu_ctx.drawImage(l_game,0,256,128,128,0,0,40,40);
   menu_ctx.drawImage(l_game,128,256,128,128,wide/2-20,0,40,40);
   if (d6.loaded==false) return;
-  //context.drawImage(img, sx, sy, swidth, sheight, x, y, width, height)
-  menu_ctx.drawImage(d6,0,0,64,64,44,0,40,40);
-  menu_ctx.drawImage(d6,0,0,64,64,wide/2-20+44 ,0,40,40);
   
+  
+  menu_ctx.drawImage(d6,dice_1*64,0,64,64,44,0,40,40);
+  menu_ctx.drawImage(d6,dice_2*64,0,64,64,wide/2-20+44 ,0,40,40);
+  menu_ctx.strokeStyle = "rgb(200,200,25)";
+  menu_ctx.lineWidth = 4
+  menu_ctx.beginPath();
+  if(turn==1)menu_ctx.strokeRect( 0,0,wide*0.4,tall);
+  if(turn==2)menu_ctx.strokeRect( wide*0.4,0,wide*0.4,tall);
+  menu_ctx.closePath();
+  menu.onclick = function(){
+    menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if(turn==2){
+      dice_2=roll(player2)
+      turn = 1;
+    }else{
+      dice_1=roll(player1)
+      turn = 2;
+    }
+    
+  };
+  menu.addEventListener("mousemove", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    menu_x = event.clientX - rect.left;
+    menu_y = event.clientY - rect.top;
+    document.title = menu_x
+  });
 }
 function draw_board(){
   for( let y = 0 ; y < g_board.length; y++){
@@ -241,7 +270,7 @@ function draw_board(){
 function start(){
   
   l_game = draw_set_image('Levis_game.png');
-   d6 = draw_set_image('d_six.png')
+  d6 = draw_set_image('d_six.png')
   player1 = {x:400,y:480,dir:12,sprite:l_game,hp:3,target:null,shake:false,draw:function(){
     let s = 0
   if(this.shake==true){s = choose(-2,-1,0,1,2)}
@@ -421,13 +450,9 @@ if(obj.x==240 && obj.y==400){obj.dir=12}
 function roll(obj){
 var pass = false
 var d6 = choose(1,2,3,4,5,6)
-
 if(obj.x==160 && obj.y==240){if(d6>2){pass=true}}
 if(obj.x==160 && obj.y==160){if(d6>4){pass=true}}
 if(obj.x==200 && obj.y==160){if(d6>5){pass=true}}
-
-
-document.title='d6 : '+d6
 if(pass==false){
 for(let i = 0; i < d6; i++){
   setTimeout(function(){
@@ -436,6 +461,7 @@ for(let i = 0; i < d6; i++){
   },400*(i+1));
 }
 }
+  return d6
 }
 function loop(){
 if(keyboard_check_pressed(vk_r)&&keyboard_check(vk_1)){roll(player1)}
