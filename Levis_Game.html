@@ -112,19 +112,19 @@ function draw_hud(){
   }
 }
 function draw_menu(){
-  /*
-  var d6 = draw_set_image('d_six.png')
+  /* */
+  d6 = draw_set_image('d_six.png')
   var menu = document.getElementById("menu")
-  var wide = parseInt(hud.style.width)
-  var menu_canvas = document.getElementById('menu');
-  var menu_ctx = menu_canvas.getContext("2d");
+  var wide = parseInt(menu.style.width)
+  var menu_ctx = menu.getContext("2d");
   if (l_game.loaded==false) return;
-  menu_ctx.drawImage(l_game,0,256,128,128, 0,0,40,40);
-  menu_ctx.drawImage(l_game,128,256,128,128, wide/2-20,0,40,40);
+  //menu_ctx.drawImage(l_game,0,256,128,128,0,0,40,40);
+ // menu_ctx.drawImage(l_game,128,256,128,128,wide/2-20,0,40,40);
   if (d6.loaded==false) return;
-  menu_ctx.drawImage(d6,0,0,64,64,42,12,64,64);
-  menu_ctx.drawImage(d6,0,0,64,64,42,12,64,64);
-  */
+  //context.drawImage(img, sx, sy, swidth, sheight, x, y, width, height)
+  menu_ctx.drawImage(d6,0,0,64,64,0,80,64,64);
+  menu_ctx.drawImage(d6,0,0,64,64,80,80,64,64);
+  
 }
 function draw_board(){
   for( let y = 0 ; y < g_board.length; y++){
@@ -466,7 +466,7 @@ draw_board()
 player1.draw();
 player2.draw();
 draw_hud();
-//draw_menu()
+draw_menu()
 }
 
 
