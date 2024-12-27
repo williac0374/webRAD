@@ -29,6 +29,24 @@ canvas {
 <script>
 window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
 
+let // ZzFXMicro - Zuper Zmall Zound Zynth - v1.3.1 by Frank Force ~ 1000 bytes
+zzfxV=.3,               // volume
+zzfxX=new AudioContext, // audio context
+zzfx=                   // play sound
+(p=1,k=.05,b=220,e=0,r=0,t=.1,q=0,D=1,u=0,y=0,v=0,z=0,l=0,E=0,A=0,F=0,c=0,w=1,m=0,B=0
+,N=0)=>{let M=Math,d=2*M.PI,R=44100,G=u*=500*d/R/R,C=b*=(1-k+2*k*M.random(k=[]))*d/R,
+g=0,H=0,a=0,n=1,I=0,J=0,f=0,h=N<0?-1:1,x=d*h*N*2/R,L=M.cos(x),Z=M.sin,K=Z(x)/4,O=1+K,
+X=-2*L/O,Y=(1-K)/O,P=(1+h*L)/2/O,Q=-(h+L)/O,S=P,T=0,U=0,V=0,W=0;e=R*e+9;m*=R;r*=R;t*=
+R;c*=R;y*=500*d/R**3;A*=d/R;v*=d/R;z*=R;l=R*l|0;p*=zzfxV;for(h=e+m+r+t+c|0;a<h;k[a++]
+=f*p)++J%(100*F|0)||(f=q?1<q?2<q?3<q?Z(g**3):M.max(M.min(M.tan(g),1),-1):1-(2*g/d%2+2
+)%2:1-4*M.abs(M.round(g/d)-g/d):Z(g),f=(l?1-B+B*Z(d*a/l):1)*(f<0?-1:1)*M.abs(f)**D*(a
+<e?a/e:a<e+m?1-(a-e)/m*(1-w):a<e+m+r?w:a<h-c?(h-a-c)/t*w:0),f=c?f/2+(c>a?0:(a<h-c?1:(
+h-a)/c)*k[a-c|0]/2/p):f,N?f=W=S*T+Q*(T=U)+P*(U=f)-Y*V-X*(V=W):0),x=(b+=u+=y)*M.cos(A*
+H++),g+=x+x*E*Z(a**5),n&&++n>z&&(b+=v,C+=v,n=0),!l||++I%l||(b=C,u=G,n=n||1);p=zzfxX.
+createBuffer(1,h,R);p.getChannelData(0).set(k);b=zzfxX.createBufferSource();
+b.buffer=p;b.connect(zzfxX.destination);b.start()}
+
+
 canvas.width=440;
 canvas.height=520;
 function resizeCanvas() {
@@ -146,7 +164,7 @@ if(turn==2){menu_ctx.strokeRect( wide*0.4,0,wide*0.4,tall)}
   menu.onclick = function(){
     menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
     if(dice_rolling1==false&&dice_rolling2==false){
-    if(player2.hp>0 && player1.hp>0){play(rollSFX)}
+    if(player2.hp>0 && player1.hp>0){zzfx(...[,,25,.05,.3,.5,3,9,-0.01,,,,,,13,.1,.2])}
       if(turn==2){
       if(player2.hp>0){shaking(player2)}else{shaking(player1);turn=1}
       }else{
@@ -284,14 +302,12 @@ function draw_board(){
 }
 
 function start(){
-  rollSFX = make_sound('leviSFX/roll.mp3',3)
-  moveSFX = make_sound('leviSFX/move.mp3',6)
-  painSFX = make_sound('leviSFX/damage.mp3',1)
-  slideSFX = make_sound('leviSFX/slide.mp3',1)
-  portalSFX = make_sound('leviSFX/portal.mp3',1)
-  heartsSFX = make_sound('leviSFX/hearts.mp3',1)
+
   winnerSFX = make_sound('leviSFX/victory.mp3',4)
   deathSFX = make_sound('leviSFX/death.mp3',4)
+  
+  
+  
   l_game = draw_set_image('Levis_game.png');
   d6 = draw_set_image('d_six.png')
   player1 = {name:"PLAYER1",x:400,y:480,dir:12,sprite:l_game,hp:3,target:null,shake:false,draw:function(){
@@ -304,6 +320,7 @@ function start(){
     }
   }
 }
+
 player2 = {name:"PLAYER2",x:400,y:480,dir:12,sprite:l_game,hp:3,target:null,shake:false,draw:function(){
   let s = 0
 if(this.shake==true){s = choose(-2,-1,0,1,2)}
@@ -320,17 +337,17 @@ function check(obj){
 //monster
 if(g_board[obj.y/40][obj.x/40]==6){
 obj.hp--;
-play(painSFX)
+zzfx(...[,,333,.01,0,.9,4,1.9,,,,,,.5,,.6]);
 obj.shake=true;setTimeout(function(){obj.shake=false},500)
 }
 //heart
 if(g_board[obj.y/40][obj.x/40]==5){
-play(heartsSFX)
+zzfx(...[,.1,75,.03,.08,.17,1,1.88,7.83,,,,,.4])
 if(obj.hp<6){obj.hp++}
 }
 //blue portal
 if(g_board[obj.y/40][obj.x/40]==7){
-play(portalSFX)
+zzfx(...[,,925,.04,.3,.6,1,.3,,6.27,-184,.09,.17])
 if(obj.x==320 && obj.y==440){ // first portal
   obj.target=[];
   obj.dir = 12;
@@ -390,7 +407,7 @@ obj.target.push({x:200,y:0})
 obj.target.push({x:160,y:0})
 obj.target.push({x:120,y:0})
 obj.target.push({x:80,y:0})
-play(slideSFX)
+zzfx(...[,,1e3,,,.5,,,,,99,.01,.03])
 
 }
 //second zoom
@@ -401,7 +418,7 @@ obj.target.push({x:0,y:200})
 obj.target.push({x:0,y:240})
 obj.target.push({x:0,y:280})
 obj.target.push({x:0,y:320})
-play(slideSFX)
+zzfx(...[,,1e3,,,.5,,,,,99,.01,.03])
 
 }
 
@@ -414,15 +431,15 @@ obj.target.push({x:320,y:80})
 obj.target.push({x:280,y:80})
 obj.target.push({x:240,y:80})
 obj.target.push({x:200,y:80})
-play(slideSFX)
+zzfx(...[,,1e3,,,.5,,,,,99,.01,.03])
 }
 //end
 if(obj.x==160 && obj.y==320 || obj.x==160 && obj.y==280){setTimeout(function(){
-play(winnerSFX)
+play(winnerSFX);
 setTimeout(function(){if(confirm(obj.name+' WINS!!  play again?')){location.reload()}else{window.close()}},100)},1);
 }
 if(player1.hp==0 && player2.hp==0){setTimeout(function(){
-  play(deathSFX)
+play(deathSFX);
 setTimeout(function(){if(confirm('EVERYONE IS DEAD!!!!!!  play again?')){location.reload()}else{window.close()}},100)},1);
 }
 }
@@ -461,7 +478,7 @@ tick=0
 }
 }
 function move(obj){
-play(moveSFX)
+zzfx(...[,,150,.05,,.05,,1.3,,,,,,3])
 if(obj.dir==12){obj.y-=40}
 if(obj.dir==9){obj.x-=40}
 if(obj.dir==6){obj.y+=40}
@@ -532,6 +549,11 @@ if(keyboard_check_pressed(vk_c)){check(player1)}
 if(player1.target!=null){warp_player1()}// it has some targets
 if(player2.target!=null){warp_player2()}// it has some targets
 
+  
+  //killemall
+  if(mouse_check_pressed()&&mouse_x>160 && mouse_x<200 && mouse_y>280 && mouse_y<320){
+    player1.hp=0;player2.hp=0;check(player1)
+  }
 let mx = floor(mouse_x/40)*40;
 let my = floor(mouse_y/40)*40;
 /*
@@ -541,7 +563,7 @@ draw_set_linewidth(2);
 draw_set_linedash([8,2])
 draw_rectangle(mx,my, 40, 40, true,0,0,0)
 draw_set_linedash([])
- */
+*/
 
 if(mouse_check_pressed()){
 if(keyboard_check(vk_1)){
