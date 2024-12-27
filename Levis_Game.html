@@ -164,7 +164,7 @@ if(turn==2){menu_ctx.strokeRect( wide*0.4,0,wide*0.4,tall)}
   menu.onclick = function(){
     menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
     if(dice_rolling1==false&&dice_rolling2==false){
-    zzfx(...[,,25,.05,.3,.5,3,9,-0.01,,,,,,13,.1,.2])​;
+    
       if(turn==2){
       if(player2.hp>0){shaking(player2)}else{shaking(player1);turn=1}
       }else{
@@ -505,7 +505,7 @@ if(obj.x==240 && obj.y==400){obj.dir=12}
 
 }
 function shaking(obj){
-
+zzfx(...[,,25,.05,.3,.5,3,9,-0.01,,,,,,13,.1,.2]);
 if(obj.name=="PLAYER1"){
 dice_rolling1=true;
 setTimeout(function(){
