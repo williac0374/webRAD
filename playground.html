@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basic Template</title>
+<style>
+body{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: black;
+  
+}
+canvas {
+  // border: 2px solid #000;
+  background-color: white;
+}
+</style>
+</head>
+
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+
+canvas.width=400;
+canvas.height=400;
+popup = {x:50,y:50,w:200,h:200,color:[255,280,0],draw:function(){
+draw_set_color(this.color[0],this.color[1],this.color[2])
+draw_rectangle(this.x, this.y, this.w, this.h,false,0,0,0)
+}}
+
+blue = {x:20,y:20,w:25,h:25,color:[0,0,255],parent:null,draw:function(){
+draw_set_color(this.color[0],this.color[1],this.color[2])
+  var modX = 0;
+  var modY = 0;
+  if(this.parent!=null){modX = this.parent.x;modY = this.parent.y}
+draw_rectangle(this.x+modX, this.y+modY, this.w, this.h,false,0,0,0)
+}}
+function start(){
+ 
+}
+
+function loop(){
+if(keyboard_check_pressed(vk_space)){blue.parent = popup}
+  
+  
+  popup.draw();
+  blue.draw();
+}
+
+function draw(){
+
+}
+
+
+
+
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
