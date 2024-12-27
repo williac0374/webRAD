@@ -146,6 +146,7 @@ if(turn==2){menu_ctx.strokeRect( wide*0.4,0,wide*0.4,tall)}
   menu.onclick = function(){
     menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
     if(dice_rolling1==false&&dice_rolling2==false){
+    if(player2.hp>0 && player1.hp>0){play(rollSFX)}
       if(turn==2){
       if(player2.hp>0){shaking(player2)}else{shaking(player1);turn=1}
       }else{
@@ -281,8 +282,16 @@ function draw_board(){
   
   
 }
+
 function start(){
-  
+  rollSFX = make_sound('leviSFX/roll.wav',3)
+  moveSFX = make_sound('leviSFX/move.mp3',6)
+  painSFX = make_sound('leviSFX/damage.wav',1)
+  slideSFX = make_sound('leviSFX/slide.mp3',1)
+  portalSFX = make_sound('leviSFX/portal.mp3',1)
+  heartsSFX = make_sound('leviSFX/hearts.wav',1)
+  winnerSFX = make_sound('leviSFX/victory.mp3',4)
+  deathSFX = make_sound('leviSFX/death.mp3',4)
   l_game = draw_set_image('Levis_game.png');
   d6 = draw_set_image('d_six.png')
   player1 = {name:"PLAYER1",x:400,y:480,dir:12,sprite:l_game,hp:3,target:null,shake:false,draw:function(){
@@ -311,15 +320,17 @@ function check(obj){
 //monster
 if(g_board[obj.y/40][obj.x/40]==6){
 obj.hp--;
-
+play(painSFX)
 obj.shake=true;setTimeout(function(){obj.shake=false},500)
 }
 //heart
 if(g_board[obj.y/40][obj.x/40]==5){
+play(heartsSFX)
 if(obj.hp<6){obj.hp++}
 }
 //blue portal
 if(g_board[obj.y/40][obj.x/40]==7){
+play(portalSFX)
 if(obj.x==320 && obj.y==440){ // first portal
   obj.target=[];
   obj.dir = 12;
@@ -379,7 +390,7 @@ obj.target.push({x:200,y:0})
 obj.target.push({x:160,y:0})
 obj.target.push({x:120,y:0})
 obj.target.push({x:80,y:0})
-
+play(slideSFX)
 
 }
 //second zoom
@@ -390,7 +401,7 @@ obj.target.push({x:0,y:200})
 obj.target.push({x:0,y:240})
 obj.target.push({x:0,y:280})
 obj.target.push({x:0,y:320})
-
+play(slideSFX)
 
 }
 
@@ -403,14 +414,16 @@ obj.target.push({x:320,y:80})
 obj.target.push({x:280,y:80})
 obj.target.push({x:240,y:80})
 obj.target.push({x:200,y:80})
-
+play(slideSFX)
 }
 //end
 if(obj.x==160 && obj.y==320 || obj.x==160 && obj.y==280){setTimeout(function(){
-if(confirm(obj.name+' WINS!!  play again?')){location.reload()}else{window.close()}},100)
+play(winnerSFX)
+setTimeout(function(){if(confirm(obj.name+' WINS!!  play again?')){location.reload()}else{window.close()}},100)},1);
 }
 if(player1.hp==0 && player2.hp==0){setTimeout(function(){
-if(confirm('EVERYONE IS DEAD!!!!!!  play again?')){location.reload()}else{window.close()}},100)
+  play(deathSFX)
+setTimeout(function(){if(confirm('EVERYONE IS DEAD!!!!!!  play again?')){location.reload()}else{window.close()}},100)},1);
 }
 }
 function warp_player1(){
@@ -448,6 +461,7 @@ tick=0
 }
 }
 function move(obj){
+play(moveSFX)
 if(obj.dir==12){obj.y-=40}
 if(obj.dir==9){obj.x-=40}
 if(obj.dir==6){obj.y+=40}
@@ -474,6 +488,7 @@ if(obj.x==240 && obj.y==400){obj.dir=12}
 
 }
 function shaking(obj){
+
 if(obj.name=="PLAYER1"){
 dice_rolling1=true;
 setTimeout(function(){
@@ -516,17 +531,18 @@ if(keyboard_check_pressed(vk_h)){player1.x=400,player1.y=480,player1.dir=12,play
 if(keyboard_check_pressed(vk_c)){check(player1)}
 if(player1.target!=null){warp_player1()}// it has some targets
 if(player2.target!=null){warp_player2()}// it has some targets
-  /*
+
 let mx = floor(mouse_x/40)*40;
 let my = floor(mouse_y/40)*40;
+/*
 draw_set_color(0,0,255)
 draw_centered_text(20, 20, mx+','+my, 10)
 draw_set_linewidth(2);
 draw_set_linedash([8,2])
 draw_rectangle(mx,my, 40, 40, true,0,0,0)
 draw_set_linedash([])
- */ 
-  
+ */
+
 if(mouse_check_pressed()){
 if(keyboard_check(vk_1)){
   player1.x = mx;player1.y = my;player1.dir=12;check(player1)
