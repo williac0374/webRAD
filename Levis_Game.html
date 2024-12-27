@@ -164,7 +164,7 @@ if(turn==2){menu_ctx.strokeRect( wide*0.4,0,wide*0.4,tall)}
   menu.onclick = function(){
     menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
     if(dice_rolling1==false&&dice_rolling2==false){
-    if(player2.hp>0 && player1.hp>0){zzfx(...[,,25,.05,.3,.5,3,9,-0.01,,,,,,13,.1,.2])}
+    zzfx(...[,,25,.05,.3,.5,3,9,-0.01,,,,,,13,.1,.2])​;
       if(turn==2){
       if(player2.hp>0){shaking(player2)}else{shaking(player1);turn=1}
       }else{
