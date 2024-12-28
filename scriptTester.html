@@ -42,14 +42,14 @@ let yellow = {
     draw_set_color(this.col[0], this.col[1], this.col[2]);
     draw_rectangle(this.x+this.modX, this.y+this.modY, this.w, this.h, false, 0, 0, 0);
   },
-  behaviours: ['show','click down 44','timeroff 2000, shake 3'],
+  behaviours: ['show','click down 44','timeroff 3000, down 0.1, right 0.1, shake 4'],
   loop: function () {
     for (let i = this.behaviours.length-1; i >=0; i--) {
       runB(this,this.behaviours[i])
     }
   },
 };
-
+//,'timeron 3000, down 0.1, right 0.1'
 tick=0;
 function runB(obj,b){
   var value = parseFloat(b.replace(/[^\d.-]/g, ""))
@@ -68,20 +68,38 @@ function runB(obj,b){
     b=''
   }
   if(b.includes('timeroff')){
-   var temp = b.split(',')
-   var v = parseFloat(temp[0].replace(/[^\d.-]/g, "")) // milliseconds till off
-   b = temp[1];
-   obj.behaviours.push(b)
-   let beh = b.replace(/[\s0-9.\-]/g, "");
-   setTimeout(function(){delB(obj,beh)},v)
-  
-  b=''
+    var temp = b.split(',')
+    var v = parseFloat(temp[0].replace(/[^\d.-]/g, "")) // milliseconds till off
+    delB(obj,'timeroff')
+    b = temp[1];
+    for(let i = 1; i < temp.length; i ++){
+      obj.behaviours.push(temp[i])
+    }
+    for(let i = 1; i < temp.length; i ++){
+     let beh = temp[i].replace(/[\s0-9.\-]/g, "");
+  setTimeout(function(){delB(obj,beh)},v)     
+    }
+
+    
+    b=''
   }
-  
+  if(b.includes('timeron')){
+    var og = b
+    var temp = b.split(',')
+    var v = parseFloat(temp[0].replace(/[^\d.-]/g, "")) // milliseconds till on
+    delB(obj,'timeron')
+    var beh = temp[1]; // the remaining actions
+    setTimeout(function(){
+      for(let i = 1; i < temp.length; i ++){
+        obj.behaviours.push(temp[i])
+      }
+    },v)
+    b=''
+  }
 if(b.includes('right')){obj.x += value}
 if(b.includes('down')){obj.y += value}
 if(b.includes('show')){obj.draw()}
- if(b.includes('shake')){ 
+  if(b.includes('shake')){
     obj.modX=random(value)-value/2;
     obj.modY=random(value)-value/2;
   }
@@ -103,7 +121,11 @@ function start(){
 function loop(){
   
   yellow.loop();
-if(keyboard_check_pressed(vk_space)){ delB(yellow,'shake')  };
+  if(keyboard_check_pressed(vk_space)){
+    var actions = ['down 0.1','right 0.2']
+  for(let i = 0; i < actions.length; i++){yellow.behaviours.push(actions[i])}
+    
+  };
   
   
   
