@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basic Template</title>
+<style>
+body{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: black;
+  
+}
+canvas {
+  // border: 2px solid #000;
+  background-color: white;
+}
+</style>
+</head>
+
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+
+canvas.width=400;
+canvas.height=400;
+
+let yellow = {
+  x: 0,
+  modX:0,
+  y: 0,
+  modY:0,
+  w: 100,
+  h: 100,
+  col: [128, 128, 0],
+  draw: function (modX,modY) {
+    draw_set_color(this.col[0], this.col[1], this.col[2]);
+    draw_rectangle(this.x+this.modX, this.y+this.modY, this.w, this.h, false, 0, 0, 0);
+  },
+  behaviours: ['show','click down 44','timeroff 2000, shake 3'],
+  loop: function () {
+    for (let i = this.behaviours.length-1; i >=0; i--) {
+      runB(this,this.behaviours[i])
+    }
+  },
+};
+
+tick=0;
+function runB(obj,b){
+  var value = parseFloat(b.replace(/[^\d.-]/g, ""))
+  if(b.includes('click')){
+    let mx = mouse_x;
+    let my = mouse_y;
+    if(mouse_check_pressed()&&inside(mx, my, obj.x, obj.y, obj.w, obj.h, 0, 0, 0)){
+    if(b.includes('right')){obj.x += value}
+    if(b.includes('down')){obj.y += value}
+    if(b.includes('show')){obj.draw()}
+      if(b.includes('shake')){
+        obj.modX=random(value)-value/2;
+        obj.modY=random(value)-value/2;
+      }
+    }
+    b=''
+  }
+  if(b.includes('timeroff')){
+   var temp = b.split(',')
+   var v = parseFloat(temp[0].replace(/[^\d.-]/g, "")) // milliseconds till off
+   b = temp[1];
+   obj.behaviours.push(b)
+   let beh = b.replace(/[\s0-9.\-]/g, "");
+   setTimeout(function(){delB(obj,beh)},v)
+  
+  b=''
+  }
+  
+if(b.includes('right')){obj.x += value}
+if(b.includes('down')){obj.y += value}
+if(b.includes('show')){obj.draw()}
+ if(b.includes('shake')){ 
+    obj.modX=random(value)-value/2;
+    obj.modY=random(value)-value/2;
+  }
+}
+function delB(obj,b){
+  for (let i = obj.behaviours.length-1; i >=0; i--) {
+  if( obj.behaviours[i].includes(b)){obj.behaviours.splice(i,1)}
+    if(b.includes('shake')){
+      obj.modX=0;
+      obj.modY=0;
+    }
+  }
+}
+
+function start(){
+  
+}
+
+function loop(){
+  
+  yellow.loop();
+if(keyboard_check_pressed(vk_space)){ delB(yellow,'shake')  };
+  
+  
+  
+  
+  
+}
+
+function draw(){
+  
+  
+  
+}
+
+function input(){
+  
+}
+
+
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
