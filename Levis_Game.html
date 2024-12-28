@@ -573,7 +573,7 @@ if(keyboard_check(vk_2)){
   player2.x = mx;player2.y = my;player2.dir=12;check(player2)
 }
 }
-document.title = floor(mouse_x)+','+floor(mouse_y)
+
 if(all_dead==true){
 if(mouse_x>266 && mouse_x<366 && mouse_y>425 && mouse_y<455){
 if(mouse_check_pressed()){location.reload()}
@@ -592,8 +592,6 @@ player2.draw();
 draw_hud();
 draw_menu()
 
-draw_set_color(0,0,255)
-draw_centered_text(20, 20, floor(mouse_x)+','+floor(mouse_y), 10)
 
 }
 function popup(x,y,w,h,p_col,t_col){
