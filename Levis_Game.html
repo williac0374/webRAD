@@ -35,18 +35,18 @@ zzfxX=new AudioContext, // audio context
 zzfx=                   // play sound
 (p=1,k=.05,b=220,e=0,r=0,t=.1,q=0,D=1,u=0,y=0,v=0,z=0,l=0,E=0,A=0,F=0,c=0,w=1,m=0,B=0
 ,N=0)=>{let M=Math,d=2*M.PI,R=44100,G=u*=500*d/R/R,C=b*=(1-k+2*k*M.random(k=[]))*d/R,
-g=0,H=0,a=0,n=1,I=0,J=0,f=0,h=N<0?-1:1,x=d*h*N*2/R,L=M.cos(x),Z=M.sin,K=Z(x)/4,O=1+K,
-X=-2*L/O,Y=(1-K)/O,P=(1+h*L)/2/O,Q=-(h+L)/O,S=P,T=0,U=0,V=0,W=0;e=R*e+9;m*=R;r*=R;t*=
-R;c*=R;y*=500*d/R**3;A*=d/R;v*=d/R;z*=R;l=R*l|0;p*=zzfxV;for(h=e+m+r+t+c|0;a<h;k[a++]
-=f*p)++J%(100*F|0)||(f=q?1<q?2<q?3<q?Z(g**3):M.max(M.min(M.tan(g),1),-1):1-(2*g/d%2+2
-)%2:1-4*M.abs(M.round(g/d)-g/d):Z(g),f=(l?1-B+B*Z(d*a/l):1)*(f<0?-1:1)*M.abs(f)**D*(a
-<e?a/e:a<e+m?1-(a-e)/m*(1-w):a<e+m+r?w:a<h-c?(h-a-c)/t*w:0),f=c?f/2+(c>a?0:(a<h-c?1:(
-h-a)/c)*k[a-c|0]/2/p):f,N?f=W=S*T+Q*(T=U)+P*(U=f)-Y*V-X*(V=W):0),x=(b+=u+=y)*M.cos(A*
-H++),g+=x+x*E*Z(a**5),n&&++n>z&&(b+=v,C+=v,n=0),!l||++I%l||(b=C,u=G,n=n||1);p=zzfxX.
-createBuffer(1,h,R);p.getChannelData(0).set(k);b=zzfxX.createBufferSource();
+  g=0,H=0,a=0,n=1,I=0,J=0,f=0,h=N<0?-1:1,x=d*h*N*2/R,L=M.cos(x),Z=M.sin,K=Z(x)/4,O=1+K,
+  X=-2*L/O,Y=(1-K)/O,P=(1+h*L)/2/O,Q=-(h+L)/O,S=P,T=0,U=0,V=0,W=0;e=R*e+9;m*=R;r*=R;t*=
+  R;c*=R;y*=500*d/R**3;A*=d/R;v*=d/R;z*=R;l=R*l|0;p*=zzfxV;for(h=e+m+r+t+c|0;a<h;k[a++]
+  =f*p)++J%(100*F|0)||(f=q?1<q?2<q?3<q?Z(g**3):M.max(M.min(M.tan(g),1),-1):1-(2*g/d%2+2
+  )%2:1-4*M.abs(M.round(g/d)-g/d):Z(g),f=(l?1-B+B*Z(d*a/l):1)*(f<0?-1:1)*M.abs(f)**D*(a
+  <e?a/e:a<e+m?1-(a-e)/m*(1-w):a<e+m+r?w:a<h-c?(h-a-c)/t*w:0),f=c?f/2+(c>a?0:(a<h-c?1:(
+  h-a)/c)*k[a-c|0]/2/p):f,N?f=W=S*T+Q*(T=U)+P*(U=f)-Y*V-X*(V=W):0),x=(b+=u+=y)*M.cos(A*
+  H++),g+=x+x*E*Z(a**5),n&&++n>z&&(b+=v,C+=v,n=0),!l||++I%l||(b=C,u=G,n=n||1);p=zzfxX.
+  createBuffer(1,h,R);p.getChannelData(0).set(k);b=zzfxX.createBufferSource();
 b.buffer=p;b.connect(zzfxX.destination);b.start()}
 
-
+all_dead=false;
 canvas.width=440;
 canvas.height=520;
 function resizeCanvas() {
@@ -161,10 +161,10 @@ if(dice_rolling2==true){dice_2=choose(1,2,3,4,5,6)}
 if(turn==1){menu_ctx.strokeRect( 0,0,wide*0.4,tall)}
 if(turn==2){menu_ctx.strokeRect( wide*0.4,0,wide*0.4,tall)}
   menu_ctx.closePath();
-  menu.onclick = function(){
+  menu.onclick = function(){1
     menu_ctx.clearRect(0, 0, canvas.width, canvas.height);
     if(dice_rolling1==false&&dice_rolling2==false){
-    
+      
       if(turn==2){
       if(player2.hp>0){shaking(player2)}else{shaking(player1);turn=1}
       }else{
@@ -302,7 +302,7 @@ function draw_board(){
 }
 
 function start(){
-
+  
   winnerSFX = make_sound('leviSFX/victory.mp3',4)
   deathSFX = make_sound('leviSFX/death.mp3',4)
   
@@ -435,12 +435,12 @@ zzfx(...[,,1e3,,,.5,,,,,99,.01,.03])
 }
 //end
 if(obj.x==160 && obj.y==320 || obj.x==160 && obj.y==280){setTimeout(function(){
-play(winnerSFX);
-setTimeout(function(){if(confirm(obj.name+' WINS!!  play again?')){location.reload()}else{window.close()}},100)},1);
+
+setTimeout(function(){popup(50,50,canvas.width-100,canvas.height-100,[64,64,64],[255,255,255]);run=false},100)},1);
 }
 if(player1.hp==0 && player2.hp==0){setTimeout(function(){
-play(deathSFX);
-setTimeout(function(){if(confirm('EVERYONE IS DEAD!!!!!!  play again?')){location.reload()}else{window.close()}},100)},1);
+
+setTimeout(function(){popup(50,50,canvas.width-100,canvas.height-100,[64,64,64],[255,255,255]);run=false},100)},1);
 }
 }
 function warp_player1(){
@@ -549,11 +549,11 @@ if(keyboard_check_pressed(vk_c)){check(player1)}
 if(player1.target!=null){warp_player1()}// it has some targets
 if(player2.target!=null){warp_player2()}// it has some targets
 
-  
-  //killemall
-  if(mouse_check_pressed()&&mouse_x>160 && mouse_x<200 && mouse_y>280 && mouse_y<320){
-    player1.hp=0;player2.hp=0;check(player1)
-  }
+
+//killemall
+if(keyboard_check(vk_d) && mouse_check_pressed()&&mouse_x>160 && mouse_x<200 && mouse_y>280 && mouse_y<320){
+player1.hp=0;player2.hp=0;check(player1)
+}
 let mx = floor(mouse_x/40)*40;
 let my = floor(mouse_y/40)*40;
 /*
@@ -573,6 +573,15 @@ if(keyboard_check(vk_2)){
   player2.x = mx;player2.y = my;player2.dir=12;check(player2)
 }
 }
+document.title = floor(mouse_x)+','+floor(mouse_y)
+if(all_dead==true){
+if(mouse_x>266 && mouse_x<366 && mouse_y>425 && mouse_y<455){
+if(mouse_check_pressed()){location.reload()}
+}
+if(mouse_x>73 && mouse_x<173 && mouse_y>425 && mouse_y<455){
+if(mouse_check_pressed()){window.close()}
+}
+}
 }
 
 function draw(){
@@ -582,8 +591,33 @@ player1.draw();
 player2.draw();
 draw_hud();
 draw_menu()
-}
 
+draw_set_color(0,0,255)
+draw_centered_text(20, 20, floor(mouse_x)+','+floor(mouse_y), 10)
+
+}
+function popup(x,y,w,h,p_col,t_col){
+  all_dead=true;
+  draw_set_color(p_col[0],p_col[1],p_col[2])
+  draw_rectangle(x, y, w, h,false)
+  draw_set_color(80,120,248)
+  draw_rectangle(x+10, y+10, w-20, h-20,false)
+  draw_set_color(t_col[0],t_col[1],t_col[2])
+  var mess = "none"
+  if(player1.hp+player2.hp==0){mess = "EVERYONES DEAD!!!";play(deathSFX)}else{
+  if(player1.x==160 && player1.y==320 || player1.x==160 && player1.y==280){mess = "PLAYER1 WINS!!!!";play(winnerSFX);}
+  if(player2.x==160 && player2.y==320 || player2.x==160 && player2.y==280){mess = "PLAYER2 WINS!!!!";play(winnerSFX);}
+}
+draw_centered_text(x+w/2, y+124,mess, 24)
+draw_centered_text(x+w/2, y+148,"PLAY AGAIN?", 24)
+////////////////////////////////////
+draw_rectangle(x+24, y+h-50, 100, 35,true)
+draw_centered_text(x+24+50, y+h-50+17.5,"cancel", 24)
+///////////////////////////////////
+draw_rectangle(x+w-124, y+h-50, 100, 35,true)
+draw_centered_text(x+w-124+50, y+h-50+17.5,"ok", 24)
+
+}
 
 </script>
 <script type='text/javascript' src='engine.js'></script>
