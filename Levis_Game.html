@@ -551,7 +551,7 @@ if(player2.target!=null){warp_player2()}// it has some targets
 
 
 //killemall
-if(keyboard_check(vk_d) && mouse_check_pressed()&&mouse_x>160 && mouse_x<200 && mouse_y>280 && mouse_y<320){
+if(mouse_check_pressed()&&mouse_x>160 && mouse_x<200 && mouse_y>280 && mouse_y<320){
 player1.hp=0;player2.hp=0;check(player1)
 }
 let mx = floor(mouse_x/40)*40;
