@@ -549,21 +549,9 @@ if(keyboard_check_pressed(vk_c)){check(player1)}
 if(player1.target!=null){warp_player1()}// it has some targets
 if(player2.target!=null){warp_player2()}// it has some targets
 
-
-//killemall
-if(mouse_check_pressed()&&mouse_x>160 && mouse_x<200 && mouse_y>280 && mouse_y<320){
-player1.hp=0;player2.hp=0;check(player1)
-}
 let mx = floor(mouse_x/40)*40;
 let my = floor(mouse_y/40)*40;
-/*
-draw_set_color(0,0,255)
-draw_centered_text(20, 20, mx+','+my, 10)
-draw_set_linewidth(2);
-draw_set_linedash([8,2])
-draw_rectangle(mx,my, 40, 40, true,0,0,0)
-draw_set_linedash([])
-*/
+
 
 if(mouse_check_pressed()){
 if(keyboard_check(vk_1)){
