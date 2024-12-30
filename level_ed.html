@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basic Template</title>
+<style>
+body{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: black;
+  
+}
+canvas {
+  // border: 2px solid #000;
+  background-color: white;
+}
+</style>
+</head>
+
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+function resizeCanvas() {
+  var WIDTH = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+  var HEIGHT = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  canvas.width=WIDTH;
+  canvas.height=HEIGHT;
+}
+
+// Call resizeCanvas immediately on load and bind to resize event
+setTimeout(function(){resizeCanvas()},10);
+window.addEventListener('resize', resizeCanvas);
+buttons = [];
+menuRect = {
+  x:0,
+  y:0,
+  w:canvas.width,
+  h:50,
+  draw:function(){
+    draw_rect_ol(this.x,this.y,this.w,this.h,4,[88,88,88],[255,255,255])
+  },
+  loop:function(){
+    this.x = 0;
+    this.y = 0;
+    this.w = canvas.width;
+    this.h = 50;
+    for(let i = 0; i < buttons.length; i++){
+      buttons[i].loop();
+      buttons[i].draw();
+    }
+  }
+}
+mapRect = {
+  x:0,
+  y:menuRect.h,
+  w:canvas.width/2,
+  h:canvas.height-20,
+  draw:function(){
+    draw_rect_ol(this.x,this.y,this.w,this.h,4,[88,88,88],[255,255,255])
+  },
+  loop:function(){
+    this.x = 0;
+    this.y = menuRect.h;
+    this.w = canvas.width/2;
+    this.h = canvas.height-menuRect.h;
+  }
+}
+
+tilesRect = {
+  x:canvas.width/2,
+  y:menuRect.h,
+  w:canvas.width/2,
+  h:canvas.height-menuRect.h,
+  sprite:null,
+  draw:function(){
+    draw_rect_ol(this.x,this.y,this.w,this.h,4,[88,88,88],[255,255,255])
+    if(this.sprite!=null){
+      draw_image(this.sprite,this.x+4,this.y+4,this.w-8,this.h-8)
+    }
+    drawG(this.x+4,this.y+4,24,24,this.w-8,this.h-8)
+    
+  },
+  loop:function(){
+    this.x = canvas.width/2;
+    this.y = menuRect.h;
+    this.w = canvas.width/2;
+    this.h = canvas.height-menuRect.h;
+  }
+}
+
+
+function makeButton(x,y,label,funct){
+temp = {
+  x:menuRect.x+x,
+  y:menuRect.y+y,
+  w:120,
+  h:menuRect.h-8,
+  bckCol:[188,188,188],
+  brdCol:[55,55,55],
+  lblCol:[55,55,55],
+  label:label,
+  draw:function(){
+    draw_rect_ol(this.x,this.y,this.w,this.h,4,this.bckCol,this.brdCol)
+    draw_set_color(this.lblCol[0],this.lblCol[1],this.lblCol[2]);
+    draw_centered_text(this.x+this.w/2, this.y+this.h/2, this.label, this.h/4)
+  },
+  loop:function(){
+    this.x = menuRect.x+x;
+    this.y = menuRect.y+y;
+    this.w = 120;
+    this.h = menuRect.h-8;
+    // hover and click
+    if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){// hover
+      this.bckCol=[222,222,222];
+      if(mouse_check_pressed()){
+        eval(funct)
+      }
+    }else{
+      this.bckCol=[188,188,188];
+    }
+  }
+}
+buttons.push(temp)
+}
+
+//makeButton(x,y,label,funct)
+makeButton(4,4,'load tSet','loadTiles()')
+makeButton(124,4,'tileGsize','alert("load tSet")')
+makeButton(244,4,'mapW','alert("load tSet")')
+makeButton(364,4,'mapH','alert("load tSet")')
+function start(){
+  
+}
+
+function loop(){
+  menuRect.loop();
+  mapRect.loop();
+  tilesRect.loop();
+  document.title = "MOUSE X: "+mouse_x+", Y: "+mouse_y
+}
+
+function draw(){
+  menuRect.draw();
+  mapRect.draw();
+  tilesRect.draw();
+ //drawG(200,200,24,24,200,200)
+}
+
+function input(){
+  
+}
+function drawG(x,y,xw,yh,w,h){
+  draw_set_alpha(1)
+  draw_set_color(0,0,255)
+  draw_set_linedash([4,4])
+  for(let i = y; i < y+h; i += yh){
+    draw_line(x, i, x+w, i)
+  }
+    for(let i = x; i < x+w; i += xw){
+    draw_line(i, y, i, y+h)
+  }
+  draw_set_linedash([1])
+ draw_set_alpha(1) 
+}
+function draw_rect_ol(x,y,w,h,borThk,bakCol,borCol){
+  draw_set_color(borCol[0],borCol[1],borCol[2])
+  draw_rectangle(x,y,w,h,false,0,0,0)
+  draw_set_color(bakCol[0],bakCol[1],bakCol[2])
+  draw_rectangle(x+borThk,y+borThk,w-borThk*2,h-borThk*2,false,0,0,0)
+}
+function loadTiles(){
+var fileInput = document.createElement('input');
+fileInput.type = 'file';
+fileInput.accept = 'image/*';
+fileInput.multiple = true; // Enable selection of multiple files
+fileInput.addEventListener('change', function(event) {
+  var files = event.target.files
+   if (files[0]) {
+    for(let i = 0; i < files.length; i++){
+    var reader = new FileReader();
+    reader.onload = function(readerEvent) {
+      var fileData =  readerEvent.target.result
+        tilesRect.sprite = draw_set_image(fileData)
+      };
+      reader.readAsDataURL(files[i]);
+    }
+  }
+  });
+  fileInput.click();
+}
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
