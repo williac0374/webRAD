@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basic Template</title>
+<style>
+body{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: black;
+  
+}
+canvas {
+  // border: 2px solid #000;
+  background-color: white;
+}
+</style>
+<script type='text/javascript' src='dungeon.js'></script>
+</head>
+
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+
+map = []
+objects = [];
+function load_tiled(lvl){
+  wide = lvl.width*lvl.tileWidth;
+  tall = lvl.height*lvl.tileHeight;
+  canvas.width=wide;
+  canvas.height=tall;
+  canvas.style.height = window.innerHeight + 'px'
+  map = lvl.data// gets map from tiled map
+  tiles = draw_set_image(lvl.tileset) // tileset used for drawing tiles and objects
+  for(let i = 0; i < lvl.objects.length; i++){
+    objects.push(lvl.objects[i])// gets objects from tiled map
+  }
+}
+function draw_map(){
+  for(let y = 0; y < map.length; y++){
+    for(let x = 0; x < map[y].length; x ++){
+      let coors = getTileSourcePosition(map[y][x], 32, 32, 10)
+      draw_image(tiles,x*32,y*32,32,32,0,0,0,coors[0],coors[1],32,32)
+    }
+  }
+  
+}
+function draw_objects(){
+  for(let i = 0; i < objects.length; i++){
+    let coors = getTileSourcePosition(objects[i].properties.gid, 32, 32, 10)
+    
+    draw_image(tiles,objects[i].x,objects[i].y,objects[i].width,objects[i].height,0,0,0,coors[0],coors[1],32,32)
+  }
+}
+function loop_objects(){
+  
+  
+  document.title = "FPS: "+fps
+  for(let i = 0; i < objects.length; i++){
+    if (typeof  objects[i].properties !== "undefined") { // checks if objects have properties
+      if (typeof  objects[i].properties.loop !== "undefined"){ // checks if there is a loop property
+        // handles loop code!!
+        eval(objects[i].properties.loop)
+      }
+    }
+  }
+}
+function start_objects(){
+  for(let i = 0; i < objects.length; i++){
+    if (typeof  objects[i].properties !== "undefined") { // checks if objects have properties
+      if (typeof  objects[i].properties.start !== "undefined"){ // checks if there is a loop property
+        // handles loop code!!
+        eval(objects[i].properties.start)
+      }
+      // handles flipping
+      if (typeof  objects[i].flipH !== "undefined") {
+        if(objects[i].flipH==true){
+         // objects[i].height *= -1;
+        }
+      }
+      if (typeof  objects[i].flipV !== "undefined") {
+        if(objects[i].flipV==true){
+          
+        }
+      }
+    }
+  }
+}
+function getTileSourcePosition(tileId, tileWidth, tileHeight, tilesetColumns) {
+  let sX = (tileId % tilesetColumns) * tileWidth;
+  let sY = Math.floor(tileId / tilesetColumns) * tileHeight;
+  return [sX, sY];
+}
+function start(){
+  
+  load_tiled(ExampleMap)
+  start_objects()
+}
+
+function loop(){
+  loop_objects()
+}
+
+function draw(){
+  draw_map();
+  draw_objects();
+}
+
+function input(){
+  
+}
+
+
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>

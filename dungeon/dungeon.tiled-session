@@ -1,0 +1,56 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "dungeon.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "Dungeon_Character.tsx": {
+            "scaleInDock": 4,
+            "scaleInEditor": 1
+        },
+        "Dungeon_Character_2.tsx": {
+            "scaleInDock": 4,
+            "scaleInEditor": 1
+        },
+        "Dungeon_Tileset.tsx": {
+            "scaleInDock": 4,
+            "scaleInEditor": 1
+        },
+        "dungeon.tmx": {
+            "scale": 1.4645833333333333,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 197.32574679943102,
+                "y": 191.86344238975818
+            }
+        },
+        "dungeon.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.exportedFilePath": "/root/spot/Downloads/imageGEN",
+    "last.imagePath": "/root/spot/Downloads/dungeon",
+    "map.height": 12,
+    "map.lastUsedExportFilter": "Advanced JS Single Layer (*.js)",
+    "map.lastUsedFormat": "tmx",
+    "map.width": 12,
+    "openFiles": [
+        "dungeon.tsx",
+        "dungeon.tmx"
+    ],
+    "project": "dungeon.tiled-project",
+    "property.type": "int",
+    "recentFiles": [
+        "dungeon.tsx",
+        "dungeon.tmx",
+        "Dungeon_Tileset.tsx",
+        "Dungeon_Character.tsx",
+        "Dungeon_Character_2.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx"
+}

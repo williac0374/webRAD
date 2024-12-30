@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="12" height="12" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="5">
+ <tileset firstgid="1" source="dungeon.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="12" height="12">
+  <data encoding="csv">
+1,2,2,2,2,2,2,2,2,2,2,3,
+1,4,4,4,4,4,4,4,4,4,4,3,
+1,4,4,4,4,4,4,4,4,4,4,3,
+1,4,4,4,4,4,4,4,4,4,4,3,
+1,4,4,4,4,4,4,4,4,4,4,3,
+1,4,4,4,4,4,4,4,4,4,4,3,
+1,4,4,4,4,4,4,4,4,4,4,3,
+1,4,4,4,4,4,4,4,4,4,4,3,
+1,4,4,4,4,4,4,4,4,4,4,3,
+1,4,4,4,4,4,4,4,4,4,4,3,
+1,4,4,4,4,4,4,4,4,4,4,3,
+11,12,12,12,12,12,12,12,12,12,12,13
+</data>
+ </layer>
+ <objectgroup id="2" name="Object Layer 1">
+  <object id="1" gid="47" x="95.9772" y="94.5206" width="32" height="32">
+   <properties>
+    <property name="gid" type="int" value="46"/>
+   </properties>
+  </object>
+  <object id="2" gid="55" x="160.842" y="160.068" width="32" height="32">
+   <properties>
+    <property name="gid" type="int" value="54"/>
+   </properties>
+  </object>
+  <object id="3" gid="15" x="255.067" y="125.929" width="32" height="32">
+   <properties>
+    <property name="gid" type="int" value="14"/>
+   </properties>
+  </object>
+  <object id="4" gid="25" x="95.2945" y="222.885" width="32" height="32">
+   <properties>
+    <property name="gid" type="int" value="24"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
