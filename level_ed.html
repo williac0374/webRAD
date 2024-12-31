@@ -16,7 +16,7 @@ body{
 }
 canvas {
   // border: 2px solid #000;
-  background-color: white;
+  background-color: rgb(88,88,88);
 }
 </style>
 </head>
@@ -25,6 +25,7 @@ canvas {
 <canvas id="canvas"></canvas>
 
 <script>
+// localStorage.removeItem("level_ed")
 window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
 function resizeCanvas() {
   var WIDTH = window.visualViewport ? window.visualViewport.width : window.innerWidth;
@@ -36,6 +37,9 @@ function resizeCanvas() {
 // Call resizeCanvas immediately on load and bind to resize event
 setTimeout(function(){resizeCanvas()},10);
 window.addEventListener('resize', resizeCanvas);
+project = {tileSet:null};
+tiles = [];
+objects = [];
 buttons = [];
 menuRect = {
   x:0,
@@ -56,19 +60,45 @@ menuRect = {
     }
   }
 }
-mapRect = {
+mapRect = { //mapRect.mapW
   x:0,
   y:menuRect.h,
   w:canvas.width/2,
   h:canvas.height-20,
+  mapX:0,
+  mapY:menuRect.h,
+  mapW:10,
+  mapH:10,
+  mapG:16,
   draw:function(){
-    draw_rect_ol(this.x,this.y,this.w,this.h,4,[88,88,88],[255,255,255])
+    //  draw_rect_ol(this.x,this.y,this.w,this.h,4,[88,88,88],[255,255,255])
+    drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
+    draw_set_color(255,255,255)
+    draw_set_linewidth(8)
+    draw_set_linedash([])
+    draw_rectangle( this.x, this.y, this.w, this.h,true)
+    
   },
   loop:function(){
     this.x = 0;
     this.y = menuRect.h;
     this.w = canvas.width/2;
     this.h = canvas.height-menuRect.h;
+    
+    if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
+      this.mapG += wheelDir*0.25;
+      wheelDir=0;
+    if(keyboard_check(vk_up)){this.mapY -= 5}
+    if(keyboard_check(vk_down)){this.mapY += 5}
+    if(keyboard_check(vk_left)){this.mapX -= 5}
+    if(keyboard_check(vk_right)){this.mapX += 5}
+      
+      let gs = this.mapG
+      let mx = (floor((mouse_x-this.mapX)/gs)*gs)+this.mapX+4
+      let my = (floor((mouse_y-this.mapY)/gs)*gs)+this.mapY+4
+      cursor(mx,my,gs,gs)
+      
+    }
   }
 }
 
@@ -77,13 +107,17 @@ tilesRect = {
   y:menuRect.h,
   w:canvas.width/2,
   h:canvas.height-menuRect.h,
+  gridSize:16,
   sprite:null,
+  scale:1,
   draw:function(){
     draw_rect_ol(this.x,this.y,this.w,this.h,4,[88,88,88],[255,255,255])
     if(this.sprite!=null){
-      draw_image(this.sprite,this.x+4,this.y+4,this.w-8,this.h-8)
+      draw_image(this.sprite,this.x+4,this.y+4,this.sprite.width*this.scale,this.sprite.height*this.scale)
+      drawG(this.x+4,this.y+4,this.gridSize*this.scale,this.gridSize*this.scale,this.sprite.width*this.scale,this.sprite.height*this.scale);
+      
     }
-    drawG(this.x+4,this.y+4,24,24,this.w-8,this.h-8)
+    
     
   },
   loop:function(){
@@ -91,82 +125,107 @@ tilesRect = {
     this.y = menuRect.h;
     this.w = canvas.width/2;
     this.h = canvas.height-menuRect.h;
+    if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
+      this.scale += wheelDir*0.25;
+      wheelDir=0;
+      let gs = this.gridSize*this.scale
+      let mx = (floor((mouse_x-this.x+4)/gs)*gs)+this.x+4
+      let my = (floor((mouse_y-this.y+4)/gs)*gs)+this.y+4
+      cursor(mx,my,gs,gs)
+    }
   }
 }
 
 
 function makeButton(x,y,label,funct){
-temp = {
-  x:menuRect.x+x,
-  y:menuRect.y+y,
-  w:120,
-  h:menuRect.h-8,
-  bckCol:[188,188,188],
-  brdCol:[55,55,55],
-  lblCol:[55,55,55],
-  label:label,
-  draw:function(){
-    draw_rect_ol(this.x,this.y,this.w,this.h,4,this.bckCol,this.brdCol)
-    draw_set_color(this.lblCol[0],this.lblCol[1],this.lblCol[2]);
-    draw_centered_text(this.x+this.w/2, this.y+this.h/2, this.label, this.h/4)
-  },
-  loop:function(){
-    this.x = menuRect.x+x;
-    this.y = menuRect.y+y;
-    this.w = 120;
-    this.h = menuRect.h-8;
-    // hover and click
-    if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){// hover
-      this.bckCol=[222,222,222];
-      if(mouse_check_pressed()){
-        eval(funct)
+  temp = {
+    x:menuRect.x+x,
+    y:menuRect.y+y,
+    w:120,
+    h:menuRect.h-8,
+    bckCol:[188,188,188],
+    brdCol:[55,55,55],
+    lblCol:[55,55,55],
+    label:label,
+    draw:function(){
+      draw_rect_ol(this.x,this.y,this.w,this.h,4,this.bckCol,this.brdCol)
+      draw_set_color(this.lblCol[0],this.lblCol[1],this.lblCol[2]);
+      draw_centered_text(this.x+this.w/2, this.y+this.h/2, this.label, this.h/4)
+    },
+    loop:function(){
+      this.x = menuRect.x+x;
+      this.y = menuRect.y+y;
+      this.w = 120;
+      this.h = menuRect.h-8;
+      // hover and click
+      if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){// hover
+        this.bckCol=[222,222,222];
+        if(mouse_check_pressed()){
+          eval(funct)
+        }
+      }else{
+        this.bckCol=[188,188,188];
       }
-    }else{
-      this.bckCol=[188,188,188];
     }
   }
-}
-buttons.push(temp)
+  buttons.push(temp)
 }
 
 //makeButton(x,y,label,funct)
 makeButton(4,4,'load tSet','loadTiles()')
-makeButton(124,4,'tileGsize','alert("load tSet")')
-makeButton(244,4,'mapW','alert("load tSet")')
-makeButton(364,4,'mapH','alert("load tSet")')
+makeButton(124,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile columns",tilesRect.gridSize))')
+makeButton(244,4,'mapW','mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW))')
+makeButton(364,4,'mapH','mapRect.mapH=parseInt(prompt("enter map height in cells",mapRect.mapH))')
+makeButton(484,4,'Save Project','')
+makeButton(604,4,'Load Project','')
 function start(){
-  
+  if(localStorage.getItem("level_ed")!=null){
+    project=JSON.parse(localStorage.getItem("level_ed"))
+    tilesRect.sprite = draw_set_image(project.tileSet)
+  }
 }
 
 function loop(){
-  menuRect.loop();
   mapRect.loop();
+  menuRect.loop();
   tilesRect.loop();
   document.title = "MOUSE X: "+mouse_x+", Y: "+mouse_y
+if(keyboard_check_pressed(vk_delete)){localStorage.removeItem("level_ed")}
 }
 
 function draw(){
-  menuRect.draw();
+  
   mapRect.draw();
+  menuRect.draw();
   tilesRect.draw();
- //drawG(200,200,24,24,200,200)
+  //drawG(200,200,24,24,200,200)
 }
 
 function input(){
   
 }
+
+function cursor(x,y,w,h){
+  draw_set_linewidth(1)
+  draw_set_color(255,255,255)
+  draw_set_linedash([4,4])
+  draw_rectangle(x, y, w, h,true)
+  draw_set_linedash([])
+}
+
 function drawG(x,y,xw,yh,w,h){
+  draw_set_linewidth(1)
   draw_set_alpha(1)
   draw_set_color(0,0,255)
   draw_set_linedash([4,4])
-  for(let i = y; i < y+h; i += yh){
+  for(let i = y; i <= y+h; i += yh){
     draw_line(x, i, x+w, i)
   }
-    for(let i = x; i < x+w; i += xw){
+  for(let i = x; i <= x+w; i += xw){
     draw_line(i, y, i, y+h)
   }
   draw_set_linedash([1])
- draw_set_alpha(1) 
+  draw_set_alpha(1)
 }
 function draw_rect_ol(x,y,w,h,borThk,bakCol,borCol){
   draw_set_color(borCol[0],borCol[1],borCol[2])
@@ -175,22 +234,25 @@ function draw_rect_ol(x,y,w,h,borThk,bakCol,borCol){
   draw_rectangle(x+borThk,y+borThk,w-borThk*2,h-borThk*2,false,0,0,0)
 }
 function loadTiles(){
-var fileInput = document.createElement('input');
-fileInput.type = 'file';
-fileInput.accept = 'image/*';
-fileInput.multiple = true; // Enable selection of multiple files
-fileInput.addEventListener('change', function(event) {
-  var files = event.target.files
-   if (files[0]) {
-    for(let i = 0; i < files.length; i++){
-    var reader = new FileReader();
-    reader.onload = function(readerEvent) {
-      var fileData =  readerEvent.target.result
-        tilesRect.sprite = draw_set_image(fileData)
-      };
-      reader.readAsDataURL(files[i]);
+  var fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.multiple = true; // Enable selection of multiple files
+  fileInput.addEventListener('change', function(event) {
+    var files = event.target.files
+    if (files[0]) {
+      for(let i = 0; i < files.length; i++){
+        var reader = new FileReader();
+        reader.onload = function(readerEvent) {
+          var fileData =  readerEvent.target.result
+          tilesRect.sprite = draw_set_image(fileData)
+          project.tileSet=tilesRect.sprite.src;
+          localStorage.setItem("level_ed", JSON.stringify(project))
+          
+        };
+        reader.readAsDataURL(files[i]);
+      }
     }
-  }
   });
   fileInput.click();
 }
