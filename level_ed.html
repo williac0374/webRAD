@@ -41,6 +41,7 @@ project = {tileSet:null};
 tiles = [];
 objects = [];
 buttons = [];
+cur_value = null
 menuRect = {
   x:0,
   y:0,
@@ -86,7 +87,7 @@ mapRect = { //mapRect.mapW
     this.h = canvas.height-menuRect.h;
     
     if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
-      this.mapG += wheelDir*0.25;
+      this.mapG += wheelDir*1.5;
       wheelDir=0;
     if(keyboard_check(vk_up)){this.mapY -= 5}
     if(keyboard_check(vk_down)){this.mapY += 5}
@@ -96,7 +97,7 @@ mapRect = { //mapRect.mapW
       let gs = this.mapG
       let mx = (floor((mouse_x-this.mapX)/gs)*gs)+this.mapX+4
       let my = (floor((mouse_y-this.mapY)/gs)*gs)+this.mapY+4
-      cursor(mx,my,gs,gs)
+      cursor(mx,my,gs,gs,null)
       
     }
   }
@@ -131,7 +132,13 @@ tilesRect = {
       let gs = this.gridSize*this.scale
       let mx = (floor((mouse_x-this.x+4)/gs)*gs)+this.x+4
       let my = (floor((mouse_y-this.y+4)/gs)*gs)+this.y+4
-      cursor(mx,my,gs,gs)
+      //img.img,img.x,img.y,img.w,img.h  this.sprite
+      
+      cursor(mx,my,gs,gs,cur_value)
+      if(mouse_check_pressed()){
+        alert()
+        cur_value = {img:this.sprite,x:0,y:0,w:16,h:16}
+      }
     }
   }
 }
@@ -189,7 +196,7 @@ function loop(){
   mapRect.loop();
   menuRect.loop();
   tilesRect.loop();
-  document.title = "MOUSE X: "+mouse_x+", Y: "+mouse_y
+  //document.title = "MOUSE X: "+mouse_x+", Y: "+mouse_y
 if(keyboard_check_pressed(vk_delete)){localStorage.removeItem("level_ed")}
 }
 
@@ -205,7 +212,10 @@ function input(){
   
 }
 
-function cursor(x,y,w,h){
+function cursor(x,y,w,h,img){
+  if(img!=null){
+    draw_image(img.img,x,y,w,h,0,0,0,img.x,img.y,img.w,img.h)
+   }
   draw_set_linewidth(1)
   draw_set_color(255,255,255)
   draw_set_linedash([4,4])
