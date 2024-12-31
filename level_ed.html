@@ -98,7 +98,7 @@ mapRect = { //mapRect.mapW
       let mx = (floor((mouse_x-this.mapX)/gs)*gs)+this.mapX+4
       let my = (floor((mouse_y-this.mapY)/gs)*gs)+this.mapY+4
       cursor(mx,my,gs,gs,cur_value)
-      
+      document.title = this.mapX+'  ,  '+mx
     }
   }
 }
@@ -145,7 +145,7 @@ tilesRect = {
         cur_value = this.sprite;
       }
     }
-    document.title = selected.cellX+'  ,  '+selected.cellY;
+    //document.title = selected.cellX+'  ,  '+selected.cellY;
   }
 }
 
