@@ -43,6 +43,7 @@ mode = 0;
 tiles = [];
 tiles2 = [];
 objects = [];
+snapped=true;
 buttons = [];
 cur_value = null
 menuRect = {
@@ -64,10 +65,10 @@ menuRect = {
     }
     // hi-lites correct mode button
     draw_set_color(0,255,0);
-    draw_set_linewidth(4);
-  if(mode==0){draw_rectangle(this.x+726, this.y+6, 116, this.h-12,true,0,0,0)}
-  if(mode==1){draw_rectangle(this.x+726+120, this.y+6, 116, this.h-12,true,0,0,0)}
-  if(mode==2){draw_rectangle(this.x+726+240, this.y+6, 116, this.h-12,true,0,0,0)}
+    draw_set_linewidth(8);
+  if(mode==0){draw_rectangle(this.x+604, this.y+6, 96, this.h-12,true,0,0,0)}
+  if(mode==1){draw_rectangle(this.x+604+100, this.y+6, 96, this.h-12,true,0,0,0)}
+  if(mode==2){draw_rectangle(this.x+604+200, this.y+6, 96, this.h-12,true,0,0,0)}
   }
 }
 mapRect = { //mapRect.mapW
@@ -81,6 +82,7 @@ mapRect = { //mapRect.mapW
   mapH:10,
   mapG:16,
   draw:function(){
+    drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
     if(tilesRect.sprite!=null){
       for (let y = 0; y < tiles.length; y++) {
         for (let x = 0; x < tiles[y].length; x++) {
@@ -111,12 +113,18 @@ mapRect = { //mapRect.mapW
           let cy = objects[i].mapY;
           let sx = tId%10*tilesRect.gridSize;
           let sy = floor(tId/10)*tilesRect.gridSize;
-          draw_image(tilesRect.sprite,this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+          draw_image(tilesRect.sprite,this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+          if(objects[i].sel==true){
+            draw_set_color(255,255,255)
+            draw_set_linedash([])
+            draw_set_linewidth(2)
+            draw_rectangle(this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG,this.mapG,true,objects[i].rot,objects[i].ox,objects[i].oy)
+          }
         }
         
       }
     }
-    drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
+    
     draw_set_color(255,255,255)
     draw_set_linewidth(8)
     draw_set_linedash([])
@@ -161,49 +169,70 @@ mapRect = { //mapRect.mapW
       let gs = this.mapG
       let mx = mouse_x;
       let my = mouse_y;
-      if(mode<2){
+      if(mode<2||snapped==true){
         mx = (floor((mouse_x-this.mapX)/gs)*gs)+this.mapX+4
         my = (floor((mouse_y-this.mapY)/gs)*gs)+this.mapY+4
       }
-      cursor(mx,my,gs,gs,cur_value)
+    cursor(mx,my,gs,gs,cur_value)
       
       mapCellX = 0;
       mapCellY = 0;
     if((mx-this.mapX-4)>0){mapCellX = (mx-this.mapX-4)/this.mapG}
     if((my-this.mapY-4)>0){mapCellY = (my-this.mapY-4)/this.mapG}
-      document.title = mapCellX+' , '+mapCellY
+     // document.title = mapCellX+' , '+mapCellY
       if(mouse_check()){
         //drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
         if(mx>this.mapX && mx < this.mapX+this.mapW*this.mapG){
           if(my>this.mapY && my < this.mapY+this.mapH*this.mapG){
-            if(mode==0){
-              tiles[mapCellY][mapCellX]=selected.tId;
-              project.tiles[mapCellY][mapCellX]=selected.tId;
-            }
-            if(mode==1){
-              tiles2[mapCellY][mapCellX]=selected.tId;
-              project.tiles2[mapCellY][mapCellX]=selected.tId;
-            }
-            if(mode==2){
-              let temp = {
-                name:'object',
-                tId:selected.tId,
-                x:mx,
-                y:my,
-                mapX:mapCellX,
-                mapY:mapCellY,
-                w:this.mapG,
-                h:this.mapG,
-                rot:0,
-                ox:0,
-                oy:0
+            if(cur_value!=null){
+              if(mode==0){
+                tiles[mapCellY][mapCellX]=selected.tId;
+                project.tiles[mapCellY][mapCellX]=selected.tId;
               }
-              objects.push(temp);
-              project.objects = objects;
-              mouse_down=false;
-              console.log(objects)
+              if(mode==1){
+                tiles2[mapCellY][mapCellX]=selected.tId;
+                project.tiles2[mapCellY][mapCellX]=selected.tId;
+              }
+              if(mode==2){
+                let temp = {
+                  name:'object',
+                  tId:selected.tId,
+                  x:mx,
+                  y:my,
+                  mapX:mapCellX,
+                  mapY:mapCellY,
+                  w:1,
+                  h:1,
+                  rot:0,
+                  ox:0,
+                  oy:0,
+                  sel:false
+                }
+                objects.push(temp);
+                project.objects = objects;
+                mouse_down=false;
+                console.log(objects)
+              }
+              localStorage.setItem("level_ed", JSON.stringify(project))
+            }else{
+              if(mode==2){
+                for(let i = objects.length-1; i>=0; i--){
+                  //draw_image(tilesRect.sprite,this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+                  let cx = objects[i].mapX;
+                  let cy = objects[i].mapY;
+                  let obx = this.mapX+4+(cx*this.mapG);
+                  let oby = this.mapY+4+(cy*this.mapG);
+                  let scaledW = this.mapG*objects[i].w;
+                  let scaledH = this.mapG*objects[i].h;
+                  if(inside(mouse_x, mouse_y, obx,oby, scaledW, scaledH, objects[i].rot,objects[i].ox,objects[i].oy)){
+                    objects[i].sel=true
+                  }else{
+                    objects[i].sel=false
+                  }
+                }
+                
+              }
             }
-            localStorage.setItem("level_ed", JSON.stringify(project))
           }
         }
       }
@@ -230,7 +259,7 @@ tilesRect = {
     
   },
   loop:function(){
-    
+    if(objects.length>0){document.title = objects[0].w+'  ,   '+mapRect.mapG}
     this.x = canvas.width/2;
     this.y = menuRect.h;
     this.w = canvas.width/2;
@@ -293,7 +322,7 @@ function makeButton(x,y,label,funct){
   temp = {
     x:menuRect.x+x,
     y:menuRect.y+y,
-    w:120,
+    w:100,
     h:menuRect.h-8,
     bckCol:[188,188,188],
     brdCol:[55,55,55],
@@ -307,7 +336,7 @@ function makeButton(x,y,label,funct){
     loop:function(){
       this.x = menuRect.x+x;
       this.y = menuRect.y+y;
-      this.w = 120;
+      this.w = 100;
       this.h = menuRect.h-8;
       // hover and click
       if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){// hover
@@ -325,14 +354,15 @@ function makeButton(x,y,label,funct){
 
 //makeButton(x,y,label,funct)
 makeButton(4,4,'load tSet','loadTiles();mouse_down=false');
-makeButton(124,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));mouse_down=false');
-makeButton(244,4,'mapW','mapRect.init();mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));mouse_down=false');
-makeButton(364,4,'mapH','mapRect.init();mapRect.mapH=parseInt(prompt("enter map height in cells",mapRect.mapH));mouse_down=false');
-makeButton(484,4,'Save Project','saveProject();mouse_down=false');
-makeButton(604,4,'Load Project','load();mouse_down=false');
-makeButton(724,4,'Tiles1','mode=0;mouse_down=false');
-makeButton(844,4,'Tiles2','mode=1;mouse_down=false');
-makeButton(964,4,'Objects','mode=2;mouse_down=false');
+makeButton(104,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));mouse_down=false');
+makeButton(204,4,'mapW','mapRect.init();mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));mouse_down=false');
+makeButton(304,4,'mapH','mapRect.init();mapRect.mapH=parseInt(prompt("enter map height in cells",mapRect.mapH));mouse_down=false');
+makeButton(404,4,'Save Project','saveProject();mouse_down=false');
+makeButton(504,4,'Load Project','load();mouse_down=false');
+makeButton(604,4,'Tiles1','mode=0;mouse_down=false');
+makeButton(704,4,'Tiles2','mode=1;mouse_down=false');
+makeButton(804,4,'Objects','mode=2;mouse_down=false');
+makeButton(904,4,'Snap2Grid','if(snapped==true){snapped=false;buttons[9].label="FreeMove"}else{snapped=true;buttons[9].label="Snap2Grid"};mouse_down=false');
 function start(){
   if(localStorage.getItem("level_ed")!=null){
     project=JSON.parse(localStorage.getItem("level_ed"))
