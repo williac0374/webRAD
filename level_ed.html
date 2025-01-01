@@ -39,7 +39,9 @@ function resizeCanvas() {
 setTimeout(function(){resizeCanvas()},10);
 window.addEventListener('resize', resizeCanvas);
 project = {tileSet:null};
+mode = 0;
 tiles = [];
+tiles2 = [];
 objects = [];
 buttons = [];
 cur_value = null
@@ -90,9 +92,18 @@ mapRect = { //mapRect.mapW
           }
         }
       }
+      for (let y = 0; y < tiles2.length; y++) {
+        for (let x = 0; x < tiles2[y].length; x++) {
+          if(tiles2[y][x]!=-1){
+            let tId = tiles2[y][x];
+            let sx = tId%10*tilesRect.gridSize;
+            let sy = floor(tId/10)*tilesRect.gridSize;
+            draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+          }
+        }
+      }
+      
     }
-    
-    // ((selected.cellY*10)+selected.cellX)
     drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
     draw_set_color(255,255,255)
     draw_set_linewidth(8)
@@ -102,6 +113,7 @@ mapRect = { //mapRect.mapW
   },
   init:function(){
     tiles = [];
+    tiles2 = [];
     for (let i = 0; i < this.mapH; i++) {
       var row = [];
       for (let j = 0; j < this.mapW; j++) {
@@ -109,7 +121,15 @@ mapRect = { //mapRect.mapW
       }
       tiles.push(row);
     }
-    project.tiles=tiles
+    project.tiles=tiles;
+    for (let i = 0; i < this.mapH; i++) {
+      var row = [];
+      for (let j = 0; j < this.mapW; j++) {
+        row.push(-1);
+      }
+      tiles2.push(row);
+    }
+    project.tiles2=tiles2;
     
   },
   loop:function(){
@@ -139,8 +159,14 @@ mapRect = { //mapRect.mapW
         //drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
         if(mx>this.mapX && mx < this.mapX+this.mapW*this.mapG){
           if(my>this.mapY && my < this.mapY+this.mapH*this.mapG){
-            tiles[mapCellY][mapCellX]=selected.tId;//((selected.cellY*10)+selected.cellX)
-            project.tiles[mapCellY][mapCellX]=selected.tId;
+            if(mode==0){
+              tiles[mapCellY][mapCellX]=selected.tId;
+              project.tiles[mapCellY][mapCellX]=selected.tId;
+            }
+            if(mode==1){
+              tiles2[mapCellY][mapCellX]=selected.tId;
+              project.tiles2[mapCellY][mapCellX]=selected.tId;
+            }
             localStorage.setItem("level_ed", JSON.stringify(project))
           }
         }
@@ -260,7 +286,7 @@ function makeButton(x,y,label,funct){
   }
   buttons.push(temp)
 }
-mode = 0
+
 //makeButton(x,y,label,funct)
 makeButton(4,4,'load tSet','loadTiles();mouse_down=false');
 makeButton(124,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));mouse_down=false');
@@ -276,6 +302,7 @@ function start(){
     project=JSON.parse(localStorage.getItem("level_ed"))
     tilesRect.sprite = draw_set_image(project.tileSet)
     tiles = project.tiles;
+    tiles2 = project.tiles2;
   }
 }
 
