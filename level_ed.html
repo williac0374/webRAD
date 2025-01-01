@@ -113,12 +113,14 @@ mapRect = { //mapRect.mapW
           let cy = objects[i].mapY;
           let sx = tId%10*tilesRect.gridSize;
           let sy = floor(tId/10)*tilesRect.gridSize;
-          draw_image(tilesRect.sprite,this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+          let ox = (this.mapG*objects[i].w)/2;
+          let oy = (this.mapG*objects[i].h)/2
+          draw_image(tilesRect.sprite,this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,objects[i].rot,ox,oy,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
           if(objects[i].sel==true){
             draw_set_color(255,255,255)
             draw_set_linedash([])
             draw_set_linewidth(2)
-            draw_rectangle(this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG,this.mapG,true,objects[i].rot,objects[i].ox,objects[i].oy)
+            draw_rectangle(this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,true,objects[i].rot,ox,oy)
           }
         }
         
@@ -132,6 +134,8 @@ mapRect = { //mapRect.mapW
     
   },
   init:function(){
+    objects = [];
+    project.objects = objects;
     tiles = [];
     tiles2 = [];
     for (let i = 0; i < this.mapH; i++) {
@@ -159,13 +163,45 @@ mapRect = { //mapRect.mapW
     this.h = canvas.height-menuRect.h;
     
     if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
-      this.mapG += wheelDir*1.5;
+      var w = 0;
+      var h = 0;
+      var r = 0;
+    if(keyboard_check(vk_w)){w=1};
+    if(keyboard_check(vk_h)){h=1};
+    if(keyboard_check(vk_r)){r=1};
+      if(w+h+r>0){
+        for(let i = objects.length-1; i>=0; i--){
+          if(objects[i].sel==true){
+          if(w>0){objects[i].w+=wheelDir*0.1}
+          if(h>0){objects[i].h+=wheelDir*0.1}
+          if(r>0){objects[i].rot+=wheelDir*5}
+          }
+        }
+        project.objects = objects
+        localStorage.setItem("level_ed", JSON.stringify(project))
+      }else{
+        this.mapG += wheelDir*1.5;
+      }
       wheelDir=0;
-    if(keyboard_check(vk_up)){this.mapY -= 5}
-    if(keyboard_check(vk_down)){this.mapY += 5}
-    if(keyboard_check(vk_left)){this.mapX -= 5}
-    if(keyboard_check(vk_right)){this.mapX += 5}
-      
+      var obj_move = false
+      for(let i = objects.length-1; i>=0; i--){
+        if(objects[i].sel==true){
+          obj_move=true;
+          let mod = 0.1
+        if(keyboard_check_pressed(vk_up)){objects[i].mapY-= mod;objects[i].y-=mod*this.mapG}
+        if(keyboard_check_pressed(vk_down)){objects[i].mapY += mod;objects[i].y+=mod*this.mapG}
+        if(keyboard_check_pressed(vk_left)){objects[i].mapX -= mod;objects[i].x-=mod*this.mapG}
+        if(keyboard_check_pressed(vk_right)){objects[i].mapX +=mod;objects[i].x+=mod*this.mapG}
+        }
+      }
+      project.objects = objects
+      localStorage.setItem("level_ed", JSON.stringify(project))
+      if(obj_move==false){
+      if(keyboard_check(vk_up)){this.mapY -= 5}
+      if(keyboard_check(vk_down)){this.mapY += 5}
+      if(keyboard_check(vk_left)){this.mapX -= 5}
+      if(keyboard_check(vk_right)){this.mapX += 5}
+      }
       let gs = this.mapG
       let mx = mouse_x;
       let my = mouse_y;
@@ -173,13 +209,13 @@ mapRect = { //mapRect.mapW
         mx = (floor((mouse_x-this.mapX)/gs)*gs)+this.mapX+4
         my = (floor((mouse_y-this.mapY)/gs)*gs)+this.mapY+4
       }
-    cursor(mx,my,gs,gs,cur_value)
+      cursor(mx,my,gs,gs,cur_value)
       
       mapCellX = 0;
       mapCellY = 0;
     if((mx-this.mapX-4)>0){mapCellX = (mx-this.mapX-4)/this.mapG}
     if((my-this.mapY-4)>0){mapCellY = (my-this.mapY-4)/this.mapG}
-     // document.title = mapCellX+' , '+mapCellY
+      // document.title = mapCellX+' , '+mapCellY
       if(mouse_check()){
         //drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
         if(mx>this.mapX && mx < this.mapX+this.mapW*this.mapG){
@@ -199,8 +235,8 @@ mapRect = { //mapRect.mapW
                   tId:selected.tId,
                   x:mx,
                   y:my,
-                  mapX:mapCellX,
-                  mapY:mapCellY,
+                  mapX:mapCellX+0.5,
+                  mapY:mapCellY+0.5,
                   w:1,
                   h:1,
                   rot:0,
@@ -217,14 +253,14 @@ mapRect = { //mapRect.mapW
             }else{
               if(mode==2){
                 for(let i = objects.length-1; i>=0; i--){
-                  //draw_image(tilesRect.sprite,this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
                   let cx = objects[i].mapX;
                   let cy = objects[i].mapY;
                   let obx = this.mapX+4+(cx*this.mapG);
                   let oby = this.mapY+4+(cy*this.mapG);
                   let scaledW = this.mapG*objects[i].w;
                   let scaledH = this.mapG*objects[i].h;
-                  if(inside(mouse_x, mouse_y, obx,oby, scaledW, scaledH, objects[i].rot,objects[i].ox,objects[i].oy)){
+                  draw_rectangle(obx-(scaledW/2),oby-(scaledH/2), scaledW, scaledH,true,objects[i].rot,objects[i].ox,objects[i].oy)
+                  if(inside(mouse_x, mouse_y, obx-(scaledW/2),oby-(scaledH/2), scaledW, scaledH, objects[i].rot,objects[i].ox,objects[i].oy)){
                     objects[i].sel=true
                   }else{
                     objects[i].sel=false
@@ -259,14 +295,16 @@ tilesRect = {
     
   },
   loop:function(){
-    if(objects.length>0){document.title = objects[0].w+'  ,   '+mapRect.mapG}
+  if(objects.length>0){document.title = objects[0].mapX+'  ,   '+objects[0].x}
     this.x = canvas.width/2;
     this.y = menuRect.h;
     this.w = canvas.width/2;
     this.h = canvas.height-menuRect.h;
     if(this.sprite!=null){
       if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
+        
         this.scale += wheelDir*0.25;
+        
         wheelDir=0;
         let gs = this.gridSize*this.scale
         let mx = (floor((mouse_x-this.x+4)/gs)*gs)+this.x+4
@@ -369,12 +407,19 @@ function start(){
     tilesRect.sprite = draw_set_image(project.tileSet)
     tiles = project.tiles;
     tiles2 = project.tiles2;
+    objects = project.objects;
   }
 }
 
 function loop(){
   
-if(keyboard_check_pressed(vk_delete)){selected.tId=-1;cur_value=null}
+  if(keyboard_check_pressed(vk_delete)){
+    selected.tId=-1;
+    cur_value=null;
+    for(let i = objects.length-1; i>=0; i--){
+    if(objects[i].sel==true){objects.splice(i,1)}
+    }
+  }
   mapRect.loop();
   menuRect.loop();
   tilesRect.loop();
