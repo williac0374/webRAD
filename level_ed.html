@@ -22,6 +22,7 @@ canvas {
 </head>
 
 <body>
+<input type="file" id="fileInput" accept=".json" style="display:none">
 <canvas id="canvas"></canvas>
 
 <script>
@@ -72,12 +73,37 @@ mapRect = { //mapRect.mapW
   mapH:10,
   mapG:16,
   draw:function(){
-    //  draw_rect_ol(this.x,this.y,this.w,this.h,4,[88,88,88],[255,255,255])
+    if(tilesRect.sprite!=null){
+      for (let y = 0; y < tiles.length; y++) {
+        for (let x = 0; x < tiles[y].length; x++) {
+          if(tiles[y][x]!=-1){
+            let tId = tiles[y][x];
+            let sx = tId%10*tilesRect.gridSize;
+            let sy = floor(tId/10)*tilesRect.gridSize;
+            draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+          }
+        }
+      }
+    }
+    
+    // ((selected.cellY*10)+selected.cellX)
     drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
     draw_set_color(255,255,255)
     draw_set_linewidth(8)
     draw_set_linedash([])
     draw_rectangle( this.x, this.y, this.w, this.h,true)
+    
+  },
+  init:function(){
+    tiles = [];
+    for (let i = 0; i < this.mapH; i++) {
+      var row = [];
+      for (let j = 0; j < this.mapW; j++) {
+        row.push(-1);
+      }
+      tiles.push(row);
+     }
+    project.tiles=tiles
     
   },
   loop:function(){
@@ -98,11 +124,25 @@ mapRect = { //mapRect.mapW
       let mx = (floor((mouse_x-this.mapX)/gs)*gs)+this.mapX+4
       let my = (floor((mouse_y-this.mapY)/gs)*gs)+this.mapY+4
       cursor(mx,my,gs,gs,cur_value)
-      document.title = this.mapX+'  ,  '+mx
+      mapCellX = 0;
+      mapCellY = 0;
+    if((mx-this.mapX-4)>0){mapCellX = (mx-this.mapX-4)/this.mapG}
+    if((my-this.mapY-4)>0){mapCellY = (my-this.mapY-4)/this.mapG}
+      // document.title = mapCellX+' , '+mapCellY
+      if(mouse_check()){
+        //drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
+        if(mx>this.mapX && mx < this.mapX+this.mapW*this.mapG){
+          if(my>this.mapY && my < this.mapY+this.mapH*this.mapG){
+            tiles[mapCellY][mapCellX]=selected.tId;//((selected.cellY*10)+selected.cellX)
+            project.tiles[mapCellY][mapCellX]=selected.tId;
+            localStorage.setItem("level_ed", JSON.stringify(project))
+          }
+        }
+      }
     }
   }
 }
-
+mapRect.init();
 tilesRect = {
   x:canvas.width/2,
   y:menuRect.h,
@@ -131,7 +171,9 @@ tilesRect = {
       wheelDir=0;
       let gs = this.gridSize*this.scale
       let mx = (floor((mouse_x-this.x+4)/gs)*gs)+this.x+4
+    if(mx>(this.sprite.width*this.scale+this.x+4)-gs){mx = (this.sprite.width*this.scale+this.x+4)-gs}
       let my = (floor((mouse_y-this.y+4)/gs)*gs)+this.y+4
+    if(my>(this.sprite.height*this.scale+this.y+4)-gs){my = (this.sprite.height*this.scale+this.y+4)-gs}
       //img.img,img.x,im.y,img.w,img.h  this.sprite
       let sx =(this.sprite.width*this.scale)
       cursor(mx,my,gs,gs,null)
@@ -142,10 +184,13 @@ tilesRect = {
         selected.h=gs;
         selected.cellX=(mx - (this.x+4))/((this.sprite.width*this.scale)/((this.sprite.width*this.scale)/(this.gridSize*this.scale)))
         selected.cellY=(my - (this.y+4))/((this.sprite.height*this.scale)/((this.sprite.height*this.scale)/(this.gridSize*this.scale)))
+        selected.tId = ((selected.cellY*10)+selected.cellX)
         cur_value = this.sprite;
       }
+      // document.title = mx + ' , ' + (this.sprite.width*this.scale+this.x+4)
     }
-    //document.title = selected.cellX+'  ,  '+selected.cellY;
+    let tId = ((selected.cellY*10)+selected.cellX)
+    //document.title = 'tID = '+tId+ ' , '+floor(tId/10)+' , '+(tId % 10)
   }
 }
 
@@ -154,6 +199,7 @@ selected = {
   y:0,
   w:0,
   h:0,
+  tId:-1,
   cellX:0,
   cellY:0,
   draw:function(){
@@ -200,24 +246,27 @@ function makeButton(x,y,label,funct){
 
 //makeButton(x,y,label,funct)
 makeButton(4,4,'load tSet','loadTiles()')
-makeButton(124,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile columns",tilesRect.gridSize))')
-makeButton(244,4,'mapW','mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW))')
-makeButton(364,4,'mapH','mapRect.mapH=parseInt(prompt("enter map height in cells",mapRect.mapH))')
-makeButton(484,4,'Save Project','')
-makeButton(604,4,'Load Project','')
+makeButton(124,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));mouse_down=false')
+makeButton(244,4,'mapW','mapRect.init();mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));mouse_down=false')
+makeButton(364,4,'mapH','mapRect.init();mapRect.mapH=parseInt(prompt("enter map height in cells",mapRect.mapH));mouse_down=false')
+makeButton(484,4,'Save Project','saveProject()')
+makeButton(604,4,'Load Project','load()')
 function start(){
   if(localStorage.getItem("level_ed")!=null){
     project=JSON.parse(localStorage.getItem("level_ed"))
     tilesRect.sprite = draw_set_image(project.tileSet)
+     tiles = project.tiles;
   }
 }
 
 function loop(){
+  document.title = selected.tId
+if(keyboard_check_pressed(vk_delete)){selected.tId=-1;cur_value=null}
   mapRect.loop();
   menuRect.loop();
   tilesRect.loop();
   //document.title = "MOUSE X: "+mouse_x+", Y: "+mouse_y
-if(keyboard_check_pressed(vk_delete)){localStorage.removeItem("level_ed")}
+if(keyboard_check_pressed(vk_space)){localStorage.removeItem("level_ed")}
 }
 
 function draw(){
@@ -241,7 +290,7 @@ function draw_selcted(x,y,w,h){
 }
 function cursor(x,y,w,h,img){//selected.cellX,selected.cellY,tilesRect.sprite,tilesRect.gridSize
   if(img!=null){
-   
+    
     draw_image(img,x,y,w,h,0,0,0,tilesRect.gridSize*selected.cellX, tilesRect.gridSize*selected.cellY,tilesRect.gridSize,tilesRect.gridSize)
   }
   draw_set_linewidth(1)
@@ -293,6 +342,36 @@ function loadTiles(){
     }
   });
   fileInput.click();
+}
+
+function saveProject() {
+    var content = JSON.stringify(project)
+    const blob = new Blob([content], { type: "text/json" }); // Create a Blob object with the JS content
+    const url = URL.createObjectURL(blob); // Create a URL for the Blob
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "map.json"; // Set the filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+function load(){
+  document.getElementById('fileInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/json') {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const fileContent = e.target.result;
+        project = JSON.parse(fileContent);  // Display as string
+        tiles = project.tiles;
+      };
+      reader.readAsText(file);  // Read the file content as text
+    } else {
+      alert('Please select a valid JSON file');
+    }
+  });
+  document.getElementById('fileInput').click();
 }
 </script>
 <script type='text/javascript' src='engine.js'></script>
