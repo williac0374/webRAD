@@ -38,7 +38,7 @@ function resizeCanvas() {
 // Call resizeCanvas immediately on load and bind to resize event
 setTimeout(function(){resizeCanvas()},10);
 window.addEventListener('resize', resizeCanvas);
-project = {tileSet:null};
+project = {tileSet:null,objects:[]};
 mode = 0;
 tiles = [];
 tiles2 = [];
@@ -102,7 +102,19 @@ mapRect = { //mapRect.mapW
           }
         }
       }
-      
+      for(let i = objects.length-1; i>=0; i--){
+        if(objects[i].tId!=-1){
+          let tId = objects[i].tId;
+          let x = objects[i].x;
+          let y = objects[i].y;
+          let cx = objects[i].mapX;
+          let cy = objects[i].mapY;
+          let sx = tId%10*tilesRect.gridSize;
+          let sy = floor(tId/10)*tilesRect.gridSize;
+          draw_image(tilesRect.sprite,this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+        }
+        
+      }
     }
     drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
     draw_set_color(255,255,255)
@@ -147,14 +159,19 @@ mapRect = { //mapRect.mapW
     if(keyboard_check(vk_right)){this.mapX += 5}
       
       let gs = this.mapG
-      let mx = (floor((mouse_x-this.mapX)/gs)*gs)+this.mapX+4
-      let my = (floor((mouse_y-this.mapY)/gs)*gs)+this.mapY+4
+      let mx = mouse_x;
+      let my = mouse_y;
+      if(mode<2){
+        mx = (floor((mouse_x-this.mapX)/gs)*gs)+this.mapX+4
+        my = (floor((mouse_y-this.mapY)/gs)*gs)+this.mapY+4
+      }
       cursor(mx,my,gs,gs,cur_value)
+      
       mapCellX = 0;
       mapCellY = 0;
     if((mx-this.mapX-4)>0){mapCellX = (mx-this.mapX-4)/this.mapG}
     if((my-this.mapY-4)>0){mapCellY = (my-this.mapY-4)/this.mapG}
-      // document.title = mapCellX+' , '+mapCellY
+      document.title = mapCellX+' , '+mapCellY
       if(mouse_check()){
         //drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
         if(mx>this.mapX && mx < this.mapX+this.mapW*this.mapG){
@@ -166,6 +183,25 @@ mapRect = { //mapRect.mapW
             if(mode==1){
               tiles2[mapCellY][mapCellX]=selected.tId;
               project.tiles2[mapCellY][mapCellX]=selected.tId;
+            }
+            if(mode==2){
+              let temp = {
+                name:'object',
+                tId:selected.tId,
+                x:mx,
+                y:my,
+                mapX:mapCellX,
+                mapY:mapCellY,
+                w:this.mapG,
+                h:this.mapG,
+                rot:0,
+                ox:0,
+                oy:0
+              }
+              objects.push(temp);
+              project.objects = objects;
+              mouse_down=false;
+              console.log(objects)
             }
             localStorage.setItem("level_ed", JSON.stringify(project))
           }
