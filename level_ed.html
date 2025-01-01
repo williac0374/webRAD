@@ -102,7 +102,7 @@ mapRect = { //mapRect.mapW
         row.push(-1);
       }
       tiles.push(row);
-     }
+    }
     project.tiles=tiles
     
   },
@@ -162,35 +162,46 @@ tilesRect = {
     
   },
   loop:function(){
+    
     this.x = canvas.width/2;
     this.y = menuRect.h;
     this.w = canvas.width/2;
     this.h = canvas.height-menuRect.h;
-    if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
-      this.scale += wheelDir*0.25;
-      wheelDir=0;
-      let gs = this.gridSize*this.scale
-      let mx = (floor((mouse_x-this.x+4)/gs)*gs)+this.x+4
-    if(mx>(this.sprite.width*this.scale+this.x+4)-gs){mx = (this.sprite.width*this.scale+this.x+4)-gs}
-      let my = (floor((mouse_y-this.y+4)/gs)*gs)+this.y+4
-    if(my>(this.sprite.height*this.scale+this.y+4)-gs){my = (this.sprite.height*this.scale+this.y+4)-gs}
-      //img.img,img.x,im.y,img.w,img.h  this.sprite
-      let sx =(this.sprite.width*this.scale)
-      cursor(mx,my,gs,gs,null)
-      if(mouse_check_pressed()){
-        selected.x=mx;
-        selected.y=my;
-        selected.w=gs;
-        selected.h=gs;
-        selected.cellX=(mx - (this.x+4))/((this.sprite.width*this.scale)/((this.sprite.width*this.scale)/(this.gridSize*this.scale)))
-        selected.cellY=(my - (this.y+4))/((this.sprite.height*this.scale)/((this.sprite.height*this.scale)/(this.gridSize*this.scale)))
-        selected.tId = ((selected.cellY*10)+selected.cellX)
-        cur_value = this.sprite;
+    if(this.sprite!=null){
+      if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
+        this.scale += wheelDir*0.25;
+        wheelDir=0;
+        let gs = this.gridSize*this.scale
+        let mx = (floor((mouse_x-this.x+4)/gs)*gs)+this.x+4
+      if(mx>(this.sprite.width*this.scale+this.x+4)-gs){mx = (this.sprite.width*this.scale+this.x+4)-gs}
+        let my = (floor((mouse_y-this.y+4)/gs)*gs)+this.y+4
+      if(my>(this.sprite.height*this.scale+this.y+4)-gs){my = (this.sprite.height*this.scale+this.y+4)-gs}
+        //img.img,img.x,im.y,img.w,img.h  this.sprite
+        let sx =(this.sprite.width*this.scale)
+        cursor(mx,my,gs,gs,null)
+        if(mouse_check_pressed()){
+          selected.x=mx;
+          selected.y=my;
+          selected.w=gs;
+          selected.h=gs;
+          selected.cellX=(mx - (this.x+4))/((this.sprite.width*this.scale)/((this.sprite.width*this.scale)/(this.gridSize*this.scale)))
+          selected.cellY=(my - (this.y+4))/((this.sprite.height*this.scale)/((this.sprite.height*this.scale)/(this.gridSize*this.scale)))
+          selected.tId = ((selected.cellY*10)+selected.cellX)
+          cur_value = this.sprite;
+        }
+        // document.title = mx + ' , ' + (this.sprite.width*this.scale+this.x+4)
       }
-      // document.title = mx + ' , ' + (this.sprite.width*this.scale+this.x+4)
+      let tId = ((selected.cellY*10)+selected.cellX)
+      //document.title = 'tID = '+tId+ ' , '+floor(tId/10)+' , '+(tId % 10)
+    }else{
+      draw_set_color(0,0,0);
+      draw_centered_text(this.x+(this.w/2), this.y+(this.h/2), "NO TILESET LOADED", this.w/20)
+      draw_set_color(0,255,0);
+      draw_set_linewidth(irandom(8))
+      draw_rectangle(menuRect.x+4, menuRect.y+4, 120, menuRect.h-8,true,0,0,0)
+    
+      
     }
-    let tId = ((selected.cellY*10)+selected.cellX)
-    //document.title = 'tID = '+tId+ ' , '+floor(tId/10)+' , '+(tId % 10)
   }
 }
 
@@ -245,17 +256,17 @@ function makeButton(x,y,label,funct){
 }
 
 //makeButton(x,y,label,funct)
-makeButton(4,4,'load tSet','loadTiles()')
+makeButton(4,4,'load tSet','loadTiles();mouse_down=false')
 makeButton(124,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));mouse_down=false')
 makeButton(244,4,'mapW','mapRect.init();mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));mouse_down=false')
 makeButton(364,4,'mapH','mapRect.init();mapRect.mapH=parseInt(prompt("enter map height in cells",mapRect.mapH));mouse_down=false')
-makeButton(484,4,'Save Project','saveProject()')
-makeButton(604,4,'Load Project','load()')
+makeButton(484,4,'Save Project','saveProject();mouse_down=false')
+makeButton(604,4,'Load Project','load();mouse_down=false')
 function start(){
   if(localStorage.getItem("level_ed")!=null){
     project=JSON.parse(localStorage.getItem("level_ed"))
     tilesRect.sprite = draw_set_image(project.tileSet)
-     tiles = project.tiles;
+    tiles = project.tiles;
   }
 }
 
@@ -345,16 +356,16 @@ function loadTiles(){
 }
 
 function saveProject() {
-    var content = JSON.stringify(project)
-    const blob = new Blob([content], { type: "text/json" }); // Create a Blob object with the JS content
-    const url = URL.createObjectURL(blob); // Create a URL for the Blob
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "map.json"; // Set the filename
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  var content = JSON.stringify(project)
+const blob = new Blob([content], { type: "text/json" }); // Create a Blob object with the JS content
+  const url = URL.createObjectURL(blob); // Create a URL for the Blob
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "map.json"; // Set the filename
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 function load(){
   document.getElementById('fileInput').addEventListener('change', function(event) {
