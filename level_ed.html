@@ -114,7 +114,7 @@ mapRect = { //mapRect.mapW
           let sx = tId%10*tilesRect.gridSize;
           let sy = floor(tId/10)*tilesRect.gridSize;
           let ox = (this.mapG*objects[i].w)/2;
-          let oy = (this.mapG*objects[i].h)/2
+          let oy = (this.mapG*objects[i].h)/2;
           draw_image(tilesRect.sprite,this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,objects[i].rot,ox,oy,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
           if(objects[i].sel==true){
             draw_set_color(255,255,255)
@@ -154,7 +154,8 @@ mapRect = { //mapRect.mapW
       tiles2.push(row);
     }
     project.tiles2=tiles2;
-    
+    project.mapW = this.mapW;
+    project.mapH = this.mapH;
   },
   loop:function(){
     this.x = 0;
@@ -259,8 +260,13 @@ mapRect = { //mapRect.mapW
                   let oby = this.mapY+4+(cy*this.mapG);
                   let scaledW = this.mapG*objects[i].w;
                   let scaledH = this.mapG*objects[i].h;
+                  let ox = (this.mapG*objects[i].w)/2;
+                  let oy = (this.mapG*objects[i].h)/2;
+                  draw_set_color(255,0,255)
+                  draw_rectangle(obx,oby,scaledW,scaledH,true,objects[i].rot,ox,oy)
+                  draw_set_color(0,255,0)
                   draw_rectangle(obx-(scaledW/2),oby-(scaledH/2), scaledW, scaledH,true,objects[i].rot,objects[i].ox,objects[i].oy)
-                  if(inside(mouse_x, mouse_y, obx-(scaledW/2),oby-(scaledH/2), scaledW, scaledH, objects[i].rot,objects[i].ox,objects[i].oy)){
+                  if(inside(mouse_x, mouse_y, obx-(scaledW/2),oby-(scaledH/2), scaledW, scaledH,true,objects[i].rot,ox,oy)){
                     objects[i].sel=true
                   }else{
                     objects[i].sel=false
@@ -393,8 +399,8 @@ function makeButton(x,y,label,funct){
 //makeButton(x,y,label,funct)
 makeButton(4,4,'load tSet','loadTiles();mouse_down=false');
 makeButton(104,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));mouse_down=false');
-makeButton(204,4,'mapW','mapRect.init();mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));mouse_down=false');
-makeButton(304,4,'mapH','mapRect.init();mapRect.mapH=parseInt(prompt("enter map height in cells",mapRect.mapH));mouse_down=false');
+makeButton(204,4,'mapW','mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));mapRect.init();mouse_down=false');
+makeButton(304,4,'mapH','mapRect.mapH=parseInt(prompt("enter map height in cells",mapRect.mapH));mapRect.init();mouse_down=false');
 makeButton(404,4,'Save Project','saveProject();mouse_down=false');
 makeButton(504,4,'Load Project','load();mouse_down=false');
 makeButton(604,4,'Tiles1','mode=0;mouse_down=false');
@@ -408,6 +414,8 @@ function start(){
     tiles = project.tiles;
     tiles2 = project.tiles2;
     objects = project.objects;
+    mapRect.mapW =  project.mapW;
+    mapRect.mapH = project.mapH;
   }
 }
 
@@ -424,7 +432,7 @@ function loop(){
   menuRect.loop();
   tilesRect.loop();
   //document.title = "MOUSE X: "+mouse_x+", Y: "+mouse_y
-if(keyboard_check_pressed(vk_space)){localStorage.removeItem("level_ed")}
+if(keyboard_check_pressed(vk_space)){localStorage.removeItem("level_ed");window.close()}
 }
 
 function draw(){
