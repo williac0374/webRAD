@@ -313,13 +313,14 @@ tilesRect = {
   sprite:null,
   scale:1,
   draw:function(){
+    if(menuRect.mode==0){
     draw_rect_ol(this.x,this.y,this.w,this.h,4,[88,88,88],[255,255,255])
     if(this.sprite!=null){
       draw_image(this.sprite,this.x+4,this.y+4,this.sprite.width*this.scale,this.sprite.height*this.scale)
       drawG(this.x+4,this.y+4,this.gridSize*this.scale,this.gridSize*this.scale,this.sprite.width*this.scale,this.sprite.height*this.scale);
       
     }
-    
+    }
     
   },
   loop:function(){
@@ -376,13 +377,25 @@ selected = {
   cellX:0,
   cellY:0,
   draw:function(){
+    if(menuRect.mode==0){
     draw_set_linewidth(1.5)
     draw_set_color(255,255,255)
     draw_set_linedash([])
     draw_rectangle(this.x, this.y, this.w, this.h,true)
     draw_set_linedash([])
+    }
   }
 }
+code = {
+  x:tilesRect.x+4,
+  y:tilesRect.y+4,
+  w:tilesRect.w
+  
+  
+}
+
+
+
 function makeButton(x,y,label,funct){
   temp = {
     x:menuRect.x+x,
