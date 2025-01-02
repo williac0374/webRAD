@@ -339,7 +339,7 @@ tilesRect = {
       draw_centered_text(this.x+(this.w/2), this.y+(this.h/2), "NO TILESET LOADED", this.w/20)
       draw_set_color(0,255,0);
       draw_set_linewidth(irandom(8))
-      draw_rectangle(menuRect.x+4, menuRect.y+4, 120, menuRect.h-8,true,0,0,0)
+      draw_rectangle(menuRect.x+4, menuRect.y+4, 100, menuRect.h-8,true,0,0,0)
       
       
     }
@@ -530,7 +530,13 @@ function load(){
       reader.onload = function(e) {
         const fileContent = e.target.result;
         project = JSON.parse(fileContent);  // Display as string
+        tilesRect.sprite = draw_set_image(project.tileSet)
         tiles = project.tiles;
+        tiles2 = project.tiles2;
+        objects = project.objects;
+        mapRect.mapW =  project.mapW;
+        mapRect.mapH = project.mapH;
+        
       };
       reader.readAsText(file);  // Read the file content as text
     } else {
