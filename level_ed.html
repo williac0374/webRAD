@@ -26,7 +26,7 @@ canvas {
 <canvas id="canvas"></canvas>
 
 <script>
-// localStorage.removeItem("level_ed")
+// localStorage.removeItem("level_ed");window.close()
 window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
 function resizeCanvas() {
   var WIDTH = window.visualViewport ? window.visualViewport.width : window.innerWidth;
@@ -273,6 +273,16 @@ mapRect = { //mapRect.mapW
                   }
                 }
                 
+              }else{
+                if(mode==0){
+                tiles[mapCellY][mapCellX]=selected.tId;
+                project.tiles[mapCellY][mapCellX]=selected.tId;
+              }
+              if(mode==1){
+                tiles2[mapCellY][mapCellX]=selected.tId;
+                project.tiles2[mapCellY][mapCellX]=selected.tId;
+              }
+                
               }
             }
           }
@@ -345,7 +355,7 @@ tilesRect = {
     }
   }
 }
-
+project.gridSize=tilesRect.gridSize
 selected = {
   x:0,
   y:0,
@@ -398,7 +408,7 @@ function makeButton(x,y,label,funct){
 
 //makeButton(x,y,label,funct)
 makeButton(4,4,'load tSet','loadTiles();mouse_down=false');
-makeButton(104,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));mouse_down=false');
+makeButton(104,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));project.gridSize=tilesRect.gridSize;mouse_down=false');
 makeButton(204,4,'mapW','mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));mapRect.init();mouse_down=false');
 makeButton(304,4,'mapH','mapRect.mapH=parseInt(prompt("enter map height in cells",mapRect.mapH));mapRect.init();mouse_down=false');
 makeButton(404,4,'Save Project','saveProject();mouse_down=false');
@@ -416,6 +426,7 @@ function start(){
     objects = project.objects;
     mapRect.mapW =  project.mapW;
     mapRect.mapH = project.mapH;
+    tilesRect.gridSize = project.gridSize
   }
 }
 
