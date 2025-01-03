@@ -22,6 +22,7 @@ vk_x = 88, vk_y = 89, vk_z = 90,
 // i/o variables:
 mouse_x = mouse_y = 0, mouse_down = mouse_pressed = mouse_released = false,wheelDir=0,
 key_down = [], key_pressed = [], key_released = [],all_keys_pressed = [],all_keys_released = [];
+vk_all_keys = [];
 function make_sound(_src,buffers){
   if (_src != '') {
     let temp = [];
@@ -227,6 +228,7 @@ function kDown(e){
   if(e.repeat){
     return;
   }
+  vk_all_keys.push(e.key)
   var keyCode = e.keyCode;
   if (!key_down[keyCode]) {
     key_pressed[keyCode] = true;
