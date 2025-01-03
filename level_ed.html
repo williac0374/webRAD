@@ -26,6 +26,11 @@ canvas {
 <canvas id="canvas"></canvas>
 
 <script>
+  
+  tester = {
+
+}
+  
 document.title=''
 //localStorage.removeItem("level_ed");window.close()
 window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
@@ -251,6 +256,9 @@ mapRect = { //mapRect.mapW
                   rot:0,
                   ox:0,
                   oy:0,
+                  startCode:'',
+                  loopCode:'',
+                  drawCode:'',
                   sel:false
                 }
                 objects.push(temp);
@@ -278,8 +286,11 @@ mapRect = { //mapRect.mapW
                   draw_set_linedash([])
                   if(inside(mouse_x, mouse_y, obx-(scaledW/2),oby-(scaledH/2), scaledW, scaledH,true,objects[i].rot,ox,oy)){
                     objects[i].sel=true;
-                    object_code=JSON.stringify(objects[i])
-                    text_area(tilesRect.x+4, tilesRect.y+4, tilesRect.w*0.94, tilesRect.h*0.94, object_code);
+                    if(textarea==null){
+                      object_code=JSON.stringify(objects[i].loopCode)
+                      
+                      text_area(tilesRect.x+4, tilesRect.y+4, tilesRect.w*0.94, tilesRect.h*0.94, object_code);
+                    }
                     noneSelected = false;
                     ;mouse_down=false;
                   }else{
@@ -289,7 +300,7 @@ mapRect = { //mapRect.mapW
                 }
                 if(noneSelected==true){
                   if(document.getElementById('codeIDE')!=null){
-                      document.getElementById('codeIDE').remove();
+                    document.getElementById('codeIDE').kill();
                   }
                   menuRect.mode=0;
                   
@@ -466,7 +477,7 @@ function start(){
     tiles2 = project.tiles2;
     objects = project.objects;
     mapRect.mapW =  project.mapW;
-    mapRect.mapH = project.mapH;document.getElementById('codeIDE')
+    mapRect.mapH = project.mapH;
     tilesRect.gridSize = project.gridSize
   }
 }
@@ -483,8 +494,11 @@ function loop(){ //;vk_all_keys=[]
   mapRect.loop();
   menuRect.loop();
   tilesRect.loop();
-  //document.title = "MOUSE X: "+mouse_x+", Y: "+mouse_y
-  
+  //tester
+  if(keyboard_check_pressed(vk_l)){objects[0].newFunct = new Function([],objects[0].loopCode)}
+    if(keyboard_check_pressed(vk_s)){objects[0].newFunct = new Function([],objects[0].startCode)}
+    if(keyboard_check_pressed(vk_d)){objects[0].newFunct = new Function([],objects[0].drawCode)}
+    if(keyboard_check_pressed(vk_enter)){objects[0].newFunct()}
 }
 
 
@@ -595,40 +609,54 @@ function load(){
       alert('Please select a valid JSON file');
     }
   });
-  document.getElementById('fileInput').click(); 
+  document.getElementById('fileInput').click();
 }
-textarea = null
+textarea = null;
 function text_area(left, top, width, height, initial_text) {
-    // Create a textarea element
-    textarea = document.createElement('textarea');
-
-    // Set styles for the textarea
-    textarea.id = 'codeIDE'
-    textarea.style.position = 'absolute';
-    textarea.style.left = `${left}px`;
-    textarea.style.top = `${top}px`;
-    textarea.style.width = `${width}px`;
-    textarea.style.height = `${height}px`;
-    textarea.style.backgroundColor = 'black';
-    textarea.style.color = 'white';
-    textarea.style.border = 'none';
-    textarea.style.outline = 'none';
-    textarea.style.resize = 'none';
-    textarea.style.padding = '10px';
-    textarea.style.fontFamily = 'monospace';
-    textarea.style.fontSize = '16px';
-    textarea.value = initial_text;
-    textarea.onchange = function(){
-      for(let i = objects.length-1; i>=0; i--){
-        if(objects[i].sel==true){
-          objects[i]==this.value
-        }
+  // Create a textarea element
+  textarea = document.createElement('textarea');
+  
+  // Set styles for the textarea
+  textarea.id = 'codeIDE'
+  textarea.style.position = 'absolute';
+textarea.style.left = `${left}px`;
+textarea.style.top = `${top}px`;
+textarea.style.width = `${width}px`;
+textarea.style.height = `${height}px`;
+  textarea.style.backgroundColor = 'black';
+  textarea.style.color = 'white';
+  textarea.style.border = 'none';
+  textarea.style.outline = 'none';
+  textarea.style.resize = 'none';
+  textarea.style.padding = '10px';
+  textarea.style.fontFamily = 'monospace';
+  textarea.style.fontSize = '26px'; 
+  textarea.style.whiteSpace = "pre-wrap";
+  const formattedString = initial_text.replace(/^"|"$/g, '').replace(/\\n/g, '\n'); 
+  textarea.value = formattedString
+  textarea.onchange = function(){
+    for(let i = objects.length-1; i>=0; i--){
+      if(objects[i].sel==true){
+        objects[i].loopCode=this.value;
       }
     }
-    // Append the textarea to the body
-    document.body.appendChild(textarea);
-
+  };
+  textarea.kill = function(){
+    this.remove();
+    textarea = null;
+  };
+  textarea.run = function(){
+    
+    
+  }
+  // Append the textarea to the body
+  document.body.appendChild(textarea);
+  
 }
+
+
+
+
 </script>
 <script type='text/javascript' src='engine.js'></script>
 
