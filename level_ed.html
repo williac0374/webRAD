@@ -708,10 +708,10 @@ textarea.style.height = `${height}px`;
 
 
   function test(){
-    var content = document.title.split('.')[0]+" = " + JSON.stringify(project)
+    var content = JSON.stringify(project)
     localStorage.setItem("level_ed_test", content)
-    var myWindow = window.open();
-    myWindow.document.write(content);
+    var myWindow = window.open('level_Play_tester.html');
+    
 
     
   }
