@@ -30,40 +30,6 @@ window.onerror = function(message, source, lineno, colno, error) {let code = loc
 
 canvas.width=0;
 canvas.height=0;
-
-
-/*
-
-game_sprite_example = draw_set_image('icon.png');
-
-
-game_object_example = {
-  name:"fred",
-  sprite:game_sprite_example,
-  x:0,
-  y:0,
-  w:32,
-  h:32,
-  dx:0,
-  dy:0,
-  rot:0,
-  ox:0,
-  oy:0,
-  move:function(){
-    this.x += this.dx;
-    this.y += this.dy;
-  },
-  draw:function(){
-    draw_image(this.sprite,this.x,this.y,this.w,this.h,this.rot,this.ox,this.oy)
-  },
-  loop:function(){
-    this.move();
-    this.draw();
-    
-  }
-}
-
-*/
 tileset = ''
 tiles = [];
 tiles2 = [];;
@@ -83,6 +49,48 @@ function load_map(m){
   canvas.height=mapH*gridSize;
 }
 
+function draw_map(){ // tiles and tiles2 are the same size so Ill combine them
+  for (let y = 0; y < tiles.length; y++) {
+    for (let x = 0; x < tiles[y].length; x++) {
+      if(tiles[y][x]!=-1){
+        let tId = tiles[y][x];
+        let sx = tId%10*gridSize;
+        let sy = floor(tId/10)*gridSize;
+        draw_image(tileset,x*gridSize,y*gridSize,gridSize,gridSize,0,0,0,sx,sy,gridSize,gridSize)
+      }
+      if(tiles2[y][x]!=-1){
+        let tId = tiles2[y][x];
+        let sx = tId%10*gridSize;
+        let sy = floor(tId/10)*gridSize;
+        draw_image(tileset,x*gridSize,y*gridSize,gridSize,gridSize,0,0,0,sx,sy,gridSize,gridSize)
+      }
+    }
+  }
+  // draws game objects
+  for(let i = objects.length-1; i>=0; i--){
+    
+    if(objects[i].tId!=-1){
+      /* */
+      let tId = objects[i].tId;
+      let x = objects[i].mapX*gridSize;
+      let y = objects[i].mapX*gridSize;
+      let w = objects[i].w*gridSize;
+      let h = objects[i].h*gridSize;
+      let rot = objects[i].rot;
+      let sx = tId%10*gridSize;
+      let sy = floor(tId/10)*gridSize;
+      let ox = (gridSize*objects[i].w)/2;
+      let oy = (gridSize*objects[i].h)/2;
+      
+      //draw_image(tileset,x,y,w,h,rot,ox,oy,source_x,source_y,source_w,source_h)
+     draw_image(tileset,x,y,w,h,rot,ox,oy,sx,sy,gridSize,gridSize)
+    }
+    
+  }
+  
+}
+
+
 
 function start(){
   load_map(map)
@@ -90,11 +98,11 @@ function start(){
 
 
 function loop(){
-  
+  document.title = gridSize
 }
 
 function draw(){
-  
+  draw_map()
 }
 
 
