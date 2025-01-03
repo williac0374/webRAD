@@ -43,10 +43,10 @@ function resizeCanvas() {
 setTimeout(function(){
   resizeCanvas();
   setTimeout(function(){
-    makeButton(tilesRect.x+4,4,'START','scriptMode=0;mouse_down=false');
-    makeButton(tilesRect.x+104,4,'LOOP','scriptMode=1;mouse_down=false');
-    makeButton(tilesRect.x+204,4,'DRAW','scriptMode=2;mouse_down=false');
-  },10);
+    makeButton(tilesRect.x+4,4,'START','scriptMode=0;show_code();mouse_down=false');
+    makeButton(tilesRect.x+104,4,'LOOP','scriptMode=1;show_code();mouse_down=false');
+    makeButton(tilesRect.x+204,4,'DRAW','scriptMode=2;show_code();mouse_down=false');
+  },1000);
 },10);
 window.addEventListener('resize', resizeCanvas);
 project = {tileSet:null,objects:[]};
@@ -75,13 +75,13 @@ menuRect = {
     this.w = canvas.width;
     this.h = 50;
     if(this.mode==0){
-      for(let i = 0; i < 10; i++){
+      for(let i = 0; i < 11; i++){
         buttons[i].loop();
         buttons[i].draw();
       }
     }
     if(this.mode==1){
-      for(let i = 10; i < 13; i++){
+      for(let i = 11; i < 14; i++){
         buttons[i].loop();
         buttons[i].draw();
       }
@@ -94,11 +94,7 @@ menuRect = {
     if(mode==1){draw_rectangle(this.x+604+100, this.y+6, 96, this.h-12,true,0,0,0)}
     if(mode==2){draw_rectangle(this.x+604+200, this.y+6, 96, this.h-12,true,0,0,0)}
     }
-    /*
-    makeButton(tilesRect.x+4,4,'START','scriptMode=0;mouse_down=false');
-    makeButton(tilesRect.x+104,4,'LOOP','scriptMode=1;mouse_down=false');
-    makeButton(tilesRect.x+204,4,'DRAW','scriptMode=2;mouse_down=false');
-    */
+    
     if(menuRect.mode==1){
       draw_set_color(0,255,0);
       draw_set_linewidth(8);
@@ -308,12 +304,18 @@ mapRect = { //mapRect.mapW
                   draw_set_linedash([8,2])
                   draw_rectangle(obx,oby,scaledW,scaledH,true,objects[i].rot,ox,oy)
                   draw_set_linedash([])
-                  if(inside(mouse_x, mouse_y, obx-(scaledW/2),oby-(scaledH/2), scaledW, scaledH,true,objects[i].rot,ox,oy)){
+                  if(inside(mouse_x, mouse_y, obx-(scaledW/2),oby-(scaledH/2), scaledW, scaledH,true,objects[i].rot,ox,oy)&&textarea==null){
                     objects[i].sel=true;
                     if(textarea==null){
-                      object_code=JSON.stringify(objects[i].loopCode)
-                      
+                    if(scriptMode==0){object_code=JSON.stringify(objects[i].startCode)}
+                    if(scriptMode==1){object_code=JSON.stringify(objects[i].loopCode)}
+                    if(scriptMode==2){object_code=JSON.stringify(objects[i].drawCode)}
                       text_area(tilesRect.x+4, tilesRect.y+4, tilesRect.w*0.94, tilesRect.h*0.94, object_code);
+                    }else{
+                    if(scriptMode==0){object_code=JSON.stringify(objects[i].startCode)}
+                    if(scriptMode==1){object_code=JSON.stringify(objects[i].loopCode)}
+                    if(scriptMode==2){object_code=JSON.stringify(objects[i].drawCode)}
+                      document.getElementById('codeIDE').value = object_code;
                     }
                     noneSelected = false;
                     ;mouse_down=false;
@@ -491,7 +493,7 @@ makeButton(604,4,'Tiles1','mode=0;mouse_down=false');
 makeButton(704,4,'Tiles2','mode=1;mouse_down=false');
 makeButton(804,4,'Objects','mode=2;mouse_down=false');
 makeButton(904,4,'Snap2Grid','if(snapped==true){snapped=false;buttons[9].label="FreeMove"}else{snapped=true;buttons[9].label="Snap2Grid"};mouse_down=false');
-
+makeButton(1004,4,'exportJS','exportJS();mouse_down=false');
 codeEdit = function(){}
 function start(){
   
@@ -508,22 +510,28 @@ function start(){
 }
 
 function loop(){ //;vk_all_keys=[]
-  document.title = menuRect.mode
-  if(keyboard_check_pressed(vk_delete)){
+  document.title = mouse_x
+  if(keyboard_check_pressed(vk_delete)&&mouse_x<window.innerWidth/2){
     selected.tId=-1;
     cur_value=null;
     for(let i = objects.length-1; i>=0; i--){
     if(objects[i].sel==true){objects.splice(i,1)}
     }
+    if(textarea!=null){textarea.kill()}
+    textarea==null;
+    menuRect.mode=0;
   }
   mapRect.loop();
   menuRect.loop();
   tilesRect.loop();
   //tester
-if(keyboard_check_pressed(vk_l)){objects[0].newFunct = new Function([],objects[0].loopCode)}
-if(keyboard_check_pressed(vk_s)){objects[0].newFunct = new Function([],objects[0].startCode)}
-if(keyboard_check_pressed(vk_d)){objects[0].newFunct = new Function([],objects[0].drawCode)}
-if(keyboard_check_pressed(vk_enter)){objects[0].newFunct()}
+if(keyboard_check_pressed(vk_t)&&textarea==null){
+  objects[0].loop = new Function([],objects[0].loopCode);
+
+}
+//if(keyboard_check_pressed(vk_s)){objects[0].newFunct = new Function([],objects[0].startCode)}
+//if(keyboard_check_pressed(vk_d)){objects[0].newFunct = new Function([],objects[0].drawCode)}
+//if(keyboard_check_pressed(vk_enter)){objects[0].newFunct()}
 }
 
 
@@ -614,6 +622,18 @@ const blob = new Blob([content], { type: "text/json" }); // Create a Blob object
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
+function exportJS() {
+  var content = JSON.stringify(project)
+const blob = new Blob([content], { type: "text/javascript" }); // Create a Blob object with the JS content
+  const url = URL.createObjectURL(blob); // Create a URL for the Blob
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "map.js"; // Set the filename
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
 function load(){
   document.getElementById('fileInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
@@ -635,6 +655,16 @@ function load(){
     }
   });
   document.getElementById('fileInput').click();
+}
+function show_code(){
+   for(let i = objects.length-1; i>=0; i--){
+     if(objects[i].sel==true){
+if(scriptMode==0){object_code=JSON.stringify(objects[i].startCode)}
+if(scriptMode==1){object_code=JSON.stringify(objects[i].loopCode)}
+if(scriptMode==2){object_code=JSON.stringify(objects[i].drawCode)}
+  document.getElementById('codeIDE').value =object_code.replace(/^"|"$/g, '').replace(/\\n/g, '\n');
+     }
+   }
 }
 textarea = null;
 function text_area(left, top, width, height, initial_text) {
@@ -662,7 +692,9 @@ textarea.style.height = `${height}px`;
   textarea.onchange = function(){
     for(let i = objects.length-1; i>=0; i--){
       if(objects[i].sel==true){
-        objects[i].loopCode=this.value;
+      if(scriptMode==0){objects[i].startCode=this.value}
+      if(scriptMode==1){objects[i].loopCode=this.value}
+      if(scriptMode==2){objects[i].drawCode=this.value}
       }
     }
   };
