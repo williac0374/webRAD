@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basic Template</title>
+<style>
+body{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: black;
+  
+}
+canvas {
+  // border: 2px solid #000;
+  background-color: white;
+  height:100vh;
+}
+</style>
+</head>
+<script type='text/javascript' src='map.js'></script>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+
+canvas.width=0;
+canvas.height=0;
+
+
+/*
+
+game_sprite_example = draw_set_image('icon.png');
+
+
+game_object_example = {
+  name:"fred",
+  sprite:game_sprite_example,
+  x:0,
+  y:0,
+  w:32,
+  h:32,
+  dx:0,
+  dy:0,
+  rot:0,
+  ox:0,
+  oy:0,
+  move:function(){
+    this.x += this.dx;
+    this.y += this.dy;
+  },
+  draw:function(){
+    draw_image(this.sprite,this.x,this.y,this.w,this.h,this.rot,this.ox,this.oy)
+  },
+  loop:function(){
+    this.move();
+    this.draw();
+    
+  }
+}
+
+*/
+tileset = ''
+tiles = [];
+tiles2 = [];;
+objects = [];
+mapW = 0;
+mapH = 0;
+gridSize = 0;
+function load_map(m){
+  tileset = draw_set_image(m.tileSet)
+  tiles = m.tiles;
+  tiles2 = m.tiles2;
+  objects = m.objects
+  mapW = m.mapW
+  mapH = m.mapH
+  gridSize = m.gridSize
+  canvas.width=mapW*gridSize;
+  canvas.height=mapH*gridSize;
+}
+
+
+function start(){
+  load_map(map)
+}
+
+
+function loop(){
+  
+}
+
+function draw(){
+  
+}
+
+
+
+
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
