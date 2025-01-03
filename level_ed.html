@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Basic Template</title>
+<title>Level_Ed</title>
 <style>
 body{
   margin: 0;
@@ -29,7 +29,6 @@ canvas {
 
 
 
-document.title=''
 //localStorage.removeItem("level_ed");window.close()
 window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
 function resizeCanvas() {
@@ -75,13 +74,13 @@ menuRect = {
     this.w = canvas.width;
     this.h = 50;
     if(this.mode==0){
-      for(let i = 0; i < 11; i++){
+      for(let i = 0; i < 12; i++){
         buttons[i].loop();
         buttons[i].draw();
       }
     }
     if(this.mode==1){
-      for(let i = 11; i < 14; i++){
+      for(let i = 12; i < 15; i++){
         buttons[i].loop();
         buttons[i].draw();
       }
@@ -94,8 +93,7 @@ menuRect = {
     if(mode==1){draw_rectangle(this.x+604+100, this.y+6, 96, this.h-12,true,0,0,0)}
     if(mode==2){draw_rectangle(this.x+604+200, this.y+6, 96, this.h-12,true,0,0,0)}
     }
-    
-    if(menuRect.mode==1){
+       if(menuRect.mode==1){
       draw_set_color(0,255,0);
       draw_set_linewidth(8);
     if(scriptMode==0){draw_rectangle(tilesRect.x+4, this.y+6, 96, this.h-12,true,0,0,0)}
@@ -104,7 +102,7 @@ menuRect = {
     }
   }
 }
-mapRect = { //mapRect.mapW
+mapRect = {
   x:0,
   y:menuRect.h,
   w:canvas.width/2,
@@ -159,13 +157,11 @@ mapRect = { //mapRect.mapW
         
       }
     }
-    
-    draw_set_color(255,255,255)
+     draw_set_color(255,255,255)
     draw_set_linewidth(8)
     draw_set_linedash([])
     draw_rectangle( this.x, this.y, this.w, this.h,true)
-    
-  },
+   },
   init:function(){
     objects = [];
     project.objects = objects;
@@ -244,15 +240,12 @@ mapRect = { //mapRect.mapW
         my = (floor((mouse_y-this.mapY)/gs)*gs)+this.mapY+4
       }
       cursor(mx,my,gs,gs,cur_value)
-      
-      mapCellX = 0;
+       mapCellX = 0;
       mapCellY = 0;
     if((mx-this.mapX-4)>0){mapCellX = (mx-this.mapX-4)/this.mapG}
     if((my-this.mapY-4)>0){mapCellY = (my-this.mapY-4)/this.mapG}
-      // document.title = mapCellX+' , '+mapCellY
       if(mouse_check()){
-        //drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
-        if(mx>this.mapX && mx < this.mapX+this.mapW*this.mapG){
+           if(mx>this.mapX && mx < this.mapX+this.mapW*this.mapG){
           if(my>this.mapY && my < this.mapY+this.mapH*this.mapG){
             if(cur_value!=null){
               if(mode==0){
@@ -374,8 +367,7 @@ tilesRect = {
   },
   loop:function(){
     if(menuRect.mode==0){
-    //if(objects.length>0){document.title = objects[0].mapX+'  ,   '+objects[0].x}
-      this.x = canvas.width/2;
+        this.x = canvas.width/2;
       this.y = menuRect.h;
       this.w = canvas.width/2;
       this.h = canvas.height-menuRect.h;
@@ -390,7 +382,7 @@ tilesRect = {
         if(mx>(this.sprite.width*this.scale+this.x+4)-gs){mx = (this.sprite.width*this.scale+this.x+4)-gs}
           let my = (floor((mouse_y-this.y+4)/gs)*gs)+this.y+4
         if(my>(this.sprite.height*this.scale+this.y+4)-gs){my = (this.sprite.height*this.scale+this.y+4)-gs}
-          //img.img,img.x,im.y,img.w,img.h  this.sprite
+         
           let sx =(this.sprite.width*this.scale)
           cursor(mx,my,gs,gs,null)
           if(mouse_check_pressed()){
@@ -405,7 +397,7 @@ tilesRect = {
           }
         }
         let tId = ((selected.cellY*10)+selected.cellX)
-        //document.title = 'tID = '+tId+ ' , '+floor(tId/10)+' , '+(tId % 10)
+     
       }else{
         draw_set_color(0,0,0);
         draw_centered_text(this.x+(this.w/2), this.y+(this.h/2), "NO TILESET LOADED", this.w/20)
@@ -482,7 +474,7 @@ function makeButton(x,y,label,funct){
   buttons.push(temp)
 }
 
-//makeButton(x,y,label,funct)
+
 makeButton(4,4,'load tSet','loadTiles();mouse_down=false');
 makeButton(104,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));project.gridSize=tilesRect.gridSize;mouse_down=false');
 makeButton(204,4,'mapW','mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));mapRect.init();mouse_down=false');
@@ -494,6 +486,7 @@ makeButton(704,4,'Tiles2','mode=1;mouse_down=false');
 makeButton(804,4,'Objects','mode=2;mouse_down=false');
 makeButton(904,4,'Snap2Grid','if(snapped==true){snapped=false;buttons[9].label="FreeMove"}else{snapped=true;buttons[9].label="Snap2Grid"};mouse_down=false');
 makeButton(1004,4,'exportJS','exportJS();mouse_down=false');
+makeButton(1104,4,'test','test();mouse_down=false');
 codeEdit = function(){}
 function start(){
   
@@ -510,7 +503,7 @@ function start(){
 }
 
 function loop(){ //;vk_all_keys=[]
-  document.title = mouse_x
+ 
   if(keyboard_check_pressed(vk_delete)&&mouse_x<window.innerWidth/2){
     selected.tId=-1;
     cur_value=null;
@@ -611,6 +604,7 @@ function loadTiles(){
 }
 
 function saveProject() {
+  
   var content = JSON.stringify(project)
 const blob = new Blob([content], { type: "text/json" }); // Create a Blob object with the JS content
   const url = URL.createObjectURL(blob); // Create a URL for the Blob
@@ -623,7 +617,7 @@ const blob = new Blob([content], { type: "text/json" }); // Create a Blob object
   URL.revokeObjectURL(url);
 }
 function exportJS() {
-  var content = JSON.stringify(project)
+  var content = document.title.split('.')[0]+' = '+JSON.stringify(project)
 const blob = new Blob([content], { type: "text/javascript" }); // Create a Blob object with the JS content
   const url = URL.createObjectURL(blob); // Create a URL for the Blob
   const link = document.createElement("a");
@@ -648,6 +642,7 @@ function load(){
         objects = project.objects;
         mapRect.mapW =  project.mapW;
         mapRect.mapH = project.mapH;
+        document.title = file.name
       };
       reader.readAsText(file);  // Read the file content as text
     } else {
@@ -712,7 +707,14 @@ textarea.style.height = `${height}px`;
 }
 
 
+  function test(){
+    var content = document.title.split('.')[0]+" = " + JSON.stringify(project)
+    localStorage.setItem("level_ed_test", content)
+    var myWindow = window.open();
+    myWindow.document.write(content);
 
+    
+  }
 
 </script>
 <script type='text/javascript' src='engine.js'></script>
